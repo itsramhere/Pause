@@ -1,0 +1,56 @@
+# Local strategy, research, implementation plans, and private evidence
+/planning/
+
+# Environment files and credentials; commit sanitized examples only
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+/secrets/
+/.aws/
+
+# JavaScript / TypeScript dependencies and generated output
+node_modules/
+dist/
+build/
+.next/
+.vite/
+*.tsbuildinfo
+
+# Go binaries, local tooling, and coverage
+/bin/
+/tmp/
+*.exe
+*.test
+coverage.out
+coverage/
+
+# Local data, uploads, and logs
+/data/
+/uploads/
+*.db
+*.db-shm
+*.db-wal
+*.log
+
+# Test and browser artifacts
+playwright-report/
+test-results/
+.cache/
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Python tooling used for local analysis
+.venv/
+venv/
+__pycache__/
+*.py[cod]
