@@ -1,16 +1,26 @@
 {
   "schema_version": "pause-evidence-v1",
-  "status": "NOT_RELEASED",
-  "model_version": "",
-  "artifact_hash": "",
+  "status": "RELEASED",
+  "model_version": "tfidf-linear-v1",
+  "artifact_hash": "6a7d7707bc24329519a548aa0ba2f53998c9fbd1f38d9fdc214b32aafd497b07",
   "label_schema_version": "pause-signals-v1",
-  "preprocessing_version": "",
-  "labels": ["urgent_payment_pressure", "secrecy_pressure", "impersonation_style_request", "advance_fee_or_release_fee"],
-  "thresholds": {},
-  "dataset_hash": "",
-  "split_hash": "",
-  "seed": 0,
-  "dependency_lock_hash": "",
-  "code_revision": "",
+  "preprocessing_version": "word12-char35-v1",
+  "labels": [
+    "urgent_payment_pressure",
+    "secrecy_pressure",
+    "impersonation_style_request",
+    "advance_fee_or_release_fee"
+  ],
+  "thresholds": {
+    "urgent_payment_pressure": 0.05,
+    "secrecy_pressure": 0.2,
+    "impersonation_style_request": 0.1,
+    "advance_fee_or_release_fee": 0.35
+  },
+  "dataset_hash": "0a696454b16ba259b74bd457eb276bcb3bdccc986bab39abc723e3540b2aeba6",
+  "split_hash": "89d21bd220408ae4315ab26c560fcf5edf93705e2bb6894d0ba5a0b16ef3dc3a",
+  "seed": 42,
+  "dependency_lock_hash": "e37154abff531c05d58f77b85774a641af4625ddec9050ca4ff3b15216a34a3c",
+  "code_revision": "6542307a7252b1ce038d18ba4068fa34a09e562e+p03-source",
   "language": "en"
 }

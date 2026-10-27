@@ -1,0 +1,31 @@
+{
+  "schema_version": "pause-p03-source-freeze-v1",
+  "scope": "Current post-debugging sources and approved artifacts; original validation report retains actual training-run source hashes; no retraining or final predictive/retrieval evaluation performed",
+  "sha256": {
+    "datasets/annotation-guide.md": "d6fc07ea1559bae03936afb2a875ac7d2ce8ba3a19654eebecc72c14b95a2a3b",
+    "datasets/sources.manifest.json": "1127d8a6371e08dbf078b0c3f83ff949dc6979720872d6d0885cfdf9c85d44b4",
+    "datasets/splits.manifest.json": "89d21bd220408ae4315ab26c560fcf5edf93705e2bb6894d0ba5a0b16ef3dc3a",
+    "internal/app/investigation.go": "4b0c63fa34ee0d0db43259191b354cf254f81793e997f7f0b791f3dac3c4de84",
+    "internal/app/investigation_test.go": "33e29f8d8a01f126fb7d0a19dd24c6f903d915ba9ddfa255906ec35c6c8777b6",
+    "internal/app/payments.go": "9050b877c6a52c7cf4041686fd7863125677d929cd595e4bc6e84880b3d3e555",
+    "internal/app/payments_test.go": "778f8633fc0bae0140c2a9bd755ee9038227aef4640bd8cab2e32e32187342c2",
+    "internal/app/service.go": "05185dc3dbafd8c02291b6ac378c44949dab955c53da713bac6b01708c25076f",
+    "internal/httpapi/investigation_test.go": "eba88b2e255ab836fb79ba29239b09380362ff26c407dd3ff3ce9d6957e6563e",
+    "internal/investigation/engine.go": "698a9024cf809abbcbb1941bb9c99d0ab724c34a1fb300fe4ab90578c6f5bf88",
+    "internal/investigation/engine_test.go": "e46ec4200f9ee39f1bd61cdb394613433bc30c3d5165d88f38303ae6e6624cd8",
+    "ml/requirements.lock.txt": "e37154abff531c05d58f77b85774a641af4625ddec9050ca4ff3b15216a34a3c",
+    "ml/src/pause_ml/runtime.py": "c1a256403d51231ff27900449c562a989ac03cd22be631b21c5be51b89f24932",
+    "ml/src/pause_ml/service.py": "76d5d4050ca715a0a93f03895c876187dc0e4bf25792ae4db5db0e8302640ca7",
+    "ml/src/pause_ml/train.py": "e8264bff8b4354607db8feab835d7a0a2e730c8b2882e63eb09a22bcf211e75d",
+    "ml/tests/test_runtime.py": "ff60e5d586c0ca1ac9a21e5ffa0216c257beae8be2fbd95cd778a9881f108ab1",
+    "ml/tests/test_service.py": "77e33429d8bf650fd8247e93d5c30038ebb854510ca01966359fa301ed9f0ddf",
+    "models/classifier.manifest.json": "399f520f31b855f29870b840734cb22ce2e35cbe0c776c972272439d8f670dfe",
+    "models/encoder.files.json": "e9766bace3629ee2d58e62acce319af1b84059e0934ef5f04c5d06dfacc56e67",
+    "models/encoder.manifest.json": "07ed4f9a7b8ce6c81095ed169b2c9d998f333d5472c433054097e2ac2ce4ee33",
+    "scripts/verify-investigation.py": "2ff5cbab12dedf1c358bd50e09f357ab74af685ab7f829f36b2809cd1577a240",
+    "search/mappings/playbooks-v1.json": "af2286f8497bf760c5474d632f2608e34c1a4f76a382c1ed87e6ecc9c7353eba",
+    "search/playbooks/corpus-v1.json": "a75608f122278b546a15df1eba700086a8ecfe628f1f8a2a6377ec058c847837",
+    "tests/fixtures/p03-adversarial.json": "450ed34ba13dfe96a0267f3d7c9ab1a346eea7786cc0bd9fcffae27bbe73fc5c",
+    "tests/fixtures/p03-workflow-suite.json": "c5aec170114dc3a2f38edbc1b5a95cf0da8064369a0d21ef458aa380c5da30e3"
+  }
+}

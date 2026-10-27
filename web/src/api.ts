@@ -8,7 +8,7 @@ export type Intent = {
  checkout: { status: string; provider_order_id: string | null; authorization_id: string | null; capture_id: string | null; reason_code: string };
  evidence: { status: string; classifier_status: string; playbook_status: string; history_status: string; reason_code: string };
 }
-export type Task = { id: string; intent_id: string; version: number; binding: Binding; status: string; expires_at: string }
+export type Task = { id: string; intent_id: string; version: number; binding: Binding; status: string; expires_at: string; content_digest:string; snapshot_hash:string; request_created_at:string; merchant_label:string }
 export type Intake = { amount: string; currency: string; merchant_id: string; subject_contact_id: string; purpose: string; message: string; history_consent: boolean }
 export class APIError extends Error { constructor(public code: string, message: string, public status: number) { super(message) } }
 export async function api<T>(path: string, method = 'GET', body?: unknown, key?: string): Promise<T> {

@@ -1,0 +1,8 @@
+{
+  "schema_version": "pause-public-relevance-v1",
+  "count": 30,
+  "sha256": "2b71cbc6df9fc2b6e7598f891c5f6a808d7a2dd45e2c3fe9fdb67253313a739d",
+  "scope": "Authored final relevance queries; P06 only; no metrics/selection/indexing in P03",
+  "corpus": "corpus-v1.json",
+  "private_query_count": 0
+}

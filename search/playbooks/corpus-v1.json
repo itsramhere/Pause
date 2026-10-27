@@ -1,0 +1,309 @@
+[
+  {
+    "playbook_id": "family-emergency",
+    "revision": 1,
+    "title": "Family emergency payment",
+    "original_summary": "A supposed relative reports trouble and asks for money. Verify independently through an established channel.",
+    "signal_tags": [
+      "urgent_payment_pressure",
+      "impersonation_style_request"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/scammers-use-fake-emergencies-steal-your-money",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "secrecy",
+    "revision": 1,
+    "title": "Family payment secrecy",
+    "original_summary": "A requester discourages discussion with other relatives. Independent conversation can help check the story.",
+    "signal_tags": [
+      "secrecy_pressure"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/scammers-use-fake-emergencies-steal-your-money",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "authority-relative",
+    "revision": 1,
+    "title": "Authority requesting family funds",
+    "original_summary": "A claimed official asks for a relative’s payment. Role claims in messages need independent checking.",
+    "signal_tags": [
+      "impersonation_style_request"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/scammers-use-fake-emergencies-steal-your-money",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "voice",
+    "revision": 1,
+    "title": "Familiar voice and payment",
+    "original_summary": "A familiar sounding caller can still require independent account confirmation before a requested purchase.",
+    "signal_tags": [
+      "impersonation_style_request"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/scammers-use-fake-emergencies-steal-your-money",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "immediate-emergency",
+    "revision": 1,
+    "title": "Immediate emergency payment",
+    "original_summary": "Pressure to send emergency money quickly can reduce time to check a request.",
+    "signal_tags": [
+      "urgent_payment_pressure"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/scammers-use-fake-emergencies-steal-your-money",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "known-channel",
+    "revision": 1,
+    "title": "Use an established contact channel",
+    "original_summary": "Contact the person through a previously known channel when checking an unexpected family payment.",
+    "signal_tags": [
+      "independent_verification"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/scammers-use-fake-emergencies-steal-your-money",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "pretend-government",
+    "revision": 1,
+    "title": "Government identity claim",
+    "original_summary": "An unexpected organization identity claim should be checked independently before responding to payment demands.",
+    "signal_tags": [
+      "impersonation_style_request"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/how-avoid-scam",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "urgent-threat",
+    "revision": 1,
+    "title": "Threat and urgent payment",
+    "original_summary": "Threats can accompany demands for immediate payment. Pause to review the demand with someone trusted.",
+    "signal_tags": [
+      "urgent_payment_pressure"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/how-avoid-scam",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "gift-card",
+    "revision": 1,
+    "title": "Payment by gift card",
+    "original_summary": "A demand for gift-card payment is a documented warning pattern. Payment-method context matters.",
+    "signal_tags": [
+      "payment_method"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/how-avoid-scam",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "crypto",
+    "revision": 1,
+    "title": "Cryptocurrency demand",
+    "original_summary": "A requester insisting on cryptocurrency can resemble documented payment pressure. Similarity does not establish who sent this request.",
+    "signal_tags": [
+      "payment_method"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/how-avoid-scam",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "fake-support",
+    "revision": 1,
+    "title": "Unsolicited support request",
+    "original_summary": "An unexpected support or account problem story can prompt payment demands. Check through a known independent service channel.",
+    "signal_tags": [
+      "impersonation_style_request"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/how-avoid-scam",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "talk-trusted",
+    "revision": 1,
+    "title": "Discuss before paying",
+    "original_summary": "Discuss an unexpected demand with someone trusted before sharing money or sensitive information.",
+    "signal_tags": [
+      "independent_verification"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/how-avoid-scam",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "loan-processing",
+    "revision": 1,
+    "title": "Guaranteed loan processing fee",
+    "original_summary": "A promised loan requiring a fee before delivery can resemble an advance-fee scheme.",
+    "signal_tags": [
+      "advance_fee_or_release_fee"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/what-know-about-advance-fee-loans",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "loan-insurance",
+    "revision": 1,
+    "title": "Upfront loan insurance",
+    "original_summary": "An upfront insurance payment tied to guaranteed credit is a documented fee pattern.",
+    "signal_tags": [
+      "advance_fee_or_release_fee"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/what-know-about-advance-fee-loans",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "loan-guarantee",
+    "revision": 1,
+    "title": "Fee guarantees credit",
+    "original_summary": "A fee said to guarantee access to credit deserves independent checking before payment.",
+    "signal_tags": [
+      "advance_fee_or_release_fee"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/what-know-about-advance-fee-loans",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "loan-paperwork",
+    "revision": 1,
+    "title": "Release paperwork fee",
+    "original_summary": "Fees described as paperwork or processing may precede promised loan funds that never arrive.",
+    "signal_tags": [
+      "advance_fee_or_release_fee"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/what-know-about-advance-fee-loans",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "ordinary-fee",
+    "revision": 1,
+    "title": "Ordinary application fees differ",
+    "original_summary": "Some legitimate applications have disclosed fees without a guarantee of credit. Fee vocabulary alone cannot determine legitimacy.",
+    "signal_tags": [
+      "ordinary_counterexample"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/what-know-about-advance-fee-loans",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  },
+  {
+    "playbook_id": "advance-promise",
+    "revision": 1,
+    "title": "Pay for a promise",
+    "original_summary": "A request to pay first for promised funds should be reviewed against the actual terms and source.",
+    "signal_tags": [
+      "advance_fee_or_release_fee"
+    ],
+    "example_phrases": [],
+    "source_url": "https://consumer.ftc.gov/articles/what-know-about-advance-fee-loans",
+    "source_publisher": "Federal Trade Commission",
+    "source_date": null,
+    "reviewed_at": "2026-10-27",
+    "license_or_usage_note": "Original Pause summary of linked FTC guidance; no source article or private message copied. Exact source date not supplied: general guidance states July 2023 (month precision); other pages have no stated date.",
+    "language": "en",
+    "active": true
+  }
+]

@@ -178,8 +178,17 @@ func TestUnreleasedManifestsFailClosed(t *testing.T) {
 	if e = json.Unmarshal(raw, &classifier); e != nil {
 		t.Fatal(e)
 	}
+	if classifier.Validate() != nil {
+		t.Fatal("approved classifier manifest invalid")
+	}
+	classifier.Status = "UNRELEASED"
 	if classifier.Validate() == nil {
-		t.Fatal("placeholder classifier was released")
+		t.Fatal("unreleased classifier accepted")
+	}
+	classifier.Status = "RELEASED"
+	classifier.ArtifactHash = "tampered"
+	if classifier.Validate() == nil {
+		t.Fatal("invalid classifier hash accepted")
 	}
 	raw, e = os.ReadFile("../../models/encoder.manifest.json")
 	if e != nil {
@@ -189,7 +198,11 @@ func TestUnreleasedManifestsFailClosed(t *testing.T) {
 	if e = json.Unmarshal(raw, &encoder); e != nil {
 		t.Fatal(e)
 	}
+	if encoder.Validate() != nil {
+		t.Fatal("approved encoder manifest invalid")
+	}
+	encoder.Status = "UNRELEASED"
 	if encoder.Validate() == nil {
-		t.Fatal("placeholder encoder was released")
+		t.Fatal("unreleased encoder accepted")
 	}
 }

@@ -35,6 +35,7 @@ build/
 /seed
 /paypal-webhooks
 /webhook-relay
+/investigation-setup
 coverage.out
 coverage/
 
@@ -46,10 +47,14 @@ coverage/
 *.db-wal
 *.log
 
-# Publish only reviewed, sanitized provider evidence; keep raw traces in /data/.
+# Publish only reviewed, sanitized payment/retrieval/acceptance evidence.
+# Raw traces, credentials, private messages and vectors stay in /data/.
 /evidence/*
 !/evidence/p02-sandbox-order-2026-10-27.json
 !/evidence/p02-sandbox-authorize-void-2026-10-27.json
+!/evidence/p03-sandbox-2026-10-27.json
+!/evidence/p03-public-retrieval-2026-10-27.json
+!/evidence/p03-debugging-2026-10-27.json
 
 # Test and browser artifacts
 playwright-report/
@@ -80,10 +85,17 @@ htmlcov/
 .nox/
 .uv-cache/
 
-# Local ML artifacts and model caches; keep source, manifests, and locks tracked
+# Local ML weights, downloaded encoder files and unreviewed model output.
+# Publish only the reviewed P03 manifests, reports and documentation below.
 /models/*
-!/models/*.json
-!/models/*.md
+!/models/README.md
+!/models/classifier-card.md
+!/models/classifier.manifest.json
+!/models/encoder.manifest.json
+!/models/encoder.files.json
+!/models/validation-report.json
+!/models/runtime-budget.json
+!/models/source-freeze.manifest.json
 /datasets/raw-private/
 /ml/.venv/
 /artifacts/

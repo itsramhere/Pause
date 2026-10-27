@@ -14,16 +14,21 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/ramst/pause/internal/config"
 	"github.com/ramst/pause/internal/domain"
+	"github.com/ramst/pause/internal/investigation"
 	"github.com/ramst/pause/internal/secure"
 	"github.com/ramst/pause/internal/store"
 )
 
 type Service struct {
-	DB       *store.Store
-	Config   config.Config
-	Clock    domain.Clock
-	Box      *secure.Box
-	Provider domain.PaymentProvider
+	DB            *store.Store
+	Config        config.Config
+	Clock         domain.Clock
+	Box           *secure.Box
+	Provider      domain.PaymentProvider
+	Investigation *investigation.Engine
+	// Internal dependency injection for policy fixtures. No bootstrap, config or
+	// HTTP path can install this; absent production investigation fails closed.
+	sourceValidator func(context.Context, string, string) (sourceValidation, error)
 }
 type Intake struct {
 	Amount           string `json:"amount"`
@@ -172,6 +177,12 @@ func (s *Service) Create(ctx context.Context, a domain.Actor, in Intake, key, co
 		return result, false, e
 	}
 	result, e = s.Read(ctx, a, id)
+	if e == nil {
+		e = s.RequestVerification(ctx, a, id, result.Version, correlation)
+		if e == nil {
+			result, e = s.Read(ctx, a, id)
+		}
+	}
 	return result, replay, e
 }
 func (s *Service) writeVersion(ctx context.Context, tx pgx.Tx, a domain.Actor, id string, version int, in Intake, amount int64) error {

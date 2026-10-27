@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/ramst/pause/internal/domain"
+	"github.com/ramst/pause/internal/investigation"
 	"github.com/ramst/pause/internal/paypal"
 	"github.com/ramst/pause/internal/store"
 )
@@ -328,7 +329,7 @@ func (s *Service) totals(ctx context.Context, tx pgx.Tx, p paymentRow) (requeste
 	err = tx.QueryRow(ctx, `SELECT COALESCE(sum(v.amount_minor),0)::bigint,COALESCE(sum(v.amount_minor) FILTER(WHERE i.authorization_id IS NOT NULL AND i.payment_status IN ('HELD','CAPTURE_PENDING','VOID_PENDING','RECONCILING')),0)::bigint,COALESCE(sum(v.amount_minor) FILTER(WHERE i.payment_status='CAPTURED'),0)::bigint FROM payment_intents i JOIN intent_versions v ON v.intent_id=i.id AND v.version=i.current_version WHERE i.household_id=$1 AND v.subject_contact_id=$2 AND i.created_at>=$3 AND i.created_at<=$4`, p.household, p.cmd.Binding.SubjectContactID, s.Clock.Now().Add(-7*24*time.Hour), s.Clock.Now()).Scan(&requested, &held, &captured)
 	return
 }
-func (s *Service) eligibility(ctx context.Context, tx pgx.Tx, p paymentRow, a domain.Actor, evidenceID string) (releaseEligibility, error) {
+func (s *Service) eligibility(ctx context.Context, tx pgx.Tx, p paymentRow, a domain.Actor, evidenceID string, proof sourceValidation) (releaseEligibility, error) {
 	var cap releaseEligibility
 	reject := func() (releaseEligibility, error) { return cap, domain.Fail("RELEASE_EVIDENCE_REQUIRED", 409) }
 	if p.cleanup || p.state != domain.Held || p.cmd.AuthorizationID == "" || !s.Clock.Now().Before(p.deadline) || a.UserID != p.reviewer || a.UserID == p.creator {
@@ -351,6 +352,18 @@ func (s *Service) eligibility(ctx context.Context, tx pgx.Tx, p paymentRow, a do
 	if !verified {
 		return reject()
 	}
+	if s.Investigation != nil {
+		var snapshot, responseHash []byte
+		var hash *string
+		if e = tx.QueryRow(ctx, `SELECT request_snapshot,response_evidence_hash FROM verifications WHERE intent_id=$1 AND intent_version=$2 AND subject_user_id=$3`, p.cmd.IntentID, p.cmd.Version, subject).Scan(&snapshot, &hash); e != nil || hash == nil {
+			return reject()
+		}
+		responseHash = []byte(*hash)
+		var bound taskSnapshot
+		if json.Unmarshal(snapshot, &bound) != nil || bound.Binding != p.cmd.Binding || bound.SubjectUserID != subject || bound.Digest != p.cmd.Digest || string(responseHash) != domain.Hash(snapshot) {
+			return reject()
+		}
+	}
 	var raw []byte
 	var evVersion, consent int
 	var rev int64
@@ -363,8 +376,28 @@ func (s *Service) eligibility(ctx context.Context, tx pgx.Tx, p paymentRow, a do
 		return reject()
 	}
 	var ev releaseEvidence
+	if proof.evidenceID != evidenceID || proof.hash != evidenceHash(raw) {
+		return reject()
+	}
+	if s.Investigation == nil && s.sourceValidator == nil {
+		return reject()
+	}
 	if json.Unmarshal(raw, &ev) != nil || ev.Unresolved || ev.PolicyVersion != PaymentPolicy || ev.Classifier.Validate() != nil || ev.Encoder.Validate() != nil || ev.Classifier.ModelVersion != classifier || ev.Encoder.EncoderVersion != encoder {
 		return reject()
+	}
+	if s.Investigation != nil {
+		var stored map[string]any
+		var packet EvidencePacket
+		var hash string
+		if json.Unmarshal(raw, &stored) != nil || json.Unmarshal(raw, &packet) != nil {
+			return reject()
+		}
+		if e = tx.QueryRow(ctx, `SELECT evidence_hash FROM evidence_snapshots WHERE id=$1`, evidenceID).Scan(&hash); e != nil {
+			return reject()
+		}
+		if hash != domain.Hash(mustJSON(stored)) || packet.Receipt.CorpusHash != s.Investigation.CorpusHash || packet.Receipt.ConcreteIndex != investigation.IndexVersion || ev.Playbooks.IndexVersion != investigation.IndexVersion || ev.Playbooks.MappingVersion != "playbooks-v1" || ev.Playbooks.FusionVersion != investigation.FusionVersion || len(s.Investigation.Sources(ev.Playbooks)) != len(ev.Playbooks.Hits) || ev.Classifier.ArtifactHash != s.Investigation.Classifier.ArtifactHash || ev.Encoder.ArtifactHash != s.Investigation.Encoder.ArtifactHash {
+			return reject()
+		}
 	}
 	var released int
 	e = tx.QueryRow(ctx, `SELECT count(*) FROM model_releases WHERE approved_at IS NOT NULL AND ((kind='classifier' AND version=$1 AND artifact_hash=$2 AND manifest=$5::jsonb) OR (kind='encoder' AND version=$3 AND artifact_hash=$4 AND manifest=$6::jsonb))`, classifier, ev.Classifier.ArtifactHash, encoder, ev.Encoder.ArtifactHash, mustJSON(ev.Classifier), mustJSON(ev.Encoder)).Scan(&released)
@@ -421,6 +454,13 @@ func (s *Service) ReviewApprove(ctx context.Context, a domain.Actor, id, evidenc
 	if e != nil {
 		return e
 	}
+	if _, e = s.Read(ctx, a, id); e != nil {
+		return e
+	}
+	proof, e := s.validateReleaseSources(ctx, id, evidenceID)
+	if e != nil {
+		return e
+	}
 	return s.DB.WithTx(ctx, func(tx pgx.Tx) error {
 		p, e := s.paymentLock(ctx, tx, id)
 		if e != nil {
@@ -429,7 +469,7 @@ func (s *Service) ReviewApprove(ctx context.Context, a domain.Actor, id, evidenc
 		if e = s.paymentActor(ctx, tx, a, p, false); e != nil {
 			return e
 		}
-		cap, e := s.eligibility(ctx, tx, p, a, evidenceID)
+		cap, e := s.eligibility(ctx, tx, p, a, evidenceID, proof)
 		if e != nil {
 			return e
 		}
@@ -481,6 +521,10 @@ func (s *Service) loadOperation(ctx context.Context, id string) (paymentOperatio
 // captures on that authorization; this does not assume a retention duration for
 // the idempotency cache. Provider reads always precede this current PG check.
 func (s *Service) captureRecoveryEligible(ctx context.Context, job domain.Job, o paymentOperation) error {
+	proof, err := s.validateApprovedSources(ctx, o.cmd.IntentID, o.cmd.Version)
+	if err != nil {
+		return err
+	}
 	return s.DB.WithTx(ctx, func(tx pgx.Tx) error {
 		p, e := s.paymentLock(ctx, tx, o.cmd.IntentID)
 		if e != nil {
@@ -497,7 +541,7 @@ func (s *Service) captureRecoveryEligible(ctx context.Context, job domain.Job, o
 			return e
 		}
 		p.state = domain.Held
-		_, e = s.eligibility(ctx, tx, p, domain.Actor{UserID: reviewer, HouseholdID: p.household, Role: domain.Reviewer}, evidence)
+		_, e = s.eligibility(ctx, tx, p, domain.Actor{UserID: reviewer, HouseholdID: p.household, Role: domain.Reviewer}, evidence, proof)
 		return e
 	})
 }
@@ -527,6 +571,11 @@ func (s *Service) RunPaymentJob(ctx context.Context, job domain.Job) error {
 		return nil
 	}
 	dispatch := o.state == "RESERVED"
+	var proof sourceValidation
+	var sourceErr error
+	if dispatch && o.kind == "CAPTURE" {
+		proof, sourceErr = s.validateApprovedSources(ctx, o.cmd.IntentID, o.cmd.Version)
+	}
 	blocked := false
 	e = s.DB.WithTx(ctx, func(tx pgx.Tx) error {
 		var p paymentRow
@@ -546,7 +595,11 @@ func (s *Service) RunPaymentJob(ctx context.Context, job domain.Job) error {
 			check := p
 			check.state = domain.Held
 			if e == nil && p.state == domain.CapturePending {
-				_, e = s.eligibility(ctx, tx, check, domain.Actor{UserID: reviewer, HouseholdID: p.household, Role: domain.Reviewer}, evidence)
+				if sourceErr != nil {
+					e = sourceErr
+				} else {
+					_, e = s.eligibility(ctx, tx, check, domain.Actor{UserID: reviewer, HouseholdID: p.household, Role: domain.Reviewer}, evidence, proof)
+				}
 			} else {
 				e = domain.Fail("RELEASE_EVIDENCE_REQUIRED", 409)
 			}

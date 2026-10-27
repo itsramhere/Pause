@@ -1,0 +1,163 @@
+{
+    "schema_version":  "pause-p03-public-retrieval-evidence-v1",
+    "scope":  "Actual PostgreSQL investigation run from real pinned inference and public Elasticsearch retrieval; no private text or vectors",
+    "observed_at":  "2026-10-27T12:52:02.4851046Z",
+    "encoder":  {
+                    "schema_version":  "pause-evidence-v1",
+                    "status":  "RELEASED",
+                    "encoder_version":  "minilm-l6-1110a243-v1",
+                    "artifact_hash":  "e8cbc0408bd6993d8bc25a07a7ab162394573a11c2333510501561ff8caa7f18",
+                    "upstream_revision":  "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+                    "license":  "Apache-2.0",
+                    "preprocessing_version":  "mean256-l2-v1",
+                    "dimension":  384,
+                    "normalized":  true,
+                    "similarity":  "cosine"
+                },
+    "run":  {
+                "lookup":  {
+                               "hits":  [
+                                            {
+                                                "score":  0.03200204813108039,
+                                                "source_id":  "urgent-threat",
+                                                "source_version":  1,
+                                                "consent_version":  0,
+                                                "projection_revision":  0
+                                            },
+                                            {
+                                                "score":  0.03131881575727918,
+                                                "source_id":  "known-channel",
+                                                "source_version":  1,
+                                                "consent_version":  0,
+                                                "projection_revision":  0
+                                            },
+                                            {
+                                                "score":  0.029910714285714284,
+                                                "source_id":  "advance-promise",
+                                                "source_version":  1,
+                                                "consent_version":  0,
+                                                "projection_revision":  0
+                                            }
+                                        ],
+                               "scope":  "PLAYBOOKS",
+                               "status":  "OK",
+                               "index_version":  "pause-playbooks-v1-minilm1110",
+                               "fusion_version":  "go-rrf60-v1",
+                               "schema_version":  "pause-evidence-v1",
+                               "encoder_version":  "minilm-l6-1110a243-v1",
+                               "mapping_version":  "playbooks-v1"
+                           },
+                "status":  "OK",
+                "receipt":  {
+                                "candidates":  [
+                                                   {
+                                                       "id":  "urgent-threat",
+                                                       "vector_rank":  2,
+                                                       "keyword_rank":  3
+                                                   },
+                                                   {
+                                                       "id":  "known-channel",
+                                                       "vector_rank":  7,
+                                                       "keyword_rank":  1
+                                                   },
+                                                   {
+                                                       "id":  "advance-promise",
+                                                       "vector_rank":  10,
+                                                       "keyword_rank":  4
+                                                   },
+                                                   {
+                                                       "id":  "authority-relative",
+                                                       "vector_rank":  9,
+                                                       "keyword_rank":  7
+                                                   },
+                                                   {
+                                                       "id":  "secrecy",
+                                                       "vector_rank":  16,
+                                                       "keyword_rank":  2
+                                                   },
+                                                   {
+                                                       "id":  "loan-guarantee",
+                                                       "vector_rank":  13,
+                                                       "keyword_rank":  6
+                                                   },
+                                                   {
+                                                       "id":  "crypto",
+                                                       "vector_rank":  17,
+                                                       "keyword_rank":  5
+                                                   },
+                                                   {
+                                                       "id":  "voice",
+                                                       "vector_rank":  1,
+                                                       "keyword_rank":  0
+                                                   },
+                                                   {
+                                                       "id":  "gift-card",
+                                                       "vector_rank":  3,
+                                                       "keyword_rank":  0
+                                                   },
+                                                   {
+                                                       "id":  "loan-processing",
+                                                       "vector_rank":  4,
+                                                       "keyword_rank":  0
+                                                   },
+                                                   {
+                                                       "id":  "talk-trusted",
+                                                       "vector_rank":  5,
+                                                       "keyword_rank":  0
+                                                   },
+                                                   {
+                                                       "id":  "family-emergency",
+                                                       "vector_rank":  6,
+                                                       "keyword_rank":  0
+                                                   },
+                                                   {
+                                                       "id":  "immediate-emergency",
+                                                       "vector_rank":  8,
+                                                       "keyword_rank":  0
+                                                   },
+                                                   {
+                                                       "id":  "pretend-government",
+                                                       "vector_rank":  11,
+                                                       "keyword_rank":  0
+                                                   },
+                                                   {
+                                                       "id":  "loan-insurance",
+                                                       "vector_rank":  12,
+                                                       "keyword_rank":  0
+                                                   },
+                                                   {
+                                                       "id":  "loan-paperwork",
+                                                       "vector_rank":  14,
+                                                       "keyword_rank":  0
+                                                   },
+                                                   {
+                                                       "id":  "fake-support",
+                                                       "vector_rank":  15,
+                                                       "keyword_rank":  0
+                                                   },
+                                                   {
+                                                       "id":  "ordinary-fee",
+                                                       "vector_rank":  18,
+                                                       "keyword_rank":  0
+                                                   }
+                                               ],
+                                "corpus_hash":  "a75608f122278b546a15df1eba700086a8ecfe628f1f8a2a6377ec058c847837",
+                                "duration_ms":  50,
+                                "input_digest":  "355319aef072d703c1e9ceed5283d2f24fa10357aed87bd12b6f6db601e49c42",
+                                "concrete_index":  "pause-playbooks-v1-minilm1110"
+                            },
+                "intent_id":  "5911eb14-bfbf-4b94-965b-ae1092ea883e",
+                "created_at":  "2026-10-27T18:16:53.81012+05:30",
+                "classification":  {
+                                       "status":  "ABSTAIN",
+                                       "artifact_hash":  "6a7d7707bc24329519a548aa0ba2f53998c9fbd1f38d9fdc214b32aafd497b07",
+                                       "model_version":  "tfidf-linear-v1",
+                                       "schema_version":  "pause-evidence-v1",
+                                       "label_schema_version":  "pause-signals-v1",
+                                       "preprocessing_version":  "word12-char35-v1"
+                                   },
+                "content_digest":  "4a7b474945e4c9bb524046535524ef30f370a4564bb1c56430c0de9947f382c2",
+                "intent_version":  1,
+                "message_digest":  "355319aef072d703c1e9ceed5283d2f24fa10357aed87bd12b6f6db601e49c42"
+            }
+}

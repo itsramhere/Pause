@@ -1,0 +1,62 @@
+{
+  "scope": "Validation only; final test unopened; synthetic single-author pilot",
+  "selection": "Linear baseline selected as bounded prototype; no advantage over rules or real-world effectiveness claimed. SetFit deferred for scope/budget.",
+  "threshold_development_revision": "Initial .35-.65 grid missed all urgency validation positives; expanded .05-.95 after inspecting validation only. Test remains untouched.",
+  "source_hashes": {
+    "__init__.py": "cb9be4fd02313af338c0b7f8aaf3459425aa997f8bb51082340e9b2b9af94c8e",
+    "runtime.py": "92268a7cca30a7560ffc84c34924102f797477e03199968592095a62256b9749",
+    "service.py": "03e5eec6b58a6022d4cb56f050ffb3184e5c4bb927850ffa023389fe2cbc2148",
+    "train.py": "e8264bff8b4354607db8feab835d7a0a2e730c8b2882e63eb09a22bcf211e75d"
+  },
+  "artifact_reload_predictions_match": true,
+  "training_ms": 145.80559999740217,
+  "rss_bytes": 116973568,
+  "peak_rss_bytes": 118468608,
+  "counts": {
+    "train": 240,
+    "validation": 80
+  },
+  "per_label": {
+    "urgent_payment_pressure": {
+      "precision": 0.5211267605633803,
+      "recall": 0.925,
+      "f1": 0.6666666666666666,
+      "support": 40
+    },
+    "secrecy_pressure": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1": 0.8,
+      "support": 40
+    },
+    "impersonation_style_request": {
+      "precision": 0.7692307692307693,
+      "recall": 0.9375,
+      "f1": 0.8450704225352113,
+      "support": 32
+    },
+    "advance_fee_or_release_fee": {
+      "precision": 1.0,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "support": 24
+    }
+  },
+  "linear": {
+    "precision": 0.6612903225806451,
+    "recall": 0.9044117647058824,
+    "f1": 0.7639751552795031
+  },
+  "rules": {
+    "precision": 0.9565217391304348,
+    "recall": 0.6470588235294118,
+    "f1": 0.7719298245614035
+  },
+  "benign_false_trigger_count": 8,
+  "abstention_rule": "ABSTAIN if fewer than 4 word tokens, all unknown word features, or any score within 0.08 of threshold",
+  "latency_ms": {
+    "p50": 1.5448999984073453,
+    "p95": 3.1451100032427344
+  },
+  "test_opened": false
+}

@@ -77,7 +77,17 @@ func setupPayments(t *testing.T) *paymentFixture {
 	box, _ := secure.NewBox(bytes.Repeat([]byte{42}, 32))
 	p := &fakeProvider{states: map[string]domain.ProviderResult{}, calls: map[string]int{}, keys: map[string]string{}, captures: map[string]int{}}
 	s := &Service{DB: db, Clock: clock, Box: box, Provider: p, Config: config.Config{MerchantID: "FIXTURE_MERCHANT", MaxAmount: 500000, DecisionTTL: 30 * time.Minute, MessageRetention: 7 * 24 * time.Hour, OperationRetention: 24 * time.Hour}}
+	// Explicit dependency fixture, available only from package test code. Product
+	// startup has no equivalent switch and rejects a missing investigation engine.
+	installFixtureSourceValidator(s)
 	return &paymentFixture{s, p, clock, schema}
+}
+func installFixtureSourceValidator(s *Service) {
+	s.sourceValidator = func(ctx context.Context, id, evidenceID string) (sourceValidation, error) {
+		var raw []byte
+		err := s.DB.Pool.QueryRow(ctx, `SELECT evidence FROM evidence_snapshots WHERE id=$1 AND intent_id=$2`, evidenceID, id).Scan(&raw)
+		return sourceValidation{evidenceID: evidenceID, hash: evidenceHash(raw)}, err
+	}
 }
 func actor(role domain.Role) domain.Actor {
 	return domain.Actor{UserID: store.SeedID(string(role) + "-1"), HouseholdID: store.SeedID("household-1"), Role: role}
@@ -361,7 +371,7 @@ func (f *paymentFixture) evidence(t *testing.T, i domain.Intent) string {
 		if _, e = tx.Exec(ctx, `INSERT INTO payment_evidence_config(id,classifier_version,encoder_version,template_version,policy_version,revision) VALUES(1,$1,$2,'fixture-template-v1',$3,1) ON CONFLICT(id) DO NOTHING`, classifier.ModelVersion, encoder.EncoderVersion, PaymentPolicy); e != nil {
 			return e
 		}
-		if _, e = tx.Exec(ctx, `INSERT INTO verifications(id,intent_id,intent_version,content_digest,subject_user_id,status,expires_at,responded_at) VALUES($1,$2,$3,$4,$5,'CONFIRMED',$6,$7)`, uuid.NewString(), i.ID, i.Version, i.Digest, actor(domain.Subject).UserID, p.deadline, f.clock.Now()); e != nil {
+		if _, e = tx.Exec(ctx, `UPDATE verifications SET status='CONFIRMED',expires_at=$3,responded_at=$4 WHERE intent_id=$1 AND intent_version=$2`, i.ID, i.Version, p.deadline, f.clock.Now()); e != nil {
 			return e
 		}
 		_, e = tx.Exec(ctx, `INSERT INTO evidence_snapshots(id,intent_id,intent_version,consent_version,history_revision,content_digest,schema_version,policy_version,classifier_version,encoder_version,template_version,evidence,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'fixture-template-v1',$11,$12)`, id, i.ID, i.Version, p.consent, p.revision, i.Digest, domain.ContractVersion, PaymentPolicy, classifier.ModelVersion, encoder.EncoderVersion, mustJSON(ev), f.clock.Now())
@@ -488,6 +498,9 @@ func TestP02LostCaptureAndPendingReconcile(t *testing.T) {
 			f.p.mu.Unlock()
 			f.clock.now = f.clock.now.Add(time.Minute)
 			restarted := *f.s
+			// Missing analysis blocks new/replayed capture, but provider truth
+			// from an already dispatched operation must still reconcile.
+			restarted.sourceValidator = nil
 			f.s = &restarted
 			f.work(t)
 			if f.status(t, i.ID) != domain.Captured || f.p.calls["CAPTURE"] != 1 {
@@ -707,6 +720,7 @@ func TestP02ProcessWorker(t *testing.T) {
 		t.Fatal(e)
 	}
 	s := &Service{DB: &store.Store{Pool: pool}, Clock: &paymentClock{now}, Provider: processProvider{url: os.Getenv("P02_CHILD_PROVIDER"), crash: os.Getenv("P02_CHILD_CRASH"), kind: os.Getenv("P02_CHILD_KIND")}}
+	installFixtureSourceValidator(s)
 	if os.Getenv("P02_CHILD_CRASH") == "after_reservation" {
 		os.Exit(71)
 	}

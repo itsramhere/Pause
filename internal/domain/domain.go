@@ -199,13 +199,16 @@ type Intent struct {
 	Evidence         EvidenceDTO        `json:"evidence"`
 }
 type Task struct {
-	ID        string    `json:"id"`
-	IntentID  string    `json:"intent_id"`
-	Version   int       `json:"version"`
-	Digest    string    `json:"content_digest"`
-	Binding   Binding   `json:"binding"`
-	Status    string    `json:"status"`
-	ExpiresAt time.Time `json:"expires_at"`
+	SnapshotHash  string    `json:"snapshot_hash"`
+	CreatedAt     time.Time `json:"request_created_at"`
+	MerchantLabel string    `json:"merchant_label"`
+	ID            string    `json:"id"`
+	IntentID      string    `json:"intent_id"`
+	Version       int       `json:"version"`
+	Digest        string    `json:"content_digest"`
+	Binding       Binding   `json:"binding"`
+	Status        string    `json:"status"`
+	ExpiresAt     time.Time `json:"expires_at"`
 }
 type Contact struct {
 	ID           string `json:"id"`

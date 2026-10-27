@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -43,6 +44,10 @@ func (s *Service) Read(ctx context.Context, a domain.Actor, id string) (domain.I
 		history = "UNAVAILABLE"
 	}
 	i.Evidence = domain.EvidenceDTO{SchemaVersion: domain.ContractVersion, Status: "UNAVAILABLE", ClassifierStatus: "UNAVAILABLE", PlaybookStatus: "UNAVAILABLE", HistoryStatus: history, ReasonCode: "INVESTIGATION_NOT_IMPLEMENTED"}
+	if s.Investigation != nil {
+		i.Evidence.ReasonCode = "ANALYZE_REQUIRED"
+		i.Evidence.Status = "PENDING"
+	}
 	return i, nil
 }
 func (s *Service) List(ctx context.Context, a domain.Actor) ([]domain.Intent, error) {
@@ -129,6 +134,20 @@ func (s *Service) Tasks(ctx context.Context, a domain.Actor) ([]domain.Task, err
 		}
 		t.Binding.IntentID = t.IntentID
 		t.Binding.Version = t.Version
+		var raw []byte
+		if e = s.DB.Pool.QueryRow(ctx, `SELECT request_snapshot FROM verifications WHERE id=$1`, t.ID).Scan(&raw); e != nil {
+			return nil, e
+		}
+		var snapshot taskSnapshot
+		if json.Unmarshal(raw, &snapshot) != nil {
+			return nil, domain.Fail("INVALID_TASK", 409)
+		}
+		t.SnapshotHash = domain.Hash(raw)
+		t.CreatedAt = snapshot.CreatedAt
+		t.MerchantLabel = snapshot.MerchantLabel
+		if (t.Status == "PENDING" || t.Status == "CONFIRMED") && !s.Clock.Now().Before(t.ExpiresAt) {
+			t.Status = "EXPIRED"
+		}
 		out = append(out, t)
 	}
 	return out, rows.Err()

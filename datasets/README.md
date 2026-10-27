@@ -1,3 +1,13 @@
 # Shareable datasets
 
-Keep licensed public data, original synthetic examples, provenance/license notes, annotation rules, and scenario-group split manifests here when created in P03. Workflow fixtures in `tests/fixtures/` are not training or evaluation data. `raw-private/` is ignored. History consent never authorizes model training. No training dataset is claimed in P01.
+The 400 original CC0 examples cover 100 scenario templates, conservatively grouped
+into ten shared-clause clusters before splitting: 240 train, 80 validation and 80
+frozen final test. The annotation guide and manifests document the single-author
+audit, exact provenance, split hashes, seed and small-data limitations.
+
+train.py fits preprocessing/weights on train only, selects thresholds on
+validation only, and never reads test.jsonl. Do not rerun --curate on a frozen
+release or inspect final errors while tuning. Final quality evaluation is P06.
+The separate 40-case product suite and 30 public relevance queries are never used
+for training. No private messages are included; history permission never grants
+training permission. raw-private remains ignored.

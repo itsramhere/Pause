@@ -1,11 +1,11 @@
 {
   "schema_version": "pause-evidence-v1",
-  "status": "NOT_RELEASED",
-  "encoder_version": "",
-  "artifact_hash": "",
-  "upstream_revision": "",
-  "license": "",
-  "preprocessing_version": "",
+  "status": "RELEASED",
+  "encoder_version": "minilm-l6-1110a243-v1",
+  "artifact_hash": "e8cbc0408bd6993d8bc25a07a7ab162394573a11c2333510501561ff8caa7f18",
+  "upstream_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "license": "Apache-2.0",
+  "preprocessing_version": "mean256-l2-v1",
   "dimension": 384,
   "normalized": true,
   "similarity": "cosine"

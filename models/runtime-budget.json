@@ -1,0 +1,17 @@
+{
+  "startup": {
+    "startup_ms": 47802.08,
+    "rss_bytes": 414003200,
+    "peak_rss_bytes": 435650560
+  },
+  "classify_ms": {
+    "p50": 4.401149999466725,
+    "p95": 7.261999992624624
+  },
+  "embed_ms": {
+    "p50": 28.52990000246791,
+    "p95": 52.11354999919421
+  },
+  "scope": "30 synthetic development probes; final test and relevance queries unopened",
+  "concurrency_limit": 2
+}

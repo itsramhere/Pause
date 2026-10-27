@@ -1,0 +1,28 @@
+{
+  "schema_version": "pause-splits-v1",
+  "seed": 42,
+  "allocation": {
+    "template-cluster-07": "train",
+    "template-cluster-03": "train",
+    "template-cluster-02": "train",
+    "template-cluster-08": "train",
+    "template-cluster-05": "train",
+    "template-cluster-06": "train",
+    "template-cluster-09": "validation",
+    "template-cluster-04": "validation",
+    "template-cluster-00": "test",
+    "template-cluster-01": "test"
+  },
+  "hashes": {
+    "train": "5f92a88607c35c38d01fd031b05e71966e278afa182a138f802bdcc0ed7d498c",
+    "validation": "2a56ebf38c32176a0d11b65870144b35874c2eb5ee7c83caa96b2d2442bbd596",
+    "test": "a1c6d1b7d71358a1373ae945fa73f05ca3a4bc70b47e9108bfca1e497b67bdd1"
+  },
+  "dataset_hash": "0a696454b16ba259b74bd457eb276bcb3bdccc986bab39abc723e3540b2aeba6",
+  "counts": {
+    "train": 240,
+    "validation": 80,
+    "test": 80
+  },
+  "audit": "Single-author template/label audit; no independent adjudication"
+}

@@ -378,7 +378,7 @@ func TestFoundationPostgres(t *testing.T) {
 			status(t, c.request("GET", "/api/intents/"+saved.ID, nil, nil), 404)
 		}
 		// Future tasks still use the narrow projection, never raw request/history.
-		_, e := f.db.Pool.Exec(ctx, `INSERT INTO verifications(id,intent_id,intent_version,content_digest,subject_user_id,status,expires_at) VALUES($1,$2,1,$3,$4,'PENDING',$5)`, uuid.NewString(), saved.ID, saved.Digest, f.actor("subject", 1).UserID, f.clock.Now().Add(time.Hour))
+		_, e := f.db.Pool.Exec(ctx, `UPDATE verifications SET expires_at=$2 WHERE intent_id=$1 AND intent_version=1`, saved.ID, f.clock.Now().Add(time.Hour))
 		if e != nil {
 			t.Fatal(e)
 		}

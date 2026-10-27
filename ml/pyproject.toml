@@ -1,9 +1,9 @@
 [project]
 name = "pause-inference"
 version = "0.1.0"
-description = "Private inference contract scaffold; no released model in P01"
+description = "Private approved TF-IDF classifier and independent pinned search encoder"
 requires-python = ">=3.12,<3.14"
-dependencies = []
+dependencies = ["scikit-learn==1.7.2", "numpy==2.2.6", "scipy==1.16.3", "joblib==1.5.2", "torch==2.9.0+cpu", "transformers==4.57.1", "huggingface-hub==0.36.0", "psutil==7.2.2"]
 
 [project.scripts]
 pause-inference = "pause_ml.service:main"
@@ -14,3 +14,11 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pause_ml"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

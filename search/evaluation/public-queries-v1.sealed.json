@@ -1,0 +1,247 @@
+[
+  {
+    "query_id": "public-01",
+    "text": "A caller says my nephew crashed and needs a purchase paid in minutes.",
+    "relevant_ids": [
+      "family-emergency",
+      "immediate-emergency"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-02",
+    "text": "Someone claiming to be my sister wants money while she is stranded.",
+    "relevant_ids": [
+      "family-emergency"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-03",
+    "text": "The sender insists my children must never learn about the transfer.",
+    "relevant_ids": [
+      "secrecy"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-04",
+    "text": "I was told to make the purchase without mentioning it to anyone.",
+    "relevant_ids": [
+      "secrecy"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-05",
+    "text": "A supposed police official wants payment for my detained cousin.",
+    "relevant_ids": [
+      "authority-relative",
+      "pretend-government"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-06",
+    "text": "The claimed physician requests funds using an unfamiliar account.",
+    "relevant_ids": [
+      "authority-relative"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-07",
+    "text": "The caller sounds exactly like a relative but asks for an unexpected payment.",
+    "relevant_ids": [
+      "voice"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-08",
+    "text": "Can a convincing familiar voice replace checking the usual contact account?",
+    "relevant_ids": [
+      "voice",
+      "known-channel"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-09",
+    "text": "I have only three minutes to send the money for an urgent rescue.",
+    "relevant_ids": [
+      "immediate-emergency"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-10",
+    "text": "A panicked caller wants the bill paid without allowing time to check.",
+    "relevant_ids": [
+      "immediate-emergency",
+      "urgent-threat"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-11",
+    "text": "How can I verify a family request without using the contact in its message?",
+    "relevant_ids": [
+      "known-channel"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-12",
+    "text": "I want to ask my relative through the number I have always used.",
+    "relevant_ids": [
+      "known-channel"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-13",
+    "text": "An unexpected federal office demands I move money now.",
+    "relevant_ids": [
+      "pretend-government",
+      "urgent-threat"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-14",
+    "text": "A message claims to represent a government agency and asks me to pay.",
+    "relevant_ids": [
+      "pretend-government"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-15",
+    "text": "They threaten arrest unless the money arrives this afternoon.",
+    "relevant_ids": [
+      "urgent-threat"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-16",
+    "text": "A threatening caller refuses to let me hang up before making payment.",
+    "relevant_ids": [
+      "urgent-threat"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-17",
+    "text": "The only accepted way to pay is to read out a gift card code.",
+    "relevant_ids": [
+      "gift-card"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-18",
+    "text": "They want me to purchase store vouchers and give them the numbers.",
+    "relevant_ids": [
+      "gift-card"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-19",
+    "text": "The sender insists I transfer digital coins to settle the demand.",
+    "relevant_ids": [
+      "crypto"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-20",
+    "text": "An unfamiliar service insists on cryptocurrency for an unexpected bill.",
+    "relevant_ids": [
+      "crypto"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-21",
+    "text": "A supposed technician says an account problem needs a payment.",
+    "relevant_ids": [
+      "fake-support"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-22",
+    "text": "Unsolicited computer support tells me to pay for a fix immediately.",
+    "relevant_ids": [
+      "fake-support"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-23",
+    "text": "I want to discuss the demand with a friend before paying it.",
+    "relevant_ids": [
+      "talk-trusted"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-24",
+    "text": "A lender promises approval only after I pay its processing charge.",
+    "relevant_ids": [
+      "loan-processing",
+      "loan-guarantee"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-25",
+    "text": "They guarantee a loan if I buy the insurance first.",
+    "relevant_ids": [
+      "loan-insurance",
+      "loan-guarantee"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-26",
+    "text": "The lender wants a paperwork charge before it will deliver the promised funds.",
+    "relevant_ids": [
+      "loan-paperwork"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-27",
+    "text": "Does an ordinary disclosed application charge always mean fraud?",
+    "relevant_ids": [
+      "ordinary-fee"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-28",
+    "text": "My application has an appraisal cost but no guarantee that I get credit.",
+    "relevant_ids": [
+      "ordinary-fee"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-29",
+    "text": "The request demands a deposit before a promised grant is delivered.",
+    "relevant_ids": [
+      "advance-promise"
+    ],
+    "language": "en"
+  },
+  {
+    "query_id": "public-30",
+    "text": "The weather is sunny and our picnic is at noon.",
+    "relevant_ids": [],
+    "language": "en"
+  }
+]

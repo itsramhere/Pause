@@ -1,15 +1,26 @@
-# Private inference scaffold
+# Private approved inference
 
-Requires Python 3.12 or 3.13 and uv 0.12.5. Runtime dependencies are empty: the P01 scaffold uses Python's standard library. `uv.lock` pins the package/Python range; `pyproject.toml` pins the build backend. Lock numerical dependencies when real inference is implemented in P03.
+Use Python 3.12 and requirements.lock.txt, including pinned CPU PyTorch. Install
+with pip and the official PyTorch CPU extra index as described in the
+[complete runbook](../docs/investigation.md). See the
+[model card](../models/classifier-card.md) for limitations.
 
 ```powershell
-Set-Location ml
-uv sync --locked
-uv run --locked python -m unittest discover -s tests -v
+$env:PYTHONPATH='ml/src'
+python -B -m pause_ml.train
+python -B -m pause_ml.runtime
 $env:ML_SERVICE_TOKEN='<at-least-32-random-characters>'
-uv run --locked pause-inference
+python -B -m pause_ml.service
+python -B -m unittest discover -s ml/tests -v
 ```
 
-`GET /readyz`, `POST /classify`, and `POST /embed` all require `Authorization: Bearer <ML_SERVICE_TOKEN>`. Default bind: `127.0.0.1:8090`. Authenticated valid requests receive **503 UNAVAILABLE / MODEL_NOT_RELEASED**, never invented scores/vectors. Intake does not require this process.
+The service checks local approved artifact hashes/dependency versions, warms up,
+and binds loopback 8090 by default. /readyz, /classify and /embed require Bearer
+service authentication. HTTP cannot train or choose model paths. Missing/tampered
+artifacts prevent startup. Two CPU slots and bounded body/text sizes limit work.
 
-The Go contracts in `internal/domain/contracts.go` define binding, labels, finite score bounds, artifact/provenance hashes, normalized dimensions, and lookup statuses. Classifier/encoder manifests are separately tracked in `models/` and marked NOT_RELEASED. HTTP cannot select artifact paths or train. History permission never allows training on private data.
+requirements.lock.txt is the measured canonical environment; pyproject.toml
+declares direct dependencies and optional uv index configuration. No obsolete
+scaffold uv lock is retained. History permission never allows model training.
+Runtime tests use synthetic development probes, never final test/relevance data.
+No generative key or fallback exists.

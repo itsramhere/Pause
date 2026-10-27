@@ -1,2 +1,13 @@
 # Migration checksums must be identical on Windows, Linux, and macOS.
 *.sql text eol=lf
+# Dataset/model provenance hashes must survive checkout on every platform.
+*.json -text
+*.jsonl -text
+*.py -text
+*.go text eol=lf
+# Preserve the exact measured installed-environment lock bytes (CRLF).
+ml/requirements.lock.txt -text
+# This reviewed guide is included in the source-freeze hash manifest.
+datasets/annotation-guide.md text eol=lf
+# Recognize intentionally preserved CRLF and keep the standard whitespace checks.
+* whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

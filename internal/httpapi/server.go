@@ -170,6 +170,46 @@ func (s *Server) Handler() http.Handler {
 				out, e := s.App.Tasks(r.Context(), session(r).Actor)
 				s.respond(w, r, out, e, 200)
 			})
+			r.With(s.requireRole(domain.Subject)).Post("/verifications/{id}/respond", func(w http.ResponseWriter, r *http.Request) {
+				var in app.Answer
+				if !s.decode(w, r, &in) {
+					return
+				}
+				e := s.App.RespondVerification(r.Context(), session(r).Actor, chi.URLParam(r, "id"), in, correlation(r))
+				s.respond(w, r, map[string]string{"status": "RECORDED"}, e, 200)
+			})
+			r.With(s.requireRole(domain.Senior, domain.Reviewer)).Post("/intents/{id}/request-verification", func(w http.ResponseWriter, r *http.Request) {
+				var in struct {
+					Version int `json:"expected_version"`
+				}
+				if !s.decode(w, r, &in) {
+					return
+				}
+				e := s.App.RequestVerification(r.Context(), session(r).Actor, chi.URLParam(r, "id"), in.Version, correlation(r))
+				s.respond(w, r, map[string]string{"status": "REQUESTED"}, e, 200)
+			})
+			r.With(s.requireRole(domain.Senior, domain.Reviewer)).Post("/intents/{id}/analyze", func(w http.ResponseWriter, r *http.Request) {
+				var in struct {
+					Version int `json:"expected_version"`
+				}
+				if !s.decode(w, r, &in) {
+					return
+				}
+				out, e := s.App.Analyze(r.Context(), session(r).Actor, chi.URLParam(r, "id"), in.Version)
+				s.respond(w, r, out, e, 200)
+			})
+			r.With(s.requireRole(domain.Senior, domain.Reviewer)).Get("/intents/{id}/evidence", func(w http.ResponseWriter, r *http.Request) {
+				out, e := s.App.Evidence(r.Context(), session(r).Actor, chi.URLParam(r, "id"))
+				s.respond(w, r, out, e, 200)
+			})
+			r.With(s.requireRole(domain.Reviewer)).Post("/intents/{id}/review", func(w http.ResponseWriter, r *http.Request) {
+				var in app.ReviewDecision
+				if !s.decode(w, r, &in) {
+					return
+				}
+				e := s.App.Review(r.Context(), session(r).Actor, chi.URLParam(r, "id"), in, correlation(r))
+				s.respond(w, r, map[string]string{"status": "RESERVED"}, e, 202)
+			})
 		})
 		r.NotFound(func(w http.ResponseWriter, r *http.Request) { s.failure(w, r, domain.Fail("NOT_FOUND", 404)) })
 		r.MethodNotAllowed(func(w http.ResponseWriter, r *http.Request) { s.failure(w, r, domain.Fail("METHOD_NOT_ALLOWED", 405)) })

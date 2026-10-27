@@ -11,6 +11,7 @@ import (
 	"github.com/ramst/pause/internal/app"
 	"github.com/ramst/pause/internal/config"
 	"github.com/ramst/pause/internal/domain"
+	"github.com/ramst/pause/internal/investigation"
 	"github.com/ramst/pause/internal/paypal"
 	"github.com/ramst/pause/internal/secure"
 	"github.com/ramst/pause/internal/store"
@@ -44,6 +45,13 @@ func Load(ctx context.Context) (*app.Service, error) {
 		return nil, e
 	}
 	a := &app.Service{DB: db, Config: c, Clock: domain.RealClock{}, Box: box}
+	if c.MLURL != "" && c.ElasticURL != "" {
+		a.Investigation, e = investigation.New(c)
+		if e != nil {
+			db.Pool.Close()
+			return nil, e
+		}
+	}
 	if c.PayPalClientID != "" {
 		a.Provider = paypal.New(c.PayPalClientID, c.PayPalSecret, c.PayPalWebhookID)
 	}

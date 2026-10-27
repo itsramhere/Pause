@@ -1,13 +1,13 @@
-"""An authenticated, fail-closed HTTP scaffold, never a toy production model.
+"""Private, bounded HTTP service for offline checksum-approved artifacts.
 
-Run with `uv run --locked pause-inference`. No training or artifact path can be
-selected through HTTP. P03 will replace unavailable responses with pinned,
-validated offline artifacts and add the locked numerical dependencies.
+Run the documented locked environment. HTTP cannot train or select model paths.
+Missing or mismatched artifacts prevent startup; no generative fallback exists.
 """
 import hmac
 import json
 import logging
 import os
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 SCHEMA_VERSION = "pause-evidence-v1"
@@ -20,7 +20,7 @@ LABELS = (
 )
 
 
-def make_handler(token: str):
+def make_handler(token: str, runtime=None):
     if len(token) < 32:
         raise ValueError("ML_SERVICE_TOKEN must contain at least 32 characters")
 
@@ -57,7 +57,9 @@ def make_handler(token: str):
             if self.path != "/readyz":
                 self.send_json(404, {"error": {"code": "NOT_FOUND"}})
                 return
-            self.send_json(503, {"status": "UNAVAILABLE", "reason_code": "MODEL_NOT_RELEASED", "schema_version": SCHEMA_VERSION})
+            self.send_json(200 if runtime else 503, {"status": "OK" if runtime else "UNAVAILABLE", "schema_version": SCHEMA_VERSION, "budget": runtime.budget if runtime else None,
+                "classifier_artifact_hash": runtime.classifier['artifact_hash'] if runtime else None,
+                "encoder_artifact_hash": runtime.encoder['artifact_hash'] if runtime else None})
 
         def do_POST(self):
             if not self.authenticated():
@@ -81,19 +83,41 @@ def make_handler(token: str):
             except (ValueError, UnicodeError):
                 self.send_json(400, {"error": {"code": "INVALID_CONTRACT"}})
                 return
-            self.send_json(503, {"status": "UNAVAILABLE", "reason_code": "MODEL_NOT_RELEASED", "schema_version": SCHEMA_VERSION})
+            if runtime is None:
+                self.send_json(503, {"status": "UNAVAILABLE", "reason_code": "MODEL_NOT_RELEASED", "schema_version": SCHEMA_VERSION})
+                return
+            try:
+                result = runtime.classify(body) if self.path == '/classify' else runtime.embed(body)
+                self.send_json(200, result)
+            except (ValueError, KeyError, TypeError):
+                self.send_json(400, {"error": {"code": "INVALID_CONTRACT"}})
+            except Exception:
+                self.send_json(503, {"status": "UNAVAILABLE", "reason_code": "INFERENCE_FAILED"})
 
     return Handler
 
 
 def main():
     token = os.environ.get("ML_SERVICE_TOKEN", "")
-    handler = make_handler(token)
+    from .runtime import Runtime
+    runtime = Runtime()  # Missing/tampered approved artifacts refuse startup.
+    handler = make_handler(token, runtime)
     host = os.environ.get("ML_HOST", "127.0.0.1")
     port = int(os.environ.get("ML_PORT", "8090"))
     logging.basicConfig(level=logging.INFO)
-    logging.info("Private inference scaffold starting; classifier and encoder UNAVAILABLE")
-    ThreadingHTTPServer((host, port), handler).serve_forever()
+    class BoundedServer(ThreadingHTTPServer):
+        daemon_threads = True
+        slots = threading.BoundedSemaphore(2)
+        def process_request(self, request, address):
+            if not self.slots.acquire(blocking=False):
+                self.shutdown_request(request)
+                return
+            super().process_request(request, address)
+        def process_request_thread(self, request, address):
+            try: super().process_request_thread(request, address)
+            finally: self.slots.release()
+    logging.info("Private approved inference starting; CPU concurrency=2")
+    BoundedServer((host, port), handler).serve_forever()
 
 
 if __name__ == "__main__":

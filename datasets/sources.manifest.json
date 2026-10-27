@@ -1,0 +1,9 @@
+{
+  "source": "Pause authored synthetic scenarios",
+  "license": "CC0-1.0",
+  "rows": 400,
+  "families": 100,
+  "transitive_template_groups": 10,
+  "private_messages": 0,
+  "annotation_guide": "annotation-guide.md"
+}

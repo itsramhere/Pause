@@ -18,6 +18,7 @@ type Config struct {
 	MessageRetention, OperationRetention, SessionTTL, DecisionTTL time.Duration
 	MLURL, MLToken, ClassifierManifest, EncoderManifest           string
 	ElasticURL, ElasticKey, PlaybookAlias, HistoryAlias           string
+	ElasticCA                                                     string
 	SecureCookies                                                 bool
 	PayPalURL, PayPalClientID, PayPalSecret, PayPalWebhookID      string
 }
@@ -29,6 +30,7 @@ func From(get func(string) string) (Config, error) {
 	if c.Environment != "development" && c.Environment != "test" && c.Environment != "demo" && c.Environment != "production" {
 		return c, errors.New("APP_ENV is invalid")
 	}
+	c.ElasticCA = get("ELASTICSEARCH_CA_CERT")
 	if c.DatabaseURL == "" {
 		return c, errors.New("DATABASE_URL is required")
 	}
