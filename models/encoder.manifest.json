@@ -1,0 +1,12 @@
+{
+  "schema_version": "pause-evidence-v1",
+  "status": "NOT_RELEASED",
+  "encoder_version": "",
+  "artifact_hash": "",
+  "upstream_revision": "",
+  "license": "",
+  "preprocessing_version": "",
+  "dimension": 384,
+  "normalized": true,
+  "similarity": "cosine"
+}

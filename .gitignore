@@ -6,6 +6,8 @@
 .env.*
 !.env.example
 !.env.*.example
+.envrc
+.direnv/
 *.pem
 *.key
 *.p12
@@ -26,6 +28,11 @@ build/
 /tmp/
 *.exe
 *.test
+# Default output names from native Go builds on Linux/macOS
+/api
+/worker
+/migrate
+/seed
 coverage.out
 coverage/
 
@@ -59,9 +66,19 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 *.egg-info/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.uv-cache/
 
 # Local ML artifacts and model caches; keep source, manifests, and locks tracked
-/models/
+/models/*
+!/models/*.json
+!/models/*.md
+/datasets/raw-private/
+/ml/.venv/
 /artifacts/
 /.model-cache/
 /.huggingface/

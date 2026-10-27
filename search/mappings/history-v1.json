@@ -1,0 +1,11 @@
+{
+ "mappings": {
+  "dynamic": "strict",
+  "properties": {
+   "household_id":{"type":"keyword"}, "subject_contact_id":{"type":"keyword"}, "intent_id":{"type":"keyword"}, "intent_version":{"type":"integer"},
+   "content_digest":{"type":"keyword"}, "projection_revision":{"type":"integer"}, "consent_version":{"type":"integer"}, "event_time":{"type":"date"}, "expires_at":{"type":"date"},
+   "purpose":{"type":"text"}, "redacted_text":{"type":"text"}, "status_display_snapshot":{"type":"keyword"}, "amount_minor":{"type":"long"},
+   "language":{"type":"keyword"}, "deleted":{"type":"boolean"}, "encoder_version":{"type":"keyword"}, "embedding":{"type":"dense_vector","dims":384,"index":true,"similarity":"cosine"}
+  }
+ }
+}

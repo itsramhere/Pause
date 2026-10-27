@@ -1,0 +1,14 @@
+{
+ "note": "Synthetic interoperability fixture, not training data or a provider transaction.",
+ "binding": {
+  "schema": "pause-binding-v1",
+  "intent_id": "3f6e546c-78d5-46c3-a73f-a47fb5aa571d",
+  "version": 1,
+  "amount_minor": 4000,
+  "currency": "USD",
+  "payee_id": "SYNTHETIC_MERCHANT",
+  "subject_contact_id": "dbd0c2a2-eb02-48c4-8be0-5fbf5459ffbe",
+  "purpose": "Transport for José"
+ },
+ "sha256": "e364136f08ea0770e4f00f504e843d62b13f4b7ec079ffb71005f38077e865e7"
+}

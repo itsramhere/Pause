@@ -1,0 +1,11 @@
+{
+ "mappings": {
+  "dynamic": "strict",
+  "properties": {
+   "playbook_id": {"type":"keyword"}, "revision":{"type":"integer"}, "title":{"type":"text"}, "original_summary":{"type":"text"},
+   "signal_tags":{"type":"keyword"}, "example_phrases":{"type":"text"}, "source_url":{"type":"keyword","index":false},
+   "source_publisher":{"type":"keyword"}, "source_date":{"type":"date"}, "reviewed_at":{"type":"date"}, "license_or_usage_note":{"type":"text","index":false},
+   "language":{"type":"keyword"}, "active":{"type":"boolean"}, "encoder_version":{"type":"keyword"}, "embedding":{"type":"dense_vector","dims":384,"index":true,"similarity":"cosine"}
+  }
+ }
+}

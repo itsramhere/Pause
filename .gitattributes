@@ -1,0 +1,2 @@
+# Migration checksums must be identical on Windows, Linux, and macOS.
+*.sql text eol=lf

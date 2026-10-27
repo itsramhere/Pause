@@ -1,0 +1,16 @@
+{
+  "schema_version": "pause-evidence-v1",
+  "status": "NOT_RELEASED",
+  "model_version": "",
+  "artifact_hash": "",
+  "label_schema_version": "pause-signals-v1",
+  "preprocessing_version": "",
+  "labels": ["urgent_payment_pressure", "secrecy_pressure", "impersonation_style_request", "advance_fee_or_release_fee"],
+  "thresholds": {},
+  "dataset_hash": "",
+  "split_hash": "",
+  "seed": 0,
+  "dependency_lock_hash": "",
+  "code_revision": "",
+  "language": "en"
+}

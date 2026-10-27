@@ -1,0 +1,16 @@
+[project]
+name = "pause-inference"
+version = "0.1.0"
+description = "Private inference contract scaffold; no released model in P01"
+requires-python = ">=3.12,<3.14"
+dependencies = []
+
+[project.scripts]
+pause-inference = "pause_ml.service:main"
+
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pause_ml"]

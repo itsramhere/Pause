@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:18.1
+    environment:
+      POSTGRES_DB: pause
+      POSTGRES_USER: pause
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a local POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - pause-postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pause -d pause"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+volumes:
+  pause-postgres:

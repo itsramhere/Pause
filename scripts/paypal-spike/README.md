@@ -13,7 +13,7 @@ Go 1.26.3 is the tested toolchain. This standalone Go module uses only the stand
 From the repository root in PowerShell:
 
 ```powershell
-if (-not (Test-Path -LiteralPath .env)) { Copy-Item .env.example .env }
+if (-not (Test-Path -LiteralPath .env)) { Copy-Item scripts/paypal-spike/.env.example .env }
 # Fill the local .env, then:
 Set-Location scripts/paypal-spike
 go run . check
@@ -28,8 +28,8 @@ Open **http://127.0.0.1:8787**. Only that exact origin is accepted. This spike r
 
 1. Sign into [PayPal Developer](https://developer.paypal.com/). In **Apps & Credentials → Sandbox**, create a REST app associated with a sandbox **business** account. Set `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, and `PAYPAL_MERCHANT_ID` to that app/account's sandbox values. The merchant ID is the business account ID, not the client ID, order ID, or buyer ID. Set `PAYPAL_MERCHANT_LABEL` to a recognizable test-store name.
 2. For this USD feasibility baseline, use **United States** as the country of both the sandbox **business seller** and the separate **personal buyer**. Associate the REST app with that US business seller; enter only the US personal buyer's generated email/password in checkout. The buyer needs no REST app, and its password is not an application environment variable. This is a test-account setup choice, not a change to any real account's country. PayPal documents US test integrations in its [API setup guide](https://developer.paypal.com/api/rest/).
-3. No generative-model API key is needed for the payment proof or revised product. Existing `AI_PROVIDER`, `AI_MODEL`, and `AI_API_KEY` placeholders are used only by the legacy optional `ai` command; they are not ML/Elastic configuration. Legacy numeric settings validate only when `ai` is invoked. The `.env.example` includes separate ML/Elastic inventory fields; the [feasibility probes](../feasibility/README.md) explain local artifacts and actual search checks.
-4. Leave `PAYPAL_WEBHOOK_ID` empty until an actual app webhook has an HTTPS listener. `DATABASE_URL`, `SESSION_KEY`, and `MESSAGE_ENCRYPTION_KEY` are P01 configuration placeholders; they are not needed by P00.
+3. No generative-model API key is needed for payment proof or the product. `AI_*` placeholders live in this harness's `.env.example` and are used only by the legacy optional `ai` command. Legacy numeric settings validate only when `ai` is invoked. The product root `.env.example` contains separate ML/Elastic configuration; the [feasibility probes](../feasibility/README.md) explain local artifacts and actual search checks.
+4. Leave `PAYPAL_WEBHOOK_ID` empty until an actual HTTPS webhook listener exists. The product's database and message-encryption settings are not needed by P00. See [P01 setup](../../docs/foundation.md) for scoped sessions and persistent intake; keep the two environment files separate.
 
 `check` writes a configuration-presence inventory and fails with **names only** for missing PayPal fields. Presence does not establish that an account works. Do not share the populated `.env`, OAuth tokens, browser cookies, or raw provider headers.
 

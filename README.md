@@ -4,7 +4,9 @@
 
 Pause is a payment-safety project for older adults and their trusted contacts. Its intended MVP combines a trained scam-signal classifier, Elasticsearch evidence retrieval, independent confirmation of urgent payment requests, and a timeline of related requests before a supported PayPal payment is released.
 
-**Status:** Early development. The local [PayPal feasibility harness](scripts/paypal-spike/README.md) has completed actual sandbox authorization without capture, a $40 capture, a separate $900 authorization void, and a duplicate-create probe using a persisted request ID. The [ML and Elastic feasibility probes](scripts/feasibility/README.md) have exercised toy training/reload, a pinned encoder with offline restart, and actual filtered keyword/vector queries on local Elasticsearch. Production training, retrieval integration, and the complete product remain planned work. The MVP requires no generative LLM or LLM API key.
+**Status:** P01 foundation implemented: a Go/PostgreSQL API and worker, scoped senior/contact/reviewer accounts, persistent secure sessions, encrypted intake, immutable request versions, consent/outbox transactions, and a minimal React interface. See [startup and API instructions](docs/foundation.md) and [verification results](docs/foundation-verification.md). Checkout, trained inference, Elastic dispatch/retrieval, and contact/reviewer decisions are later product phases and explicitly unavailable in this release. No generative LLM key is required.
+
+The separate [PayPal feasibility harness](scripts/paypal-spike/README.md) has completed sandbox authorization without capture, a $40 capture, a separate $900 authorization void, and a duplicate-create probe. The [ML and Elastic feasibility probes](scripts/feasibility/README.md) have exercised toy training/reload, an offline pinned encoder, and filtered keyword/vector queries on local Elasticsearch. These remain feasibility evidence, separate from the product foundation.
 
 ## The problem
 
@@ -70,18 +72,20 @@ Guardian conflict-of-interest protection is planned for a later iteration.
 
 ## Development
 
-Implementation will progress through feasibility, application foundations, payment handling, classifier training and verification, Elastic history retrieval, accessible user flows, reliability checks, and demo preparation. Training will keep scenario families and paraphrases in separate train/validation/test groups. Evaluation will compare rules alone, rules plus the classifier, and the complete retrieval-assisted workflow. Setup instructions for these components will be added when implemented.
+Start with the [foundation setup](docs/foundation.md): native or optional Compose PostgreSQL, `go run ./cmd/migrate`, explicit `go run ./cmd/seed`, `go run ./cmd/api`, and `npm ci` / `npm run dev` from `web/`. The worker runs separately with `go run ./cmd/worker`. Configuration lives in a separate ignored environment file selected by `ENV_FILE`; preserve existing credentials. Public source and instructions work without `planning/`.
+
+Run `go test ./...`, `go vet ./...`, and frontend typecheck/build. Set `TEST_DATABASE_URL` to run the real PostgreSQL integration suite; CI supplies a disposable Postgres service. The [private Python scaffold](ml/README.md) has a locked package and authenticated fail-closed endpoints. Future training will use scenario-disjoint splits; model quality and product retrieval remain later gates.
 
 Start the P00 sandbox harness with Go 1.26.3 from the repository root:
 
 ```powershell
 # Preserve any existing environment file, then fill its sandbox credentials.
-if (-not (Test-Path -LiteralPath .env)) { Copy-Item .env.example .env }
+if (-not (Test-Path -LiteralPath .env)) { Copy-Item scripts/paypal-spike/.env.example .env }
 Set-Location scripts/paypal-spike
 go run . check
 go run . serve
 ```
 
-Open `http://127.0.0.1:8787`. Run `go test ./...` and `go vet ./...` from the spike directory for offline payment-harness verification. See the [spike instructions](scripts/paypal-spike/README.md) for accounts, separate capture/void scenarios, exact API contracts, and recovery steps. Its existing `ai` command is a legacy external-model experiment, not the new classifier; it is unnecessary for the revised MVP. Current harness configuration placeholders will be migrated when the ML/Elastic components are implemented. The product must run without private `planning/` files; the harness currently uses that directory as its default local evidence destination.
+Open `http://127.0.0.1:8787`. Run `go test ./...` and `go vet ./...` from the spike directory for offline harness checks. See its instructions for sandbox scenarios and recovery. The historical `ai` command is optional and is not the new classifier. Legacy configuration examples are kept alongside the harness; the product does not consume its `AI_*` variables. The harness retains its original default evidence path; override `SPIKE_EVIDENCE_DIR=data/spike-evidence` to keep local receipts outside planning.
 
 Pause is being planned for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/).
