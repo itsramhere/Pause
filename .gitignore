@@ -51,6 +51,27 @@ Desktop.ini
 
 # Python tooling used for local analysis
 .venv/
+.venv-*/
 venv/
 __pycache__/
 *.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Local ML artifacts and model caches; keep source, manifests, and locks tracked
+/models/
+/artifacts/
+/.model-cache/
+/.huggingface/
+*.joblib
+*.pkl
+*.pickle
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.npy
+*.npz

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pause · PayPal feasibility proof</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Pause / P00 / sandbox only</p>
+    <h1>Authorize first. Resolve separately.</h1>
+    <p class="intro">A local operator harness for two real sandbox purchases. Buyer approval creates an authorization. It never calls capture.</p>
+    <aside><strong>Payment destination:</strong> <span id="merchant">Loading configuration…</span><br>The relative named in the synthetic message does not receive these funds. No real emergency or contact response is verified here.</aside>
+    <section aria-labelledby="scenario-heading">
+      <h2 id="scenario-heading">Start a separate order for each outcome</h2>
+      <label for="scenario">Synthetic scenario</label>
+      <select id="scenario"></select>
+      <p id="scenario-description"></p>
+      <button id="create" disabled>Create sandbox order</button>
+    </section>
+    <p id="notice" role="status" aria-live="polite">Loading…</p>
+    <section aria-labelledby="runs-heading">
+      <div class="row"><h2 id="runs-heading">Persisted proof runs</h2><button id="refresh" class="secondary">Refresh local records</button></div>
+      <p>Use the sandbox <strong>personal buyer</strong> login in PayPal. On each new order, run the duplicate-create probe before approval. Capture/void controls are local operator actions, not authenticated family decisions.</p>
+      <div id="runs"></div>
+    </section>
+  </main>
+</body>
+</html>
