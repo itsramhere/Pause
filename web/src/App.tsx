@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { api, APIError, money, type Actor, type Configuration, type Contact, type Intake, type Intent, type Task } from './api'
+import { Checkout, paymentText } from './Checkout'
 
 export default function App() {
  const [actor, setActor] = useState<Actor | null>(null)
@@ -20,7 +21,7 @@ export default function App() {
    <div className="boundary"><span aria-hidden="true">◈</span><p>A controlled merchant checkout prototype. Pause cannot stop payments made elsewhere.</p></div>
    {error && <p className="error" role="alert">{error}</p>}
    {loading ? <p role="status">Opening Pause…</p> : !actor ? <section className="login-layout">
-    <div className="intro"><p className="eyebrow">ROOM TO CHECK THE STORY</p><h1>Before you pay,<br />take a pause.</h1><p className="lede">Keep the request details together, choose an enrolled relative, and decide whether to use your earlier requests for context.</p><p className="scope">This foundation release saves requests and consent. Payment checkout, message analysis, and contact answers arrive in later phases.</p></div>
+    <div className="intro"><p className="eyebrow">ROOM TO CHECK THE STORY</p><h1>Before you pay,<br />take a pause.</h1><p className="lede">Keep the request details together, choose an enrolled relative, and decide whether to use your earlier requests for context.</p><p className="scope">Sandbox checkout can authorize a merchant hold and request cancellation. Release remains unavailable until independent confirmation, analysis and review are ready.</p></div>
     <form className="card login" onSubmit={login}><h2>Sign in to your account</h2><p>Use your own enrolled account. Your account determines your access.</p><label>Email<input name="email" type="email" autoComplete="username" required /></label><label>Password<input name="password" type="password" autoComplete="current-password" required maxLength={256} /></label><button className="primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button></form>
    </section> : <Workspace key={actor.user_id} actor={actor} onUnauthenticated={() => setActor(null)} />}
   </main><footer>Time to check the story before a supported payment goes through.</footer>
@@ -49,7 +50,7 @@ function Workspace({ actor, onUnauthenticated }: { actor: Actor; onUnauthenticat
    }
   } catch(e) { if (e instanceof APIError && e.status === 401) onUnauthenticated(); else setError(errorText(e)) }
  }
- useEffect(() => { void refresh() }, []) // The workspace remounts on account change.
+ useEffect(() => { void refresh(); const timer = setInterval(() => { void refresh() }, 5000); return () => clearInterval(timer) }, []) // The workspace remounts on account change.
  // The keyed form must mount before correction focus moves into it.
  useEffect(() => {
   if (amountInput.current) {
@@ -100,7 +101,10 @@ function Workspace({ actor, onUnauthenticated }: { actor: Actor; onUnauthenticat
    <section className="records"><h2>{actor.role === 'subject' ? 'Confirmation tasks' : actor.role === 'reviewer' ? 'Assigned cases' : 'Saved requests'}</h2>
     {actor.role === 'subject' ? tasks.length ? tasks.map(t => <article className="card" key={t.id}><h3>{t.binding.purpose}</h3><p>{money(t.binding.amount_minor)} · Merchant {t.binding.payee_id}</p><p>{t.status} · version {t.version}</p><p>Contact responses are unavailable in this foundation release.</p></article>) : <div className="empty">No confirmation tasks are available. Task delivery and responses arrive in a later phase.</div> : intents.length ? intents.map(i => <article className="card record" key={i.id}>
      <div className="record-top"><h3>{i.binding.purpose}</h3><strong className="amount">{money(i.binding.amount_minor)}</strong></div><p className="meta">{new Date(i.created_at).toLocaleString()} · Version {i.version}</p>
-     <dl><div><dt>Payment</dt><dd>{i.payment_status === 'DRAFT' ? 'Draft · no authorization' : i.payment_status}</dd></div><div><dt>Merchant</dt><dd>{i.binding.payee_id}</dd></div><div><dt>Checkout & analysis</dt><dd>Unavailable in this release</dd></div><div><dt>History permission</dt><dd>{i.consent.history ? 'Allowed' : 'Not allowed'} · revision {i.consent.version}</dd></div></dl>
+     <dl><div><dt>Payment</dt><dd>{paymentText(i.payment_status)}</dd></div><div><dt>Merchant</dt><dd>{i.binding.payee_id}</dd></div><div><dt>Analysis & release</dt><dd>Unavailable until independent evidence and review are ready</dd></div><div><dt>History permission</dt><dd>{i.consent.history ? 'Allowed' : 'Not allowed'} · revision {i.consent.version}</dd></div></dl>
+     {i.checkout.provider_order_id && <p className="meta">PayPal order: {i.checkout.provider_order_id}{i.checkout.authorization_id && <> · Authorization: {i.checkout.authorization_id}</>}{i.checkout.capture_id && <> · Capture: {i.checkout.capture_id}</>} · <a href={`/api/intents/${i.id}/payment-diagnostics`} target="_blank" rel="noreferrer">Read-only payment diagnostics</a></p>}
+     {actor.role === 'senior' && i.checkout.status === 'AVAILABLE' && i.binding.payee_id === config.merchant_id && Date.now() < Date.parse(i.decision_deadline) && ['DRAFT', 'AWAITING_PAYER'].includes(i.payment_status) && <Checkout intent={i} config={config} refresh={refresh} />}
+     {['HELD','AWAITING_PAYER','RECONCILING','CAPTURE_PENDING','VOID_PENDING'].includes(i.payment_status) && <button disabled={busy} onClick={async () => { setBusy(true); try { await api(`/intents/${i.id}/cancel`, 'POST', { expected_version: i.version }); await refresh(); setNotice('Cancellation requested. The request shows the current provider result; an in-flight capture may still complete.') } catch(e) { setError(errorText(e)) } finally { setBusy(false) } }}>{actor.role === 'reviewer' ? 'Decline / request cancellation' : 'Request cancellation'}</button>}
      {actor.role === 'senior' && <div className="actions">{i.payment_status === 'DRAFT' && <button disabled={busy} onClick={() => correct(i)}>Correct details</button>}<button disabled={busy} onClick={() => changeConsent(i)}>{i.consent.history ? 'Withdraw history permission' : 'Allow history use'}</button></div>}
     </article>) : <div className="empty">{actor.role === 'senior' ? 'Your saved requests will appear here.' : 'No cases are assigned to this account.'}</div>}
    </section>

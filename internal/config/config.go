@@ -19,6 +19,7 @@ type Config struct {
 	MLURL, MLToken, ClassifierManifest, EncoderManifest           string
 	ElasticURL, ElasticKey, PlaybookAlias, HistoryAlias           string
 	SecureCookies                                                 bool
+	PayPalURL, PayPalClientID, PayPalSecret, PayPalWebhookID      string
 }
 
 // Load never includes values or credentials in a configuration error.
@@ -30,6 +31,11 @@ func From(get func(string) string) (Config, error) {
 	}
 	if c.DatabaseURL == "" {
 		return c, errors.New("DATABASE_URL is required")
+	}
+	c.PayPalURL = value(get, "PAYPAL_BASE_URL", "https://api-m.sandbox.paypal.com")
+	c.PayPalClientID, c.PayPalSecret, c.PayPalWebhookID = get("PAYPAL_CLIENT_ID"), get("PAYPAL_CLIENT_SECRET"), get("PAYPAL_WEBHOOK_ID")
+	if c.PayPalURL != "https://api-m.sandbox.paypal.com" || (c.PayPalClientID == "") != (c.PayPalSecret == "") || c.PayPalWebhookID == "WEBHOOK_ID" {
+		return c, errors.New("PayPal requires sandbox URL, paired credentials and a real app webhook ID")
 	}
 	d, err := url.Parse(c.DatabaseURL)
 	if err != nil || (d.Scheme != "postgres" && d.Scheme != "postgresql") || d.Host == "" || d.Path == "" || d.Path == "/" {

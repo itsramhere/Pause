@@ -4,9 +4,19 @@
 
 Pause is a payment-safety project for older adults and their trusted contacts. Its intended MVP combines a trained scam-signal classifier, Elasticsearch evidence retrieval, independent confirmation of urgent payment requests, and a timeline of related requests before a supported PayPal payment is released.
 
-**Status:** P01 foundation implemented: a Go/PostgreSQL API and worker, scoped senior/contact/reviewer accounts, persistent secure sessions, encrypted intake, immutable request versions, consent/outbox transactions, and a minimal React interface. See [startup and API instructions](docs/foundation.md) and [verification results](docs/foundation-verification.md). Checkout, trained inference, Elastic dispatch/retrieval, and contact/reviewer decisions are later product phases and explicitly unavailable in this release. No generative LLM key is required.
+**Status:** Phase 2 is implemented and independently verified. The Go/PostgreSQL foundation now supports exact version-bound sandbox orders, authorization-only checkout, cancellation/deadline voids, durable jobs, crash recovery, verified webhooks and scoped diagnostics. See [payment setup](docs/payments.md), [acceptance results](docs/payments-debugging-2026-10-27.md), and [foundation setup](docs/foundation.md).
+
+Ordinary product capture remains unavailable until Phase 3 supplies authentic contact confirmation, approved analysis and reviewer evidence. Trained inference and Elastic product retrieval remain later phases. No generative LLM key is required.
 
 The separate [PayPal feasibility harness](scripts/paypal-spike/README.md) has completed sandbox authorization without capture, a $40 capture, a separate $900 authorization void, and a duplicate-create probe. The [ML and Elastic feasibility probes](scripts/feasibility/README.md) have exercised toy training/reload, an offline pinned encoder, and filtered keyword/vector queries on local Elasticsearch. These remain feasibility evidence, separate from the product foundation.
+
+## Verified Phase 2
+
+- All 17 Phase 2 acceptance cases pass. Both the standard suite and the race-detector suite passed **228 tests/subtests**, with zero failures or skipped tests, using actual PostgreSQL.
+- Separate worker processes recover capture and void at six crash checkpoints. Concurrent PostgreSQL transactions test command exclusivity, lease recovery, stale evidence and cancellation during capture. Capture eligibility uses private typed fixtures in this phase.
+- A real **$1.00 USD sandbox authorization → void** completed through the application, with zero capture commands. Three actual same-app webhook events passed signature verification and reconciled to the same request. The [sanitized provider/event trace](evidence/p02-sandbox-authorize-void-2026-10-27.json) records the exact bindings and outcomes.
+
+The [acceptance report](docs/payments-debugging-2026-10-27.md) documents failure injections, compiler setup, remaining phase boundaries and temporary webhook cleanup. Reviewed public evidence is explicitly allowlisted in `.gitignore`; local credentials, raw traces, test output, binaries and planning files stay ignored.
 
 ## The problem
 
@@ -74,7 +84,9 @@ Guardian conflict-of-interest protection is planned for a later iteration.
 
 Start with the [foundation setup](docs/foundation.md): native or optional Compose PostgreSQL, `go run ./cmd/migrate`, explicit `go run ./cmd/seed`, `go run ./cmd/api`, and `npm ci` / `npm run dev` from `web/`. The worker runs separately with `go run ./cmd/worker`. Configuration lives in a separate ignored environment file selected by `ENV_FILE`; preserve existing credentials. Public source and instructions work without `planning/`.
 
-Run `go test ./...`, `go vet ./...`, and frontend typecheck/build. Set `TEST_DATABASE_URL` to run the real PostgreSQL integration suite; CI supplies a disposable Postgres service. The [private Python scaffold](ml/README.md) has a locked package and authenticated fail-closed endpoints. Future training will use scenario-disjoint splits; model quality and product retrieval remain later gates.
+For Phase 2 checkout, follow [payment setup](docs/payments.md): apply migrations through version 5, configure the allowlisted sandbox merchant and paired PayPal credentials, and run both API and worker. Actual webhook delivery requires an active HTTPS listener and that app's registered webhook ID. The temporary listener used for acceptance has been removed; follow the documented registration steps for another live test.
+
+Run `go test ./...`, `go test -race ./internal/...`, `go vet ./...`, and frontend typecheck/build. Set `TEST_DATABASE_URL` to run the real PostgreSQL integration suite; CI supplies a disposable Postgres service. Windows race tests require CGO and a compatible 64-bit C compiler on PATH; the [verified Code::Blocks GCC setup](docs/payments-debugging-2026-10-27.md#environment-and-final-checks) uses process-local settings. The [private Python scaffold](ml/README.md) has a locked package and authenticated fail-closed endpoints. Future training will use scenario-disjoint splits; model quality and product retrieval remain later gates.
 
 Start the P00 sandbox harness with Go 1.26.3 from the repository root:
 

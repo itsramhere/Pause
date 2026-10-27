@@ -261,15 +261,20 @@ func (r SearchResult) Validate(q SearchQuery) error {
 func finite(v float64) bool { return !math.IsNaN(v) && !math.IsInf(v, 0) }
 
 type ProviderCommand struct {
-	IntentID          string
-	Version           int
-	Digest, RequestID string
-	Binding           Binding
-	ProviderObjectID  string
+	IntentID                            string
+	Version                             int
+	Digest, RequestID                   string
+	Binding                             Binding
+	ProviderObjectID                    string
+	OrderID, AuthorizationID, CaptureID string
+	Environment                         string
 }
 type ProviderResult struct {
-	OrderID, AuthorizationID, CaptureID, Status string
-	Confirmed                                   bool
+	OrderID, AuthorizationID, CaptureID, Status     string
+	Confirmed                                       bool
+	AmountMinor                                     int64
+	Currency, PayeeID, Environment, DebugID         string
+	OrderStatus, AuthorizationStatus, CaptureStatus string
 }
 type PaymentProvider interface {
 	CreateOrder(context.Context, ProviderCommand) (ProviderResult, error)

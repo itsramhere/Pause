@@ -19,10 +19,11 @@ import (
 )
 
 type Service struct {
-	DB     *store.Store
-	Config config.Config
-	Clock  domain.Clock
-	Box    *secure.Box
+	DB       *store.Store
+	Config   config.Config
+	Clock    domain.Clock
+	Box      *secure.Box
+	Provider domain.PaymentProvider
 }
 type Intake struct {
 	Amount           string `json:"amount"`

@@ -36,6 +36,29 @@ func TestCanonicalIntentPathsPostgres(t *testing.T) {
 	status(t, c.request("POST", "/api/intents/urn:uuid:"+i.ID+"/abandon", map[string]int{"expected_version": 2}, nil), 200)
 }
 
+func TestP02NoPublicCaptureAndPaymentRouteSecurity(t *testing.T) {
+	f := newFixture(t)
+	senior := f.newClient("127.0.0.70")
+	senior.login(t, "senior1@example.test")
+	i := readIntent(t, senior.request("POST", "/api/intents", intake("1.00", false), map[string]string{"Idempotency-Key": "p02-route-boundary"}))
+	for _, path := range []string{"capture", "review-approve", "approve", "release"} {
+		status(t, senior.request("POST", "/api/intents/"+i.ID+"/"+path, map[string]any{"expected_version": 1, "test_eligible": true, "bypass": true}, nil), 404)
+	}
+	for _, path := range []string{"paypal-order", "authorize", "cancel"} {
+		status(t, senior.request("POST", "/api/intents/"+i.ID+"/"+path, map[string]int{"expected_version": 1}, map[string]string{"Origin": "https://attacker.example"}), 403)
+		status(t, senior.request("POST", "/api/intents/"+i.ID+"/"+path, map[string]int{"expected_version": 1}, map[string]string{"X-CSRF-Token": "forged"}), 403)
+	}
+	other := f.newClient("127.0.0.71")
+	other.login(t, "senior2@example.test")
+	for _, path := range []string{"payment-diagnostics", "provider-state"} {
+		status(t, other.request("GET", "/api/intents/"+i.ID+"/"+path, nil, nil), 404)
+	}
+	var commands int
+	if err := f.db.Pool.QueryRow(context.Background(), `SELECT count(*) FROM payment_operations`).Scan(&commands); err != nil || commands != 0 {
+		t.Fatal("rejected routes persisted money commands", commands, err)
+	}
+}
+
 func TestInitialStateAndProviderBindingConstraintsPostgres(t *testing.T) {
 	f := newFixture(t)
 	ctx := context.Background()

@@ -1,0 +1,32 @@
+﻿{
+    "intent_id":  "ad6c795c-c905-4396-a35c-40bf3c762f94",
+    "observed_at":  "2026-10-27T10:58:47.4153936Z",
+    "authorization_void_smoke":  "NOT_COMPLETED",
+    "decision_deadline":  "2026-10-27T16:58:44.30191+05:30",
+    "merchant_id":  "4XDLGF4ER6RT4",
+    "payment_status":  "AWAITING_PAYER",
+    "environment":  "sandbox",
+    "version":  1,
+    "currency":  "USD",
+    "amount_minor":  100,
+    "operations":  [
+                       {
+                           "attempts":  1,
+                           "dead_letter_at":  null,
+                           "debug_id":  "f7895590d77ec",
+                           "environment":  "sandbox",
+                           "error_code":  null,
+                           "job_error_code":  null,
+                           "kind":  "CREATE_ORDER",
+                           "lease_until":  null,
+                           "operation_id":  "9c7714c9-34db-4cad-83e8-2aeee740f3d3",
+                           "provider_request_id":  "62a4af15-3f89-406a-9244-34c9ca4ad44a",
+                           "provider_status":  "AWAITING_PAYER",
+                           "request_hash":  "705b99a0a6048cc762a14209c1f85a80691ce151ff9872f06cb53f552efd580b",
+                           "state":  "CONFIRMED"
+                       }
+                   ],
+    "provider_order_id":  "134972283M7133742",
+    "capture_id":  null,
+    "authorization_id":  null
+}

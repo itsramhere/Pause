@@ -144,7 +144,7 @@ const (
 )
 
 func CanTransition(from, to PaymentStatus) bool {
-	next := map[PaymentStatus][]PaymentStatus{Draft: {AwaitingPayer, Abandoned}, AwaitingPayer: {Held, Abandoned, Reconciling, ClosedUncaptured}, Held: {CapturePending, VoidPending, Reconciling, ClosedUncaptured}, CapturePending: {Captured, Held, Reconciling}, VoidPending: {Voided, Reconciling}, Reconciling: {Captured, Voided, Held, ClosedUncaptured}}
+	next := map[PaymentStatus][]PaymentStatus{Draft: {AwaitingPayer, Abandoned}, AwaitingPayer: {Held, Abandoned, Reconciling, ClosedUncaptured}, Held: {CapturePending, VoidPending, Reconciling, ClosedUncaptured}, CapturePending: {Captured, Held, Reconciling}, VoidPending: {Voided, Reconciling}, Reconciling: {Captured, Voided, Held, ClosedUncaptured, Abandoned, AwaitingPayer}, Abandoned: {Reconciling}}
 	for _, n := range next[from] {
 		if n == to {
 			return true
@@ -171,6 +171,7 @@ type CheckoutDTO struct {
 	Status          string  `json:"status"`
 	ProviderOrderID *string `json:"provider_order_id"`
 	AuthorizationID *string `json:"authorization_id"`
+	CaptureID       *string `json:"capture_id"`
 	ReasonCode      string  `json:"reason_code"`
 }
 type EvidenceDTO struct {

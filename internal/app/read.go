@@ -31,6 +31,13 @@ func (s *Service) Read(ctx context.Context, a domain.Actor, id string) (domain.I
 	i.Binding.IntentID = i.ID
 	i.Binding.Version = i.Version
 	i.Checkout = domain.CheckoutDTO{Status: "UNAVAILABLE", ReasonCode: "PAYMENTS_NOT_IMPLEMENTED"}
+	if s.Provider != nil {
+		i.Checkout.Status = "AVAILABLE"
+		i.Checkout.ReasonCode = "SANDBOX_AUTHORIZATION_ONLY"
+	}
+	if e = s.DB.Pool.QueryRow(ctx, `SELECT provider_order_id,authorization_id,capture_id FROM payment_intents WHERE id=$1`, id).Scan(&i.Checkout.ProviderOrderID, &i.Checkout.AuthorizationID, &i.Checkout.CaptureID); e != nil {
+		return i, e
+	}
 	history := "NOT_APPLICABLE"
 	if i.Consent.History {
 		history = "UNAVAILABLE"

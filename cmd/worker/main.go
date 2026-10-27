@@ -19,10 +19,23 @@ func main() {
 	}
 	defer a.DB.Pool.Close()
 	jobs := &store.Jobs{DB: a.DB, Clock: a.Clock}
-	ticker := time.NewTicker(30 * time.Second)
+	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
 	log.Info("worker_started", "projection_dispatch", "UNAVAILABLE")
 	for {
+		if e = a.TickPayments(ctx); e != nil {
+			log.Error("payment_scan_failed", "reason_code", "DATABASE_UNAVAILABLE")
+		}
+		for n := 0; n < 20; n++ {
+			worked, err := a.WorkPaymentOnce(ctx)
+			if err != nil {
+				log.Error("payment_job_failed", "reason_code", "PAYMENT_WORKER_ERROR")
+				break
+			}
+			if !worked {
+				break
+			}
+		}
 		if e = a.CleanupMessages(ctx); e != nil {
 			log.Error("retention_cleanup_failed", "reason_code", "DATABASE_UNAVAILABLE")
 		}

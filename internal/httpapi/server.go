@@ -51,6 +51,16 @@ func (s *Server) Handler() http.Handler {
 	r.Use(s.security)
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) { write(w, 200, map[string]string{"status": "alive"}) })
 	r.Get("/readyz", s.ready)
+	r.Post("/api/webhooks/paypal", func(w http.ResponseWriter, r *http.Request) {
+		r.Body = http.MaxBytesReader(w, r.Body, 256*1024)
+		raw, e := io.ReadAll(r.Body)
+		if e != nil {
+			s.failure(w, r, domain.Fail("BODY_TOO_LARGE", 413))
+			return
+		}
+		e = s.App.IngestWebhook(r.Context(), r.Header, raw)
+		s.respond(w, r, map[string]string{"status": "STORED"}, e, 200)
+	})
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/auth/login", s.login)
 		r.Group(func(r chi.Router) {
@@ -59,7 +69,11 @@ func (s *Server) Handler() http.Handler {
 			r.Post("/auth/logout", s.logout)
 			r.Get("/configuration", func(w http.ResponseWriter, r *http.Request) {
 				c := s.App.Config
-				write(w, 200, map[string]any{"merchant_id": c.MerchantID, "merchant_label": c.MerchantLabel, "currency": "USD", "max_amount_minor": c.MaxAmount, "message_retention_hours": int(c.MessageRetention.Hours()), "payment_status": "UNAVAILABLE", "investigation_status": "UNAVAILABLE"})
+				payment := "UNAVAILABLE"
+				if s.App.Provider != nil {
+					payment = "SANDBOX_AUTHORIZATION_ONLY"
+				}
+				write(w, 200, map[string]any{"merchant_id": c.MerchantID, "merchant_label": c.MerchantLabel, "currency": "USD", "max_amount_minor": c.MaxAmount, "message_retention_hours": int(c.MessageRetention.Hours()), "payment_status": payment, "paypal_client_id": c.PayPalClientID, "investigation_status": "UNAVAILABLE"})
 			})
 			r.With(s.requireRole(domain.Senior)).Get("/contacts", func(w http.ResponseWriter, r *http.Request) {
 				out, e := s.App.Contacts(r.Context(), session(r).Actor)
@@ -84,6 +98,43 @@ func (s *Server) Handler() http.Handler {
 			r.Get("/intents/{id}", func(w http.ResponseWriter, r *http.Request) {
 				out, e := s.App.Read(r.Context(), session(r).Actor, chi.URLParam(r, "id"))
 				s.respond(w, r, out, e, 200)
+			})
+			for path, kind := range map[string]string{"paypal-order": "CREATE_ORDER", "authorize": "AUTHORIZE"} {
+				r.With(s.requireRole(domain.Senior)).Post("/intents/{id}/"+path, func(w http.ResponseWriter, r *http.Request) {
+					var in app.PaymentAction
+					if !s.decode(w, r, &in) {
+						return
+					}
+					out, e := s.App.ReserveCheckout(r.Context(), session(r).Actor, chi.URLParam(r, "id"), kind, r.Header.Get("Idempotency-Key"), in, correlation(r))
+					s.respond(w, r, out, e, 202)
+				})
+			}
+			r.With(s.requireRole(domain.Senior, domain.Reviewer)).Post("/intents/{id}/cancel", func(w http.ResponseWriter, r *http.Request) {
+				var in struct {
+					ExpectedVersion int `json:"expected_version"`
+				}
+				if !s.decode(w, r, &in) {
+					return
+				}
+				out, e := s.App.Cancel(r.Context(), session(r).Actor, chi.URLParam(r, "id"), in.ExpectedVersion, correlation(r))
+				s.respond(w, r, out, e, 202)
+			})
+			r.With(s.requireRole(domain.Senior, domain.Reviewer)).Get("/intents/{id}/payment-diagnostics", func(w http.ResponseWriter, r *http.Request) {
+				out, e := s.App.Diagnostics(r.Context(), session(r).Actor, chi.URLParam(r, "id"))
+				s.respond(w, r, out, e, 200)
+			})
+			r.With(s.requireRole(domain.Senior, domain.Reviewer)).Get("/intents/{id}/provider-state", func(w http.ResponseWriter, r *http.Request) {
+				out, e := s.App.ProviderDiagnostic(r.Context(), session(r).Actor, chi.URLParam(r, "id"))
+				if e != nil {
+					var fault *domain.Fault
+					if errors.As(e, &fault) {
+						s.failure(w, r, e)
+						return
+					}
+					s.failure(w, r, domain.Fail("PROVIDER_READ_UNAVAILABLE", 503))
+					return
+				}
+				s.respond(w, r, out, nil, 200)
 			})
 			r.Get("/intents/{id}/message", func(w http.ResponseWriter, r *http.Request) {
 				out, e := s.App.Message(r.Context(), session(r).Actor, chi.URLParam(r, "id"))
@@ -207,8 +258,8 @@ func (s *Server) security(next http.Handler) http.Handler {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("Referrer-Policy", "no-referrer")
 		w.Header().Set("X-Frame-Options", "DENY")
-		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
-		if r.Method != "GET" && r.Method != "HEAD" && r.Method != "OPTIONS" {
+		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' https://www.paypal.com https://www.paypalobjects.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.paypal.com https://*.paypalobjects.com; img-src 'self' data: https://*.paypal.com https://*.paypalobjects.com; frame-src https://*.paypal.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+		if r.Method != "GET" && r.Method != "HEAD" && r.Method != "OPTIONS" && r.URL.Path != "/api/webhooks/paypal" {
 			if r.Header.Get("Origin") != s.App.Config.Origin || r.Header.Get("Sec-Fetch-Site") == "cross-site" {
 				s.failure(w, r, domain.Fail("ORIGIN_REJECTED", 403))
 				return

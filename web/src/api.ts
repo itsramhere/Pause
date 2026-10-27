@@ -1,11 +1,11 @@
 export type Actor = { user_id: string; household_id: string; name: string; role: 'senior' | 'subject' | 'reviewer' }
 export type Contact = { id: string; name: string; relationship: string }
-export type Configuration = { merchant_id: string; merchant_label: string; currency: string; max_amount_minor: number; message_retention_hours: number }
+export type Configuration = { merchant_id: string; merchant_label: string; currency: string; max_amount_minor: number; message_retention_hours: number; payment_status: string; paypal_client_id: string }
 export type Binding = { intent_id: string; version: number; amount_minor: number; currency: string; payee_id: string; subject_contact_id: string; purpose: string }
 export type Intent = {
  id: string; version: number; binding: Binding; content_digest: string; payment_status: string; verification_status: string; review_status: string;
- consent: { version: number; history: boolean; training: boolean }; created_at: string; message_expires_at: string;
- checkout: { status: string; provider_order_id: string | null; reason_code: string };
+ consent: { version: number; history: boolean; training: boolean }; created_at: string; message_expires_at: string; decision_deadline: string;
+ checkout: { status: string; provider_order_id: string | null; authorization_id: string | null; capture_id: string | null; reason_code: string };
  evidence: { status: string; classifier_status: string; playbook_status: string; history_status: string; reason_code: string };
 }
 export type Task = { id: string; intent_id: string; version: number; binding: Binding; status: string; expires_at: string }
