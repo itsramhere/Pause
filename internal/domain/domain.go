@@ -184,6 +184,9 @@ type EvidenceDTO struct {
 	ReasonCode       string  `json:"reason_code"`
 }
 type Intent struct {
+	PaymentNotice    string             `json:"payment_notice,omitempty"`
+	SubjectName      string             `json:"subject_name"`
+	CleanupRequested bool               `json:"cleanup_requested"`
 	SyntheticHistory *SyntheticHistory  `json:"synthetic_history,omitempty"`
 	HistoryRevision  int64              `json:"history_revision"`
 	ID               string             `json:"id"`
@@ -207,6 +210,7 @@ type SyntheticHistory struct {
 	Status   string `json:"status"`
 }
 type Task struct {
+	CanDeny       bool      `json:"can_deny"`
 	SnapshotHash  string    `json:"snapshot_hash"`
 	CreatedAt     time.Time `json:"request_created_at"`
 	MerchantLabel string    `json:"merchant_label"`

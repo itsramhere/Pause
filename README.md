@@ -10,6 +10,44 @@ identity, prove an emergency, or authorize payment.
 
 ## Current implementation
 
+**Phase 5 product flows are implemented.** Senior intake now leads through an
+explicit history choice, purchase summary, PayPal authorization, independent
+answer, review and accurate waiting/final states. The contact inbox and reviewer
+case view keep entered facts, classifier signals, sourced playbooks, authenticated
+answers and complete versus retrieved history distinct. Refresh/retry, stale
+review, consent withdrawal, outages, keyboard actions and phone layouts have
+dedicated checks. See the [experience runbook](docs/experience.md) and
+[verification report](docs/experience-verification-2026-10-28.md).
+
+An opt-in judge launcher and `cmd/demo-seed` create isolated synthetic households
+with independently signed-in, expiring accounts. Persistent creation/order/value
+limits bound the demo. Reset cancels/reconciles existing payments and retains
+unresolved commands before allowing a fresh launch. Apply migrations through
+**version 8**. No browser role switch or developer privilege is supplied.
+
+The new browser suite runs real Go routes and PostgreSQL with explicitly test-only
+provider/classifier/search adapters. It covers confirmed/approved capture and
+denied void across independent sessions; these are **simulated provider results**.
+A separate mobile probe used the supplied synthetic account with actual local
+ML/Elastic, then abandoned its draft without creating a PayPal order. A subsequent
+user-approved **$1.00 actual sandbox purchase was captured**, with independent
+contact/reviewer sign-ins and a matching authoritative PayPal GET. See the
+[P05 capture receipt](evidence/p05-sandbox-capture-2026-10-28.json), including the
+disclosed recovery of two synthetic test-account passwords. A screen-reader
+walkthrough and hosted CI observation
+remain release checks. This phase does not claim improved predictive performance.
+
+The [independent P05 debugging pass](docs/experience-debugging-2026-10-28.md)
+fixed stale action notices and completed receipts losing their recorded contact
+answer after expiry. Full normal/race suites passed 320 tests/subtests each;
+final targeted expiry and browser regressions also passed. Native Chrome 200%
+reflow was inspected. The fresh $1 sandbox denial/void replay now completed:
+independent denial, provider-confirmed VOIDED, no capture and rejected approval.
+The confirmation window expired during checkout, exposing and fixing a blocked
+denial action while preserving positive-confirmation expiry. See the
+[actual P05 void receipt](evidence/p05-sandbox-void-2026-10-28.json). No credential
+reset or payment-state override was used for that replay.
+
 **Phase 4 implementation and automated verification are complete.** Real
 consent-scoped Elasticsearch projection/retrieval, canonical PostgreSQL timelines,
 separate financial totals, fixed review rules, cleanup/reindexing and transactional
@@ -28,11 +66,10 @@ cleanup, delayed writes, reindex/rollback and stale-review rejection. The
 [sanitized P04 receipt](evidence/p04-patterns-2026-10-28.json) records measured
 results, source hashes and the separate test-only payment scope.
 
-Browser verification remains partial: the consent-off desktop flow was observed,
-but mobile layout, updated-card screenshots, a fresh three-account browser journey
-and a controlled in-flight fetch timing replay remain unverified. Hosted CI has
-not yet been observed. These limits do not imply final release readiness or
-predictive effectiveness; final held-out evaluation remains P06 work.
+At the P04 handoff, only the consent-off desktop flow had been observed in a
+browser. P05 adds phone screenshots, independent account journeys and a controlled
+in-flight response replay, within the fixture/actual-service boundaries described
+above. Hosted CI is still unobserved; final held-out evaluation remains P06 work.
 
 **Phase 3 was completed in its documented prototype scope.** All P03-T01 through
 P03-T17 acceptance cases passed independent implementation/debugging checks on
@@ -127,7 +164,7 @@ anomaly learning and native apps remain outside this iteration.
 ## Run and verify
 
 Follow the foundation and payment setup for PostgreSQL and paired sandbox
-credentials. Apply migrations through version 7. Preserve populated environment
+credentials. Apply migrations through version 8. Preserve populated environment
 files; select an ignored local configuration with ENV_FILE. Start API and worker
 separately. The investigation runbook describes exact Python dependency locks,
 reproducible artifact training/download, private service authentication and public

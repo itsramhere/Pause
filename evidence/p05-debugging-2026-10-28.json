@@ -1,0 +1,95 @@
+{
+  "phase": "P05",
+  "date": "2026-10-28",
+  "scope": "Independent debugging; actual PostgreSQL and approved local ML/Elastic; explicitly simulated payment adapters for automated journeys",
+  "normal_go": {
+    "passed_tests_and_subtests": 320,
+    "failed": 0,
+    "skipped_test_cases": 0,
+    "live_private_elastic_enabled": true,
+    "browser_elapsed_seconds": 41.29
+  },
+  "race_go": {
+    "passed_tests_and_subtests": 320,
+    "failed": 0,
+    "skipped_test_cases": 0,
+    "data_race_reports": 0,
+    "compiler": "Existing CodeBlocks MinGW GCC; process-local CGO settings",
+    "browser_elapsed_seconds": 35.6
+  },
+  "final_targeted_checks": {
+    "all_view_expiry_normal": "PASS",
+    "all_view_expiry_race": "PASS",
+    "browser": "PASS",
+    "browser_elapsed_seconds": 41.29,
+    "note": "Full normal and race suites rerun after the actual sandbox replay and late-denial fix; both include the expired-window browser projection and actual private Elastic checks."
+  },
+  "frontend": {
+    "rendered_tests_passed": 6,
+    "production_build": "PASS",
+    "typecheck": "PASS"
+  },
+  "python": {
+    "approved_runtime_tests_passed": 11,
+    "release_model_or_threshold_changes": false
+  },
+  "other": {
+    "go_vet": "PASS",
+    "command_builds": "PASS",
+    "three_public_source_links": "OPENED_SUCCESSFULLY"
+  },
+  "fixes": [
+    "Clear action acknowledgements when the observed projection changes or fails",
+    "Preserve recorded confirmations on closed purchase cards, inboxes, evidence and canonical timelines while open holds expire",
+    "Hide pending release prompts on terminal receipts",
+    "Exclude three ignored local Go helpers from package builds using build tags",
+    "Allow only restrictive exact-purchase denial after confirmation expiry, before the application deadline; positive expiry, identity/binding and closed-state checks retained",
+    "Explain late denial in the inbox and evidence; map public-source failure to actionable copy"
+  ],
+  "actual_services": {
+    "mobile_intake_analysis_abandon_logout": "PASS",
+    "probe_created_paypal_order": false,
+    "private_lexical_vector_zero_hit_revocation_cleanup": "PASS",
+    "private_physical_cleanup_ms": 9898,
+    "classifier_known_false_signals_and_abstention_reproduced": true
+  },
+  "manual": {
+    "narrow_intake_waiting_reviewer_contact_uncertainty_images": "INSPECTED",
+    "native_chrome_200_percent_zoom": "INSPECTED_AND_RESTORED",
+    "native_existing_capture_receipt_after_answer_expiry": "RECORDED_CONFIRMATION_PRESERVED",
+    "screen_reader_audio_walkthrough": "NOT_PERFORMED"
+  },
+  "payment_evidence": {
+    "automated_capture_and_void": "DETERMINISTIC_TEST_ADAPTERS_ONLY",
+    "prior_actual_capture_receipt": "p05-sandbox-capture-2026-10-28.json",
+    "new_actual_paypal_capture_claimed": false,
+    "new_actual_paypal_void_claimed": true,
+    "fresh_void": "PROVIDER_CONFIRMED_VOIDED_AFTER_INDEPENDENT_DENIAL",
+    "fresh_void_amount_minor": 100,
+    "fresh_void_currency": "USD",
+    "actual_void_receipt": "p05-sandbox-void-2026-10-28.json",
+    "denial_after_confirmation_expiry": true,
+    "rendered_three_role_receipt_check": "PASS",
+    "capture_operations": 0,
+    "reviewer_approval_rejected_http": 409
+  },
+  "remaining_release_checks": [
+    "Audible screen-reader walkthrough",
+    "Hosted CI observation"
+  ],
+  "full_p05_release_gate": "OPEN_PENDING_MANUAL_SCREEN_READER_CHECK",
+  "source_sha256": {
+    "web/src/App.tsx": "19243816262d3054ed17e5faa46d6de4f55f809a70d8a5aa7789578815480cf8",
+    "web/src/Investigation.tsx": "44cd8ec03a60cf51162d40502d48aff12cae69400aff175c96dab9775dfa0ac1",
+    "web/tests/browser.mjs": "d65669eced13f4de31a1939f7c7c68bea1c2923e6daaaf9576235f2a57555ca7",
+    "internal/app/read.go": "8b631a68d154cb9514cbf2df8f5a54262d8787800ca24dff1a10ce883a79dd40",
+    "internal/app/investigation.go": "d0bb2a4b025552e80d422bc730704a3d6a75548613a6ccf45012696fa956431d",
+    "internal/app/history.go": "0d5d78c1610c3ecaa7bcf623e868f0bcbd42c5e1a638a9e63608d01407152776",
+    "internal/app/experience_test.go": "27156574e552297e4086e219ea92bc629905a87dc3e8ca80bba07d75d44c3bdf",
+    "internal/domain/domain.go": "72ec7451b9c05172e8809c3131872c98012cf51e59af534c837eb86216b161a8",
+    "internal/httpapi/server.go": "382d5930b4845cb6f0719faa3199501373ca92570d904d60f8130a5a027a2efe",
+    "web/src/api.ts": "f906d649ab18632dc7a73d2ead590f07fc71e6ecfe190b9d9ecc6c7d04d530f7",
+    "web/tests/experience.test.mjs": "dc6956f66f31b9b689ebe98e591bc95cd4dd7cbfa05727c7a5539f0d43602bae",
+    "web/tests/verify-void.mjs": "8981dbffefad031e1c420bd0b245ec209fc09343fae45b7fefe31f3c8d004243"
+  }
+}

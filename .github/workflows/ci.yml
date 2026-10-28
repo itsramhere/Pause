@@ -1,4 +1,4 @@
-name: Phase 4 checks
+name: Product checks
 on:
   push:
   pull_request:
@@ -35,6 +35,17 @@ jobs:
         working-directory: scripts/paypal-spike
   web:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18.1
+        env:
+          POSTGRES_DB: pause_test
+          POSTGRES_USER: pause
+          POSTGRES_PASSWORD: ci-disposable-only
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U pause -d pause_test"
+          --health-interval 5s --health-timeout 3s --health-retries 10
     defaults:
       run:
         working-directory: web
@@ -49,6 +60,15 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: npx playwright install --with-deps chromium
+      - run: go test ./internal/httpapi -run TestP05BrowserJourneys -count=1 -v
+        working-directory: .
+        env:
+          P05_BROWSER: '1'
+          TEST_DATABASE_URL: postgres://pause:ci-disposable-only@127.0.0.1:5432/pause_test?sslmode=disable
   inference-runtime:
     runs-on: ubuntu-latest
     services:

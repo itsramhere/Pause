@@ -1,0 +1,105 @@
+{
+  "schema_version": "pause-p05-sandbox-void-evidence-v1",
+  "environment": "sandbox",
+  "scope": "Actual PayPal Sandbox; user-approved $1 buyer authorization; separate normal senior, subject and reviewer sign-ins",
+  "intent_id": "0ac0f26a-a966-49b4-bd46-a9c88e944cfe",
+  "binding": {
+    "schema": "pause-binding-v1",
+    "intent_id": "0ac0f26a-a966-49b4-bd46-a9c88e944cfe",
+    "version": 1,
+    "amount_minor": 100,
+    "currency": "USD",
+    "payee_id": "4XDLGF4ER6RT4",
+    "subject_contact_id": "989c71a7-30bd-5a71-8b0e-341e17bce880",
+    "purpose": "Synthetic P05 denied-void verification"
+  },
+  "created_at": "2026-10-28T11:17:53.382598+05:30",
+  "decision_deadline": "2026-10-28T11:47:53.382598+05:30",
+  "payment_status": "VOIDED",
+  "verification_status": "DENIED",
+  "review_status": "PENDING",
+  "independent_actor_user_ids": [
+    "0e756086-39d4-51bc-a932-36ad4e3e3c94",
+    "b4f96898-b420-5b10-a759-41244467ea58",
+    "1de0fcb0-39b9-5ca6-8b77-938bf13f101d"
+  ],
+  "checkout": {
+    "status": "AVAILABLE",
+    "provider_order_id": "5TN732520N086914B",
+    "authorization_id": "2EF75823DN961060S",
+    "capture_id": null,
+    "reason_code": "SANDBOX_AUTHORIZATION_ONLY"
+  },
+  "provider": {
+    "OrderID": "5TN732520N086914B",
+    "AuthorizationID": "2EF75823DN961060S",
+    "CaptureID": "",
+    "Status": "VOIDED",
+    "Confirmed": true,
+    "AmountMinor": 100,
+    "Currency": "USD",
+    "PayeeID": "4XDLGF4ER6RT4",
+    "Environment": "sandbox",
+    "DebugID": "ca517c5b36aac",
+    "OrderStatus": "COMPLETED",
+    "AuthorizationStatus": "VOIDED",
+    "CaptureStatus": ""
+  },
+  "observed_at": "2026-10-28T06:09:34.953242+00:00",
+  "terminal_verified": true,
+  "operations": [
+    {
+      "kind": "CREATE_ORDER",
+      "state": "CONFIRMED",
+      "attempts": 1,
+      "provider_status": "AWAITING_PAYER",
+      "error_code": null
+    },
+    {
+      "kind": "AUTHORIZE",
+      "state": "CONFIRMED",
+      "attempts": 1,
+      "provider_status": "HELD",
+      "error_code": null
+    },
+    {
+      "kind": "VOID",
+      "state": "CONFIRMED",
+      "attempts": 1,
+      "provider_status": "VOIDED",
+      "error_code": null
+    }
+  ],
+  "denial_after_confirmation_expiry": true,
+  "verification_expires_at": "2026-10-28T11:32:53.497134+05:30",
+  "verification_responded_at": "2026-10-28T11:38:43.375173+05:30",
+  "post_denial_approval_http_status": 409,
+  "post_denial_approval_error_code": "RELEASE_EVIDENCE_REQUIRED",
+  "capture_operations": 0,
+  "credentials_reset": false,
+  "classifier_status": "ABSTAIN",
+  "playbook_status": "OK",
+  "limitations": [
+    "Sandbox test money",
+    "Denial records an enrolled synthetic account statement, not objective event truth",
+    "The confirmation window expired during checkout; the tested fix permits only restrictive denial before the application deadline",
+    "No new capture or model effectiveness claim"
+  ],
+  "private_material_excluded": [
+    "passwords",
+    "session tokens",
+    "API keys",
+    "raw messages",
+    "raw provider bodies"
+  ],
+  "late_confirmation_policy_check": "Rejected by deterministic expiry-boundary tests; no late positive response submitted to the actual sandbox intent",
+  "rendered_receipt_verification": {
+    "separate_senior_subject_reviewer_sign_ins": "PASS",
+    "desktop": "PASS",
+    "mobile_390px": "PASS",
+    "canonical_voided_and_denied": "PASS",
+    "approval_control_absent": "PASS",
+    "screenshots": "Local ignored data/p05-browser/live-void-*.png",
+    "visual_inspection": "Senior phone and reviewer desktop inspected"
+  }
+}

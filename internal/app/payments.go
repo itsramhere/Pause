@@ -181,6 +181,9 @@ func (s *Service) ReserveCheckout(ctx context.Context, a domain.Actor, id, kind,
 			return e
 		}
 		if kind == "CREATE_ORDER" {
+			if e = s.demoCheckoutLimit(ctx, tx, p); e != nil {
+				return e
+			}
 			if p.cmd.Binding.PayeeID != s.Config.MerchantID {
 				return domain.Fail("MERCHANT_NOT_ALLOWED", 409)
 			}

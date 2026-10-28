@@ -38,6 +38,7 @@ build/
 /investigation-setup
 /history-setup
 /patterns-seed
+/demo-seed
 coverage.out
 coverage/
 
@@ -58,6 +59,10 @@ coverage/
 !/evidence/p03-public-retrieval-2026-10-27.json
 !/evidence/p03-debugging-2026-10-27.json
 !/evidence/p04-patterns-2026-10-28.json
+!/evidence/p05-experience-2026-10-28.json
+!/evidence/p05-sandbox-capture-2026-10-28.json
+!/evidence/p05-debugging-2026-10-28.json
+!/evidence/p05-sandbox-void-2026-10-28.json
 
 # Test and browser artifacts
 playwright-report/

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -31,13 +32,22 @@ func (s *Service) Read(ctx context.Context, a domain.Actor, id string) (domain.I
 	}
 	i.Binding.IntentID = i.ID
 	i.Binding.Version = i.Version
+	if e = s.DB.Pool.QueryRow(ctx, `SELECT COALESCE((SELECT CASE kind WHEN 'CAPTURE' THEN 'A previous capture attempt did not complete. Check the current provider outcome and review the request again before retrying.' WHEN 'VOID' THEN 'Cancellation could not be confirmed. The authorization is still being checked; do not assume funds have been released.' ELSE 'A checkout attempt did not complete. Retry this saved request or request cancellation; do not create a replacement payment.' END FROM payment_operations WHERE intent_id=$1 AND state='FAILED' ORDER BY created_at DESC LIMIT 1),'')`, i.ID).Scan(&i.PaymentNotice); e != nil {
+		return i, e
+	}
+	if e = s.DB.Pool.QueryRow(ctx, `SELECT u.display_name FROM contacts c JOIN users u ON u.id=c.user_id WHERE c.id=$1 AND c.household_id=$2`, i.Binding.SubjectContactID, a.HouseholdID).Scan(&i.SubjectName); e != nil {
+		return i, e
+	}
 	i.Checkout = domain.CheckoutDTO{Status: "UNAVAILABLE", ReasonCode: "PAYMENTS_NOT_IMPLEMENTED"}
 	if s.Provider != nil {
 		i.Checkout.Status = "AVAILABLE"
 		i.Checkout.ReasonCode = "SANDBOX_AUTHORIZATION_ONLY"
 	}
+	if e = s.DB.Pool.QueryRow(ctx, `SELECT cleanup_requested FROM payment_intents WHERE id=$1`, id).Scan(&i.CleanupRequested); e != nil {
+		return i, e
+	}
 	var seedScenario, seedStatus *string
-	if e = s.DB.Pool.QueryRow(ctx, `SELECT i.provider_order_id,i.authorization_id,i.capture_id,h.history_revision,CASE WHEN t.status IN ('PENDING','CONFIRMED') AND t.expires_at<=$2 THEN 'EXPIRED' ELSE COALESCE(t.status,i.verification_status) END,seed.scenario,seed.status FROM payment_intents i JOIN households h ON h.id=i.household_id LEFT JOIN verifications t ON t.intent_id=i.id AND t.intent_version=i.current_version LEFT JOIN synthetic_history seed ON seed.intent_id=i.id WHERE i.id=$1`, id, s.Clock.Now()).Scan(&i.Checkout.ProviderOrderID, &i.Checkout.AuthorizationID, &i.Checkout.CaptureID, &i.HistoryRevision, &i.Verification, &seedScenario, &seedStatus); e != nil {
+	if e = s.DB.Pool.QueryRow(ctx, `SELECT i.provider_order_id,i.authorization_id,i.capture_id,h.history_revision,CASE WHEN (t.status='PENDING' OR (t.status='CONFIRMED' AND i.payment_status NOT IN ('CAPTURED','VOIDED','CLOSED_UNCAPTURED','ABANDONED'))) AND t.expires_at<=$2 THEN 'EXPIRED' ELSE COALESCE(t.status,i.verification_status) END,seed.scenario,seed.status FROM payment_intents i JOIN households h ON h.id=i.household_id LEFT JOIN verifications t ON t.intent_id=i.id AND t.intent_version=i.current_version LEFT JOIN synthetic_history seed ON seed.intent_id=i.id WHERE i.id=$1`, id, s.Clock.Now()).Scan(&i.Checkout.ProviderOrderID, &i.Checkout.AuthorizationID, &i.Checkout.CaptureID, &i.HistoryRevision, &i.Verification, &seedScenario, &seedStatus); e != nil {
 		return i, e
 	}
 	if seedScenario != nil && seedStatus != nil {
@@ -125,7 +135,7 @@ func (s *Service) Tasks(ctx context.Context, a domain.Actor) ([]domain.Task, err
 	if a.Role != domain.Subject {
 		return nil, domain.Fail("FORBIDDEN", 403)
 	}
-	rows, e := s.DB.Pool.Query(ctx, `SELECT t.id::text,i.id::text,t.intent_version,t.content_digest,t.status,t.expires_at,v.binding_schema,v.amount_minor,v.currency,v.payee_id,v.subject_contact_id::text,v.purpose FROM verifications t JOIN payment_intents i ON i.id=t.intent_id AND i.current_version=t.intent_version JOIN intent_versions v ON v.intent_id=t.intent_id AND v.version=t.intent_version JOIN contacts c ON c.id=v.subject_contact_id AND c.household_id=i.household_id AND c.user_id=t.subject_user_id AND c.active JOIN memberships m ON m.household_id=i.household_id AND m.user_id=$1 AND m.role='subject' AND m.active WHERE t.subject_user_id=$1 AND i.household_id=$2 ORDER BY t.expires_at DESC LIMIT 100`, a.UserID, a.HouseholdID)
+	rows, e := s.DB.Pool.Query(ctx, `SELECT t.id::text,i.id::text,t.intent_version,t.content_digest,t.status,t.expires_at,i.payment_status,i.cleanup_requested,i.decision_deadline,v.binding_schema,v.amount_minor,v.currency,v.payee_id,v.subject_contact_id::text,v.purpose FROM verifications t JOIN payment_intents i ON i.id=t.intent_id AND i.current_version=t.intent_version JOIN intent_versions v ON v.intent_id=t.intent_id AND v.version=t.intent_version JOIN contacts c ON c.id=v.subject_contact_id AND c.household_id=i.household_id AND c.user_id=t.subject_user_id AND c.active JOIN memberships m ON m.household_id=i.household_id AND m.user_id=$1 AND m.role='subject' AND m.active WHERE t.subject_user_id=$1 AND i.household_id=$2 ORDER BY t.expires_at DESC LIMIT 100`, a.UserID, a.HouseholdID)
 	if e != nil {
 		return nil, e
 	}
@@ -133,7 +143,10 @@ func (s *Service) Tasks(ctx context.Context, a domain.Actor) ([]domain.Task, err
 	out := []domain.Task{}
 	for rows.Next() {
 		var t domain.Task
-		if e = rows.Scan(&t.ID, &t.IntentID, &t.Version, &t.Digest, &t.Status, &t.ExpiresAt, &t.Binding.Schema, &t.Binding.AmountMinor, &t.Binding.Currency, &t.Binding.PayeeID, &t.Binding.SubjectContactID, &t.Binding.Purpose); e != nil {
+		var payment domain.PaymentStatus
+		var cleanup bool
+		var deadline time.Time
+		if e = rows.Scan(&t.ID, &t.IntentID, &t.Version, &t.Digest, &t.Status, &t.ExpiresAt, &payment, &cleanup, &deadline, &t.Binding.Schema, &t.Binding.AmountMinor, &t.Binding.Currency, &t.Binding.PayeeID, &t.Binding.SubjectContactID, &t.Binding.Purpose); e != nil {
 			return nil, e
 		}
 		t.Binding.IntentID = t.IntentID
@@ -149,7 +162,9 @@ func (s *Service) Tasks(ctx context.Context, a domain.Actor) ([]domain.Task, err
 		t.SnapshotHash = domain.Hash(raw)
 		t.CreatedAt = snapshot.CreatedAt
 		t.MerchantLabel = snapshot.MerchantLabel
-		if (t.Status == "PENDING" || t.Status == "CONFIRMED") && !s.Clock.Now().Before(t.ExpiresAt) {
+		closed := payment == domain.Captured || payment == domain.Voided || payment == domain.ClosedUncaptured || payment == domain.Abandoned
+		t.CanDeny = t.Status == "PENDING" && !closed && !cleanup && s.Clock.Now().Before(deadline)
+		if (t.Status == "PENDING" || (t.Status == "CONFIRMED" && !closed)) && !s.Clock.Now().Before(t.ExpiresAt) {
 			t.Status = "EXPIRED"
 		}
 		out = append(out, t)

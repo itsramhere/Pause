@@ -1,0 +1,93 @@
+﻿{
+    "phase":  "P05",
+    "date":  "2026-10-28",
+    "scope":  "Product experience; actual PostgreSQL and separate actual ML/Elastic checks; deterministic payment browser adapters",
+    "migration_version":  8,
+    "normal_go":  {
+                      "passed_tests_and_subtests":  311,
+                      "actual_private_elastic_tests":  true,
+                      "skipped_test_cases":  0,
+                      "failed":  0
+                  },
+    "frontend":  {
+                     "rendered_tests_passed":  5,
+                     "typecheck":  "PASS",
+                     "production_build":  "PASS"
+                 },
+    "browser":  {
+                    "checks":  [
+                                   "confirmed-and-approved capture",
+                                   "denied void",
+                                   "canonical PostgreSQL assertions",
+                                   "cross-household rejection",
+                                   "real stale-packet rejection",
+                                   "isolated demo accounts and reset",
+                                   "expiry and CSRF",
+                                   "consent withdrawal and delayed stale response suppression",
+                                   "outage cancellation",
+                                   "lost response plus refresh and double submission produces one intent",
+                                   "keyboard senior/contact/reviewer actions",
+                                   "320px and 390px layouts",
+                                   "200 percent CSS zoom"
+                               ],
+                    "duration_seconds":  38.405,
+                    "final_result":  "PASS",
+                    "independent_contexts":  4,
+                    "payment_outcomes":  "DETERMINISTIC_TEST_ADAPTERS_ONLY"
+                },
+    "race":  {
+                 "targeted_duration_seconds":  46.575,
+                 "initial_full_run_passed":  310,
+                 "targeted_p05_rerun":  "PASS",
+                 "targeted_passed":  2,
+                 "initial_full_run_failed":  1,
+                 "initial_failure":  "Browser assertion ran before the independent-answer poll settled; no Go data-race report"
+             },
+    "other_checks":  {
+                         "local_server_readiness":  "PASS migration 8",
+                         "go_vet":  "PASS",
+                         "diff_check":  "PASS",
+                         "command_builds":  "PASS"
+                     },
+    "actual_local_service_probe":  {
+                                       "mobile_intake_analysis_abandonment":  "PASS",
+                                       "public_elastic_lookup":  "Actual lookup with three sourced matches",
+                                       "new_live_paypal_receipt_claimed":  false,
+                                       "synthetic_account_login":  "PASS",
+                                       "paypal_orders_created":  0,
+                                       "classifier":  "Actual approved artifact; valid abstention and known false signals"
+                                   },
+    "remaining_release_checks":  [
+                                     "fresh P05 denied/void replay; earlier P03 void is historical",
+                                     "native browser zoom",
+                                     "screen-reader walkthrough",
+                                     "hosted CI observation"
+                                 ],
+    "source_sha256":  {
+                          "internal/app/demo.go":  "bb2e88d506497197f4967edbe08a1fd376f552d24ad96f340a9d4265cbb86e2c",
+                          "internal/app/read.go":  "74fd6b3ccda26b942e2071eccd8d6de8d3cad233cb5acea720f2a8fcf7f6006d",
+                          "internal/app/service.go":  "b3cf14c132c1e7d2e3275d1d40f71d77939bc53fd57c37ce048d2426743d7d52",
+                          "internal/auth/auth.go":  "7055c40d557b60d56a39357cf14401018b17d5406813d4514797275bcb690488",
+                          "internal/httpapi/server.go":  "ae1045e6c23fcde042f6aa8268b30e3920bbed002b0189587c0b1303b51611a5",
+                          "migrations/008_demo_runs.sql":  "74ac28c2466d86353f88073af4ee18ac8511cff55d5a6c6fe65f294409abc9a8",
+                          "web/src/App.tsx":  "62e624f102afd25fc0fd378a42c735041f1a0d3ba8cb6c8027c55275146abf80",
+                          "web/src/Checkout.tsx":  "57a3aa363a81b8246126bf8e824ececa3169da09cc3f3357a8be10afa07521f3",
+                          "web/src/Investigation.tsx":  "034f1ce2b98254b04ea42d03813febd7b285a431d377100c5f241267c4956748",
+                          "web/src/HistoryEvidence.tsx":  "784870d2e3d0a14eb710b629401f67182a1b0b436aa70e599bee1bdb110b3c89",
+                          "web/src/DemoLauncher.tsx":  "34ec80cfc08e7ffb90f88b978254a2fb864ef0b130a76f62e61a509bb76fd232",
+                          "web/src/status.ts":  "1f20464e1e9c8d4e10dac834333e1ac74356b2d3b6881e93ec5ccb8e8c4db079",
+                          "web/tests/browser.mjs":  "8fa41d6f7d1e0789ac72b38d4f364ed7ccafe38ba1685f35c6fc797d49e7d776",
+                          "internal/httpapi/browser_test.go":  "2a7d0f17837864a7efeeb7e8e4ea9a65438222760a9bd42e92ac535671612e19"
+                      },
+    "actual_sandbox_capture":  {
+                                   "result":  "PASS",
+                                   "receipt":  "p05-sandbox-capture-2026-10-28.json",
+                                   "amount_minor":  100,
+                                   "currency":  "USD",
+                                   "capture_id":  "3R378453UW1255157",
+                                   "provider_status":  "COMPLETED",
+                                   "independent_role_sessions":  true,
+                                   "synthetic_credential_recovery_disclosed":  true,
+                                   "observed_at":  "2026-10-28T05:34:06.268805+00:00"
+                               }
+}

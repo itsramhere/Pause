@@ -42,3 +42,22 @@ func TestConfigurationValidationAndNoLLMDependency(t *testing.T) {
 		t.Fatal("production cookie config", e)
 	}
 }
+
+func TestDemoConfigurationIsExplicitAndNonProduction(t *testing.T) {
+	env := validEnv()
+	get := func(k string) string { return env[k] }
+	c, e := From(get)
+	if e != nil || c.DemoEnabled {
+		t.Fatal("demo must default off", e)
+	}
+	env["DEMO_ENABLED"] = "1"
+	c, e = From(get)
+	if e != nil || !c.DemoEnabled {
+		t.Fatal("explicit demo", e)
+	}
+	env["APP_ENV"] = "production"
+	env["APP_BASE_URL"] = "https://pause.example"
+	if _, e = From(get); e == nil {
+		t.Fatal("production scenario launcher accepted")
+	}
+}

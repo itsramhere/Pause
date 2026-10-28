@@ -123,6 +123,13 @@ func (s *Service) Create(ctx context.Context, a domain.Actor, in Intake, key, co
 		if _, e := tx.Exec(ctx, `SELECT id FROM households WHERE id=$1 FOR UPDATE`, a.HouseholdID); e != nil {
 			return e
 		}
+		var demoClosed bool
+		if e := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM demo_runs WHERE household_id=$1 AND (resetting OR expires_at<=$2))`, a.HouseholdID, now).Scan(&demoClosed); e != nil {
+			return e
+		}
+		if demoClosed {
+			return domain.Fail("DEMO_CLOSED", 409)
+		}
 		if _, e := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1,0))`, a.UserID+":"+key); e != nil {
 			return e
 		}

@@ -146,7 +146,10 @@ func (s *Service) RespondVerification(ctx context.Context, a domain.Actor, taskI
 		if e != nil {
 			return e
 		}
-		if status != "PENDING" || version != p.cmd.Version || version != in.ExpectedVersion || digest != in.Digest || digest != p.cmd.Digest || domain.Hash(raw) != in.SnapshotHash || !s.Clock.Now().Before(expires) || !s.Clock.Now().Before(p.deadline) || p.cleanup || p.state == domain.Voided || p.state == domain.Captured || p.state == domain.Abandoned || p.state == domain.ClosedUncaptured {
+		// A late positive answer can never restore release eligibility. A denial
+		// still restricts this exact open purchase while its application window is
+		// active; expiry must not disable the contact's cancellation path.
+		if status != "PENDING" || version != p.cmd.Version || version != in.ExpectedVersion || digest != in.Digest || digest != p.cmd.Digest || domain.Hash(raw) != in.SnapshotHash || (in.Response == "CONFIRMED" && !s.Clock.Now().Before(expires)) || !s.Clock.Now().Before(p.deadline) || p.cleanup || p.state == domain.Voided || p.state == domain.Captured || p.state == domain.Abandoned || p.state == domain.ClosedUncaptured {
 			return domain.Fail("VERIFICATION_STALE", 409)
 		}
 		var active bool
@@ -338,7 +341,8 @@ func (s *Service) Evidence(ctx context.Context, a domain.Actor, id string) (Evid
 		if errors.Is(e, pgx.ErrNoRows) {
 			status = "NOT_REQUESTED"
 		}
-		if (status == "PENDING" || status == "CONFIRMED") && !s.Clock.Now().Before(expiry) {
+		closed := p.state == domain.Captured || p.state == domain.Voided || p.state == domain.ClosedUncaptured || p.state == domain.Abandoned
+		if (status == "PENDING" || (status == "CONFIRMED" && !closed)) && !s.Clock.Now().Before(expiry) {
 			status = "EXPIRED"
 		}
 		packet.Verification = map[string]any{"status": status, "subject_user_id": subject, "responded_at": answered, "expires_at": expiry, "snapshot_hash": domain.Hash(verificationSnapshot), "scope": "Records the enrolled account's response, not proof that the event happened."}
@@ -376,7 +380,7 @@ func (s *Service) Evidence(ctx context.Context, a domain.Actor, id string) (Evid
 		if p.history && packet.History.Status != domain.LookupOK {
 			packet.Missing = append(packet.Missing, "Successful current private history lookup (run message checks to refresh)")
 		}
-		if status != "CONFIRMED" {
+		if status != "CONFIRMED" || !s.Clock.Now().Before(expiry) {
 			packet.Missing = append(packet.Missing, "Current independent subject confirmation")
 		}
 		checks.Unresolved = len(packet.Missing) > 0

@@ -64,7 +64,7 @@ func (s *Service) Login(ctx context.Context, email, password, ip, oldToken, corr
 	}
 	var hash, member string
 	var a domain.Actor
-	e = s.DB.Pool.QueryRow(ctx, `SELECT u.id::text,u.display_name,u.password_hash,m.id::text,m.household_id::text,m.role FROM users u JOIN memberships m ON m.user_id=u.id AND m.active WHERE u.email=$1 ORDER BY m.id LIMIT 1`, email).Scan(&a.UserID, &a.Name, &hash, &member, &a.HouseholdID, &a.Role)
+	e = s.DB.Pool.QueryRow(ctx, `SELECT u.id::text,u.display_name,u.password_hash,m.id::text,m.household_id::text,m.role FROM users u JOIN memberships m ON m.user_id=u.id AND m.active WHERE u.email=$1 AND NOT EXISTS(SELECT 1 FROM demo_runs d WHERE d.household_id=m.household_id AND (d.expires_at<=$2 OR d.closed_at IS NOT NULL)) ORDER BY m.id LIMIT 1`, email, now).Scan(&a.UserID, &a.Name, &hash, &member, &a.HouseholdID, &a.Role)
 	if e != nil && !errors.Is(e, pgx.ErrNoRows) {
 		return out, e
 	}
@@ -106,7 +106,7 @@ func (s *Service) Resolve(ctx context.Context, token string) (Session, error) {
 	if len(token) != 43 {
 		return out, domain.Fail("UNAUTHENTICATED", 401)
 	}
-	e := s.DB.Pool.QueryRow(ctx, `SELECT u.id::text,u.display_name,m.household_id::text,m.role,s.csrf_hash FROM sessions s JOIN memberships m ON m.id=s.membership_id AND m.active JOIN users u ON u.id=m.user_id WHERE s.token_hash=$1 AND s.expires_at>$2`, domain.Hash([]byte(token)), s.Clock.Now()).Scan(&out.Actor.UserID, &out.Actor.Name, &out.Actor.HouseholdID, &out.Actor.Role, &out.CSRFHash)
+	e := s.DB.Pool.QueryRow(ctx, `SELECT u.id::text,u.display_name,m.household_id::text,m.role,s.csrf_hash FROM sessions s JOIN memberships m ON m.id=s.membership_id AND m.active JOIN users u ON u.id=m.user_id WHERE s.token_hash=$1 AND s.expires_at>$2 AND NOT EXISTS(SELECT 1 FROM demo_runs d WHERE d.household_id=m.household_id AND (d.expires_at<=$2 OR d.closed_at IS NOT NULL))`, domain.Hash([]byte(token)), s.Clock.Now()).Scan(&out.Actor.UserID, &out.Actor.Name, &out.Actor.HouseholdID, &out.Actor.Role, &out.CSRFHash)
 	if errors.Is(e, pgx.ErrNoRows) {
 		return out, domain.Fail("UNAUTHENTICATED", 401)
 	}

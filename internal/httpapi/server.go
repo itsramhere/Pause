@@ -62,6 +62,33 @@ func (s *Server) Handler() http.Handler {
 		s.respond(w, r, map[string]string{"status": "STORED"}, e, 200)
 	})
 	r.Route("/api", func(r chi.Router) {
+		r.Get("/demo", func(w http.ResponseWriter, r *http.Request) {
+			write(w, 200, map[string]any{"enabled": s.App.Config.DemoEnabled, "mode": "PAYPAL_SANDBOX"})
+		})
+		r.Post("/demo/runs", func(w http.ResponseWriter, r *http.Request) {
+			var in struct {
+				Scenario string `json:"scenario"`
+			}
+			if !s.decode(w, r, &in) {
+				return
+			}
+			peer, _, err := net.SplitHostPort(r.RemoteAddr)
+			if err != nil {
+				peer = r.RemoteAddr
+			}
+			out, e := s.App.LaunchDemo(r.Context(), in.Scenario, peer)
+			s.respond(w, r, out, e, 201)
+		})
+		r.Post("/demo/runs/{id}/reset", func(w http.ResponseWriter, r *http.Request) {
+			var in struct {
+				Token string `json:"reset_token"`
+			}
+			if !s.decode(w, r, &in) {
+				return
+			}
+			out, e := s.App.ResetDemo(r.Context(), chi.URLParam(r, "id"), in.Token)
+			s.respond(w, r, map[string]string{"status": out}, e, 200)
+		})
 		r.Post("/auth/login", s.login)
 		r.Group(func(r chi.Router) {
 			r.Use(s.authenticate)
@@ -71,9 +98,13 @@ func (s *Server) Handler() http.Handler {
 				c := s.App.Config
 				payment := "UNAVAILABLE"
 				if s.App.Provider != nil {
-					payment = "SANDBOX_AUTHORIZATION_ONLY"
+					payment = "PAYPAL_SANDBOX"
 				}
-				write(w, 200, map[string]any{"merchant_id": c.MerchantID, "merchant_label": c.MerchantLabel, "currency": "USD", "max_amount_minor": c.MaxAmount, "message_retention_hours": int(c.MessageRetention.Hours()), "payment_status": payment, "paypal_client_id": c.PayPalClientID, "investigation_status": "UNAVAILABLE"})
+				investigation := "UNAVAILABLE"
+				if s.App.Investigation != nil {
+					investigation = "AVAILABLE"
+				}
+				write(w, 200, map[string]any{"merchant_id": c.MerchantID, "merchant_label": c.MerchantLabel, "currency": "USD", "max_amount_minor": c.MaxAmount, "message_retention_hours": int(c.MessageRetention.Hours()), "payment_status": payment, "paypal_client_id": c.PayPalClientID, "investigation_status": investigation})
 			})
 			r.With(s.requireRole(domain.Senior)).Get("/contacts", func(w http.ResponseWriter, r *http.Request) {
 				out, e := s.App.Contacts(r.Context(), session(r).Actor)
@@ -248,6 +279,34 @@ func message(code string) string {
 	switch code {
 	case "INVALID_CREDENTIALS":
 		return "Email or password is incorrect."
+	case "CONTACT_NOT_ALLOWED":
+		return "Choose a currently enrolled relative. Unknown people and institutions cannot be verified here. You can leave without authorizing a purchase."
+	case "MERCHANT_NOT_ALLOWED":
+		return "Only the displayed sandbox merchant is supported. Leave this purchase if the receiving merchant is not the one you intend."
+	case "DEMO_DISABLED":
+		return "Scenario launch is not enabled on this server. Use the supplied test-account instructions."
+	case "DEMO_THROTTLED":
+		return "The scenario creation limit has been reached. Keep using your current run or try again in an hour."
+	case "DEMO_PAYMENT_LIMIT":
+		return "This synthetic run allows two sandbox orders with a combined maximum of $1,000. No additional order was created."
+	case "DEMO_CLOSED":
+		return "This scenario is closing or has expired. Existing payment outcomes are still reconciled."
+	case "INVESTIGATION_UNAVAILABLE", "SOURCES_UNAVAILABLE", "PUBLIC_SOURCES_UNAVAILABLE":
+		return "Message checks are unavailable. Retry when the service returns. Cancellation and contact answers remain available."
+	case "PAYMENTS_UNAVAILABLE", "PROVIDER_READ_UNAVAILABLE":
+		return "PayPal is unavailable. The payment outcome has not been confirmed. Check the saved request before retrying."
+	case "DEADLINE_EXPIRED", "VERIFICATION_CLOSED", "MESSAGE_EXPIRED":
+		return "The time to complete this request has elapsed. You can cancel it and check the final payment outcome."
+	case "VERIFICATION_STALE":
+		return "This exact request has changed, expired, or already received an answer. Refresh your inbox to see the current request."
+	case "RELEASE_NOT_ALLOWED", "INVALID_TRANSITION":
+		return "This action is not available in the current payment state. Refresh the request and check its outcome."
+	case "IDEMPOTENCY_CONFLICT":
+		return "A previous submission used different details. Refresh your requests before trying again."
+	case "INVALID_MESSAGE", "INVALID_PURPOSE", "CONSENT_REQUIRED":
+		return "Enter an English message and a purpose of 3–240 characters, and choose whether to use request history."
+	case "FORBIDDEN", "CSRF_REJECTED", "ORIGIN_REJECTED":
+		return "This session cannot perform that action. Sign in again with the correct independent account."
 	case "UNAUTHENTICATED":
 		return "Please sign in."
 	case "LOGIN_THROTTLED":

@@ -21,6 +21,7 @@ type Config struct {
 	ElasticURL, ElasticKey, PlaybookAlias, HistoryAlias           string
 	ElasticCA                                                     string
 	SecureCookies                                                 bool
+	DemoEnabled                                                   bool
 	PayPalURL, PayPalClientID, PayPalSecret, PayPalWebhookID      string
 }
 
@@ -32,6 +33,10 @@ func From(get func(string) string) (Config, error) {
 		return c, errors.New("APP_ENV is invalid")
 	}
 	c.ElasticCA = get("ELASTICSEARCH_CA_CERT")
+	c.DemoEnabled = get("DEMO_ENABLED") == "1"
+	if c.DemoEnabled && c.Environment == "production" {
+		return c, errors.New("demo launch is disabled in production")
+	}
 	if c.DatabaseURL == "" {
 		return c, errors.New("DATABASE_URL is required")
 	}
