@@ -15,6 +15,7 @@ type Config struct {
 	MessageKey                                                    []byte
 	MerchantID, MerchantLabel                                     string
 	MaxAmount                                                     int64
+	PatternRequested, PatternMinimum, PatternMultiplier           int64
 	MessageRetention, OperationRetention, SessionTTL, DecisionTTL time.Duration
 	MLURL, MLToken, ClassifierManifest, EncoderManifest           string
 	ElasticURL, ElasticKey, PlaybookAlias, HistoryAlias           string
@@ -63,6 +64,20 @@ func From(get func(string) string) (Config, error) {
 		c.MaxAmount, err = strconv.ParseInt(get("MAX_AMOUNT_MINOR"), 10, 64)
 		if err != nil || c.MaxAmount < 1 || c.MaxAmount > 500000 {
 			return c, errors.New("MAX_AMOUNT_MINOR must be between 1 and 500000")
+		}
+	}
+	for _, item := range []struct {
+		name     string
+		target   *int64
+		fallback int64
+	}{{"PATTERN_REQUESTED_THRESHOLD_MINOR", &c.PatternRequested, 100000}, {"PATTERN_ESCALATION_MINIMUM_MINOR", &c.PatternMinimum, 10000}, {"PATTERN_ESCALATION_MULTIPLIER", &c.PatternMultiplier, 3}} {
+		*item.target = item.fallback
+		if raw := get(item.name); raw != "" {
+			n, e := strconv.ParseInt(raw, 10, 64)
+			if e != nil || n < 1 || n > 1000000000 {
+				return c, errors.New(item.name + " is out of range")
+			}
+			*item.target = n
 		}
 	}
 	for _, item := range []struct {

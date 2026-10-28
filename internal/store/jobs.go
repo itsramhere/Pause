@@ -26,7 +26,7 @@ func (j *Jobs) Lease(ctx context.Context, kinds []string, duration time.Duration
 	token := uuid.NewString()
 	out := &domain.Job{}
 	// SKIP LOCKED plus a fresh token fences a late worker after lease replacement.
-	e := j.DB.Pool.QueryRow(ctx, `WITH candidate AS (SELECT id FROM jobs WHERE kind=ANY($1) AND not_before<=$2 AND completed_at IS NULL AND failed_at IS NULL AND attempts<max_attempts AND (lease_until IS NULL OR lease_until<=$2) ORDER BY not_before,id FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE jobs j SET attempts=j.attempts+1,lease_token=$3,lease_until=$4 FROM candidate c WHERE j.id=c.id RETURNING j.id::text,j.kind,j.object_id::text,j.attempts,j.lease_token::text,j.lease_until`, kinds, now, token, now.Add(duration)).Scan(&out.ID, &out.Kind, &out.ObjectID, &out.Attempts, &out.LeaseToken, &out.LeaseUntil)
+	e := j.DB.Pool.QueryRow(ctx, `WITH candidate AS (SELECT id FROM jobs WHERE kind=ANY($1) AND not_before<=$2 AND completed_at IS NULL AND failed_at IS NULL AND attempts<max_attempts AND (lease_until IS NULL OR lease_until<=$2) ORDER BY CASE WHEN kind='SEARCH_PROJECTION' AND EXISTS(SELECT 1 FROM search_projections p WHERE p.intent_id=jobs.object_id AND p.action='DELETE') THEN 0 ELSE 1 END,not_before,id FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE jobs j SET attempts=j.attempts+1,lease_token=$3,lease_until=$4 FROM candidate c WHERE j.id=c.id RETURNING j.id::text,j.kind,j.object_id::text,j.attempts,j.lease_token::text,j.lease_until`, kinds, now, token, now.Add(duration)).Scan(&out.ID, &out.Kind, &out.ObjectID, &out.Attempts, &out.LeaseToken, &out.LeaseUntil)
 	if errors.Is(e, pgx.ErrNoRows) {
 		return nil, nil
 	}

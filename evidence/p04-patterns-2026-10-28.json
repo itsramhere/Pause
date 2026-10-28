@@ -1,0 +1,406 @@
+{
+  "phase": "P04",
+  "actual_private_integration": {
+    "classifier_artifact_hash": "6a7d7707bc24329519a548aa0ba2f53998c9fbd1f38d9fdc214b32aafd497b07",
+    "cleanup_failure_pending_then_retried": true,
+    "cleanup_ms": 10137,
+    "elastic_version": "9.5.5",
+    "encoder_artifact_hash": "e8cbc0408bd6993d8bc25a07a7ab162394573a11c2333510501561ff8caa7f18",
+    "fresh_pattern_rationale_resolved": true,
+    "fresh_reindex_and_rollback_passed": true,
+    "in_flight_reindex_revocation_race_passed": true,
+    "in_flight_upsert_revocation_race_passed": true,
+    "physical_text_and_vector_absent": true,
+    "queries": [
+      {
+        "candidates": [
+          {
+            "id": "e5331ceb-5a04-4341-9ebe-98285c5928cc",
+            "keyword_rank": 0,
+            "vector_rank": 1
+          }
+        ],
+        "encoder": "minilm-l6-1110a243-v1",
+        "fusion": "go-rrf60-v1",
+        "hit_count": 1,
+        "index": "pause-request-history-v1-live-b8755e88e4134f8584e534e7758352d6",
+        "query_id": "development-paraphrase",
+        "status": "OK"
+      },
+      {
+        "candidates": [],
+        "encoder": "minilm-l6-1110a243-v1",
+        "fusion": "go-rrf60-v1",
+        "hit_count": 0,
+        "index": "pause-request-history-v1-live-b8755e88e4134f8584e534e7758352d6",
+        "query_id": "development-no-match",
+        "status": "OK"
+      },
+      {
+        "candidates": [
+          {
+            "id": "e5331ceb-5a04-4341-9ebe-98285c5928cc",
+            "keyword_rank": 1,
+            "vector_rank": 1
+          }
+        ],
+        "encoder": "minilm-l6-1110a243-v1",
+        "fusion": "go-rrf60-v1",
+        "hit_count": 1,
+        "index": "pause-request-history-v1-live-b8755e88e4134f8584e534e7758352d6",
+        "query_id": "development-literal",
+        "status": "OK"
+      }
+    ],
+    "recorded_at_utc": "2026-10-28T04:08:26.9523659Z",
+    "retention_text_and_vector_cleanup_passed": true,
+    "revocation_replay_rejected": true,
+    "scope": "Actual local Elastic and approved inference; PostgreSQL disposable schema; payment adapter is test-only, not new PayPal evidence",
+    "stale_review_rejected": true,
+    "worker_outbox_dispatch_passed": true,
+    "wrong_dimension_rejected": true,
+    "wrong_encoder_alias_switch_rejected": true
+  },
+  "local_api_scenarios": [
+    {
+      "scope": "Authenticated synthetic local API; actual classifier/encoder and private/public Elastic; no new provider operation",
+      "scenario": "f04",
+      "intent_id": "eb43edbd-760c-4c9c-9345-2e304fe03aa3",
+      "private_status": "OK",
+      "totals": {
+        "requested_minor": 112000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 22000
+      },
+      "timeline_count": 3,
+      "context_source_ids": [
+        "249befd3-4466-4181-b27e-6b1c5e157032",
+        "68c8c4db-e99a-42c3-8787-f27c94644416"
+      ],
+      "rules": [
+        {
+          "reason": "SEVEN_DAY_REQUESTED_TOTAL",
+          "matched": true,
+          "applicable": true,
+          "operands": {
+            "requested_minor": 112000
+          },
+          "thresholds": {
+            "strictly_above_minor": 100000
+          },
+          "matched_request_ids": [
+            "68c8c4db-e99a-42c3-8787-f27c94644416",
+            "249befd3-4466-4181-b27e-6b1c5e157032",
+            "eb43edbd-760c-4c9c-9345-2e304fe03aa3"
+          ],
+          "policy_version": "pause-pattern-policy-v1"
+        },
+        {
+          "reason": "CURRENT_AMOUNT_ESCALATION",
+          "matched": true,
+          "applicable": true,
+          "operands": {
+            "current_minor": 90000,
+            "previous_minor": 18000
+          },
+          "thresholds": {
+            "minimum_minor": 10000,
+            "multiplier": 3
+          },
+          "matched_request_ids": [
+            "249befd3-4466-4181-b27e-6b1c5e157032",
+            "eb43edbd-760c-4c9c-9345-2e304fe03aa3"
+          ],
+          "policy_version": "pause-pattern-policy-v1"
+        }
+      ],
+      "classifier_status": "OK",
+      "playbook_status": "OK",
+      "missing_checks": [
+        "Current independent subject confirmation"
+      ],
+      "index_version": "pause-request-history-v1-minilm1110",
+      "encoder_version": "minilm-l6-1110a243-v1",
+      "template_version": "private-history-template-v1",
+      "policy_version": "pause-pattern-policy-v1"
+    },
+    {
+      "scope": "Authenticated synthetic local API; actual classifier/encoder and private/public Elastic; no new provider operation",
+      "scenario": "benign",
+      "intent_id": "f88b0192-e168-487e-a556-517bcfacde5f",
+      "private_status": "OK",
+      "totals": {
+        "requested_minor": 19000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 10000
+      },
+      "timeline_count": 3,
+      "context_source_ids": [
+        "64d5a4fb-b34d-4058-a628-3b93e6680b16"
+      ],
+      "rules": [
+        {
+          "reason": "SEVEN_DAY_REQUESTED_TOTAL",
+          "matched": false,
+          "applicable": true,
+          "operands": {
+            "requested_minor": 19000
+          },
+          "thresholds": {
+            "strictly_above_minor": 100000
+          },
+          "matched_request_ids": [
+            "0e655308-bfcb-45e2-a29c-807012553190",
+            "64d5a4fb-b34d-4058-a628-3b93e6680b16",
+            "f88b0192-e168-487e-a556-517bcfacde5f"
+          ],
+          "policy_version": "pause-pattern-policy-v1"
+        },
+        {
+          "reason": "CURRENT_AMOUNT_ESCALATION",
+          "matched": false,
+          "applicable": true,
+          "operands": {
+            "current_minor": 9000,
+            "previous_minor": 6000
+          },
+          "thresholds": {
+            "minimum_minor": 10000,
+            "multiplier": 3
+          },
+          "matched_request_ids": [
+            "64d5a4fb-b34d-4058-a628-3b93e6680b16",
+            "f88b0192-e168-487e-a556-517bcfacde5f"
+          ],
+          "policy_version": "pause-pattern-policy-v1"
+        }
+      ],
+      "classifier_status": "ABSTAIN",
+      "playbook_status": "OK",
+      "missing_checks": [
+        "Current independent subject confirmation"
+      ],
+      "index_version": "pause-request-history-v1-minilm1110",
+      "encoder_version": "minilm-l6-1110a243-v1",
+      "template_version": "private-history-template-v1",
+      "policy_version": "pause-pattern-policy-v1"
+    }
+  ],
+  "verification": {
+    "normal_go_suite": {
+      "passed_tests_and_subtests": 300,
+      "failed": 0,
+      "skipped": 0
+    },
+    "race_go_suite": {
+      "passed_tests_and_subtests": 300,
+      "failed": 0,
+      "skipped": 0
+    },
+    "go_vet": "PASS",
+    "go_command_builds": "PASS",
+    "frontend_typecheck_and_build": "PASS",
+    "python_smoke_syntax": "PASS",
+    "ci_yaml_parse": "PASS"
+  },
+  "cleanup_measurement": "Current indexed document has no snippet or embedding, PG denies revoked/expired sources, and delayed writes cannot restore them. This is not a disk or backup sanitization audit.",
+  "provider_evidence": "No new PayPal operation performed for P04. Live integration test payment outcomes use the test adapter; actual P03 sandbox receipts remain separately linked.",
+  "visual_qa": {
+    "status": "NOT_COMPLETED",
+    "reason": "Computer Use stopped because the current Chrome URL could not be determined confidently."
+  },
+  "hosted_ci_run": "NOT_OBSERVED; workflow updated for actual private dependencies",
+  "final_p06_evaluation": "NOT_RUN; sealed sets unchanged",
+  "user_reported_browser_checks": {
+    "f04_requested_minor": 112000,
+    "seeded_captured_minor": 22000,
+    "provider_captured_minor": 0,
+    "held_minor": 0,
+    "timeline_rows": 3,
+    "matched_prior_excerpts": 2,
+    "both_pattern_reasons_present": true,
+    "withdrawal_hides_history_and_keeps_current_checks": true,
+    "scope": "User-reported rendered text; no screenshots or mobile-layout verification"
+  },
+  "post_manual_verification_fix": {
+    "problem": "Evidence showed EXPIRED but request card/timeline showed stored PENDING.",
+    "change": "Request card and canonical timeline derive expiry from task TTL consistently with evidence/inbox; recorded responses remain unchanged.",
+    "postgres_expiry_task_replay_and_subject_authority_tests": "PASS",
+    "targeted_race_expiry_history_and_concurrent_review_tests": "PASS",
+    "go_vet": "PASS",
+    "api_and_worker_builds": "PASS",
+    "restarted_api_check": {
+      "card_status": "EXPIRED",
+      "evidence_status": "EXPIRED",
+      "history_permission": false,
+      "permission_preserved": true,
+      "private_status": "NOT_APPLICABLE",
+      "verification": "PASS"
+    },
+    "baseline_note": "The full 300-test normal/race results precede this follow-up; the targeted regressions above verify the display fix."
+  },
+  "independent_debugging": {
+    "recorded_at_utc": "2026-10-28T04:39:14.077025+00:00",
+    "base_commit": "d5102f1f50af3f03338fdf5c4ac2bd7c2face6fc",
+    "scope": "Existing uncommitted P04 implementation plus independent regression fixes; actual PostgreSQL/Elastic/approved inference; no new PayPal operation",
+    "normal_go_suite": {
+      "passed_tests_and_subtests": 305,
+      "failed": 0,
+      "skipped_test_cases": 0,
+      "cleanup_ms": [
+        15581
+      ]
+    },
+    "race_go_suite": {
+      "passed_tests_and_subtests": 305,
+      "failed": 0,
+      "skipped_test_cases": 0,
+      "cleanup_ms": [
+        8435
+      ]
+    },
+    "go_vet": "PASS",
+    "all_command_builds": "PASS",
+    "frontend_typecheck_and_build": "PASS",
+    "rendered_template_tests": {
+      "passed": 3,
+      "failed": 0,
+      "new_dependencies": 0
+    },
+    "offline_approved_artifact_python_tests": {
+      "passed": 11,
+      "failed": 0,
+      "environment": "existing .venv-p00 with pinned inference dependencies"
+    },
+    "foundation_fixture_repeated_race_runs": {
+      "runs": 3,
+      "result": "PASS"
+    },
+    "fixes": [
+      "Standalone source hydration reuses locked canonical permissions/window/timestamp-UUID ordering",
+      "Saved cards expose synthetic provenance separately from provider payment state",
+      "Evidence panel remounts when permission/history/request/payment context changes",
+      "Foundation fixture fixes reviewer selection order and prior-request timestamp"
+    ],
+    "actual_private_integration": {
+      "classifier_artifact_hash": "6a7d7707bc24329519a548aa0ba2f53998c9fbd1f38d9fdc214b32aafd497b07",
+      "cleanup_failure_pending_then_retried": true,
+      "cleanup_ms": 15581,
+      "elastic_version": "9.5.5",
+      "encoder_artifact_hash": "e8cbc0408bd6993d8bc25a07a7ab162394573a11c2333510501561ff8caa7f18",
+      "fresh_pattern_rationale_resolved": true,
+      "fresh_reindex_and_rollback_passed": true,
+      "in_flight_reindex_revocation_race_passed": true,
+      "in_flight_upsert_revocation_race_passed": true,
+      "physical_text_and_vector_absent": true,
+      "queries": [
+        {
+          "candidates": [
+            {
+              "id": "ad8891ba-8b02-4646-b932-d32c94853957",
+              "keyword_rank": 0,
+              "vector_rank": 1
+            }
+          ],
+          "encoder": "minilm-l6-1110a243-v1",
+          "fusion": "go-rrf60-v1",
+          "hit_count": 1,
+          "index": "pause-request-history-v1-live-3c1671ec9f17480a97057fa76f562ec0",
+          "query_id": "development-paraphrase",
+          "status": "OK"
+        },
+        {
+          "candidates": [],
+          "encoder": "minilm-l6-1110a243-v1",
+          "fusion": "go-rrf60-v1",
+          "hit_count": 0,
+          "index": "pause-request-history-v1-live-3c1671ec9f17480a97057fa76f562ec0",
+          "query_id": "development-no-match",
+          "status": "OK"
+        },
+        {
+          "candidates": [
+            {
+              "id": "ad8891ba-8b02-4646-b932-d32c94853957",
+              "keyword_rank": 1,
+              "vector_rank": 1
+            }
+          ],
+          "encoder": "minilm-l6-1110a243-v1",
+          "fusion": "go-rrf60-v1",
+          "hit_count": 1,
+          "index": "pause-request-history-v1-live-3c1671ec9f17480a97057fa76f562ec0",
+          "query_id": "development-literal",
+          "status": "OK"
+        }
+      ],
+      "recorded_at_utc": "2026-10-28T04:36:42.8834536Z",
+      "retention_text_and_vector_cleanup_passed": true,
+      "revocation_replay_rejected": true,
+      "scope": "Actual local Elastic and approved inference; PostgreSQL disposable schema; payment adapter is test-only, not new PayPal evidence",
+      "stale_review_rejected": true,
+      "worker_outbox_dispatch_passed": true,
+      "wrong_dimension_rejected": true,
+      "wrong_encoder_alias_switch_rejected": true
+    },
+    "supplied_account_api_check": {
+      "scope": "Supplied synthetic senior account; current local API with actual ML and Elastic; no provider operation",
+      "login": "PASS",
+      "request_count": 9,
+      "seeded_cards": 0,
+      "classifier_status": "OK",
+      "public_status": "OK",
+      "history_status": "NOT_APPLICABLE",
+      "history_permission": false,
+      "totals": {
+        "requested_minor": 0,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "timeline_count": 0,
+      "context_match_count": 0,
+      "missing_checks": [
+        "Current independent subject confirmation"
+      ]
+    },
+    "browser_observation": {
+      "status": "LIMITED",
+      "observed": "Existing F04 consent-off screen visibly excludes historical timeline/excerpts while current checks and expired response remain visible",
+      "remaining": [
+        "Updated-card desktop screenshot",
+        "Mobile layout",
+        "Fresh three-account browser journey",
+        "Controlled in-flight browser fetch timing replay"
+      ],
+      "reason": "Browser access host unavailable; native window later minimized"
+    },
+    "initial_failures_resolved": [
+      "Missing seeded-card provenance and later tied request exposure reproduced before fixes",
+      "Full race run exposed randomized reviewer-assignment fixture; fixed without changing immutable scope or access constraints"
+    ],
+    "source_sha256": {
+      "internal/app/projections.go": "bd9941ee2b0d68a1411f50030674a42d9da09dc7ac9b9ca7be2a295c5187655a",
+      "internal/app/read.go": "4d618d677206d123b51b84962237ca86dc27344f93bb5868c5fe0f02a945aa0e",
+      "internal/app/history_test.go": "5741f135066dc6bdb39a1d5991fa6033848b86d7831f9cb94e4a95e2d3cf6517",
+      "internal/httpapi/integration_test.go": "a970fe58edb8d8dc649783c08170e27398200240b9d1daf22a88fe6d4864f9ae",
+      "internal/domain/domain.go": "5f1c5b77741e4792d46dbff2ed3b39ce49c9f7326e5a6985b467fa4f75361c55",
+      "web/src/App.tsx": "440810964ed1325adaf9bc10429ff5e4c360384f615a7766ad31fd1dd71ee8a5",
+      "web/src/api.ts": "2bd0edd81f39b9c1ac444f73419132e7cf2e745f3271b5433debe029f078ebcb",
+      "web/src/style.css": "7dc4499837d33cfbc802521d5c61ae1542cdcd6cb40a993755b68fe8e5434166",
+      "web/tests/history.test.mjs": "d3ff8c314bd9ddb1bcbf5a0cf797d31c9b98dbbeb7e0bd2fc4ee1ac542b02747",
+      "web/package.json": "fc349f1bf2de91194de417c497894bbf69c209edf6020d6caa12faad85f4261e",
+      ".github/workflows/ci.yml": "ad35be61ef4dbe8ae4059f5566c3a0b67b0899a04201421519a0384fa4acacc0"
+    },
+    "sealed_final_evaluation": "NOT_RUN; unchanged",
+    "new_provider_operations": 0
+  }
+}

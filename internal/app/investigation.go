@@ -52,6 +52,8 @@ type EvidencePacket struct {
 	TemplateVersion  string                   `json:"template_version"`
 	ReleaseEvidence  releaseEvidence          `json:"-"`
 	Receipt          investigation.Receipt    `json:"retrieval_receipt"`
+	History          HistoryPacket            `json:"private_history"`
+	HistorySummary   string                   `json:"history_summary"`
 }
 
 func (s *Service) RequestVerification(ctx context.Context, a domain.Actor, id string, version int, correlation string) error {
@@ -203,7 +205,20 @@ func (s *Service) Analyze(ctx context.Context, a domain.Actor, id string, versio
 		r = domain.SearchResult{SchemaVersion: domain.ContractVersion, Scope: domain.Playbooks, Status: domain.LookupUnavailable, EncoderVersion: engine.Encoder.EncoderVersion, Hits: []domain.SearchHit{}}
 	}
 	status := "OK"
-	if ce != nil || re != nil {
+	prior, history, he := s.historyForAnalysis(ctx, a, id)
+	if he != nil {
+		return nil, he
+	}
+	private := domain.SearchResult{SchemaVersion: domain.ContractVersion, Scope: domain.History, Status: domain.LookupNotApplicable, EncoderVersion: engine.Encoder.EncoderVersion, Hits: []domain.SearchHit{}}
+	var privateReceipt investigation.Receipt
+	if prior.history {
+		private, privateReceipt, he = engine.RetrieveHistory(ctx, historyQuery(prior, history, engine.Encoder.EncoderVersion, message), historyPermissions(history))
+		if he != nil {
+			private.Status = domain.LookupUnavailable
+			private.Hits = []domain.SearchHit{}
+		}
+	}
+	if ce != nil || re != nil || he != nil {
 		status = "UNAVAILABLE"
 	}
 	e = s.DB.WithTx(ctx, func(tx pgx.Tx) error {
@@ -217,8 +232,11 @@ func (s *Service) Analyze(ctx context.Context, a domain.Actor, id string, versio
 		if p.cmd.Version != version || p.cmd.Digest != i.Digest {
 			return domain.Fail("VERSION_CONFLICT", 409)
 		}
+		if p.revision != prior.revision || p.consent != prior.consent {
+			return domain.Fail("HISTORY_REVIEW_REQUIRED", 409)
+		}
 		// Only bounded model/search metadata is retained; never private text/vectors.
-		_, e = tx.Exec(ctx, `INSERT INTO investigation_runs(id,intent_id,intent_version,content_digest,message_digest,status,classifier,lookup,receipt,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT(intent_id,intent_version,message_digest) DO UPDATE SET status=EXCLUDED.status,classifier=EXCLUDED.classifier,lookup=EXCLUDED.lookup,receipt=EXCLUDED.receipt,created_at=EXCLUDED.created_at`, uuid.NewString(), id, version, i.Digest, domain.Hash([]byte(message)), status, mustJSON(c), mustJSON(r), mustJSON(receipt), s.Clock.Now())
+		_, e = tx.Exec(ctx, `INSERT INTO investigation_runs(id,intent_id,intent_version,content_digest,message_digest,status,classifier,lookup,receipt,created_at,private_lookup,private_receipt,private_revision) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) ON CONFLICT(intent_id,intent_version,message_digest) DO UPDATE SET status=EXCLUDED.status,classifier=EXCLUDED.classifier,lookup=EXCLUDED.lookup,receipt=EXCLUDED.receipt,created_at=EXCLUDED.created_at,private_lookup=EXCLUDED.private_lookup,private_receipt=EXCLUDED.private_receipt,private_revision=EXCLUDED.private_revision`, uuid.NewString(), id, version, i.Digest, domain.Hash([]byte(message)), status, mustJSON(c), mustJSON(r), mustJSON(receipt), s.Clock.Now(), mustJSON(private), mustJSON(privateReceipt), prior.revision)
 		return e
 	})
 	if e != nil {
@@ -252,6 +270,10 @@ func (s *Service) Evidence(ctx context.Context, a domain.Actor, id string) (Evid
 			liveSources, liveErr = engine.Revalidate(ctx, liveLookup)
 		}
 	}
+	privateIndex, privateIndexErr := "", error(nil)
+	if i.Consent.History {
+		privateIndex, privateIndexErr = engine.HistoryIndex(ctx, engine.Config.HistoryAlias)
+	}
 	e = s.DB.WithTx(ctx, func(tx pgx.Tx) error {
 		p, e := s.paymentLock(ctx, tx, id)
 		if e != nil {
@@ -260,11 +282,12 @@ func (s *Service) Evidence(ctx context.Context, a domain.Actor, id string) (Evid
 		if e = s.paymentActor(ctx, tx, a, p, false); e != nil {
 			return e
 		}
-		if p.cmd.Version != i.Version {
+		if p.cmd.Version != i.Version || p.consent != i.Consent.Version {
 			return domain.Fail("VERSION_CONFLICT", 409)
 		}
-		var cRaw, rRaw, receiptRaw []byte
-		e = tx.QueryRow(ctx, `SELECT classifier,lookup,receipt FROM investigation_runs WHERE intent_id=$1 AND intent_version=$2 AND content_digest=$3 AND message_digest=$4`, id, i.Version, i.Digest, domain.Hash([]byte(message))).Scan(&cRaw, &rRaw, &receiptRaw)
+		var cRaw, rRaw, receiptRaw, privateRaw, privateReceiptRaw []byte
+		var privateRevision *int64
+		e = tx.QueryRow(ctx, `SELECT classifier,lookup,receipt,private_lookup,private_receipt,private_revision FROM investigation_runs WHERE intent_id=$1 AND intent_version=$2 AND content_digest=$3 AND message_digest=$4`, id, i.Version, i.Digest, domain.Hash([]byte(message))).Scan(&cRaw, &rRaw, &receiptRaw, &privateRaw, &privateReceiptRaw, &privateRevision)
 		checks := releaseEvidence{Classifier: engine.Classifier, Encoder: engine.Encoder, PolicyVersion: PaymentPolicy, History: domain.SearchResult{SchemaVersion: domain.ContractVersion, Scope: domain.History, Status: domain.LookupNotApplicable, EncoderVersion: engine.Encoder.EncoderVersion, Hits: []domain.SearchHit{}}}
 		if p.history {
 			checks.History.Status = domain.LookupUnavailable
@@ -276,6 +299,12 @@ func (s *Service) Evidence(ctx context.Context, a domain.Actor, id string) (Evid
 			if json.Unmarshal(cRaw, &checks.Classification) != nil || json.Unmarshal(rRaw, &checks.Playbooks) != nil || json.Unmarshal(receiptRaw, &packet.Receipt) != nil {
 				return domain.Fail("INVALID_EVIDENCE", 409)
 			}
+			if p.history && privateRevision != nil && *privateRevision == p.revision && privateIndexErr == nil {
+				var result domain.SearchResult
+				if json.Unmarshal(privateRaw, &result) == nil && result.IndexVersion == privateIndex && result.Validate(historyQuery(p, HistoryPacket{WindowStart: s.Clock.Now().Add(-7 * 24 * time.Hour), WindowEnd: s.Clock.Now()}, engine.Encoder.EncoderVersion, message)) == nil {
+					checks.History = result
+				}
+			}
 		} else {
 			checks.Classification.Status = domain.Unavailable
 			checks.Playbooks.Status = domain.LookupUnavailable
@@ -284,6 +313,19 @@ func (s *Service) Evidence(ctx context.Context, a domain.Actor, id string) (Evid
 		if e != nil {
 			return e
 		}
+		packet.History, e = s.canonicalHistory(ctx, tx, p)
+		if e != nil {
+			return e
+		}
+		if p.history {
+			_ = json.Unmarshal(privateReceiptRaw, &packet.History.Receipt)
+			if e = s.hydrateHistoryPacket(ctx, tx, &packet.History, checks.History); e != nil {
+				return e
+			}
+			checks.History = packet.History.Lookup
+		}
+		checks.HistoryHash = packet.History.SnapshotHash
+		packet.HistorySummary = historySummary(packet.History)
 		var status string
 		var answered *time.Time
 		var expiry time.Time
@@ -324,15 +366,15 @@ func (s *Service) Evidence(ctx context.Context, a domain.Actor, id string) (Evid
 		}
 		packet.ClassifierStatus = checks.Classification.Status
 		packet.LookupStatus = checks.Playbooks.Status
-		packet.Attention = checks.Classification.Status == domain.Abstain
+		packet.Attention = checks.Classification.Status == domain.Abstain || patternAttention(packet.History)
 		if !usableClassification {
 			packet.Missing = append(packet.Missing, "Usable approved classification")
 		}
 		if checks.Playbooks.Validate(domain.SearchQuery{Scope: domain.Playbooks, EncoderVersion: engine.Encoder.EncoderVersion, Limit: 20}) != nil || checks.Playbooks.Status != domain.LookupOK || packet.Receipt.CorpusHash != engine.CorpusHash {
 			packet.Missing = append(packet.Missing, "Successful approved public lookup")
 		}
-		if p.history {
-			packet.Missing = append(packet.Missing, "Private history retrieval requires P04")
+		if p.history && packet.History.Status != domain.LookupOK {
+			packet.Missing = append(packet.Missing, "Successful current private history lookup (run message checks to refresh)")
 		}
 		if status != "CONFIRMED" {
 			packet.Missing = append(packet.Missing, "Current independent subject confirmation")
@@ -343,14 +385,17 @@ func (s *Service) Evidence(ctx context.Context, a domain.Actor, id string) (Evid
 		// the original message under its own retention boundary after this hash.
 		packet.ID = uuid.NewString()
 		packet.Hash = ""
+		matches := packet.History.Matches
+		packet.History.Matches = privateEvidenceMatches(packet.History)
 		raw := mustJSON(packet)
 		stored := map[string]any{}
 		_ = json.Unmarshal(raw, &stored)
-		for key, value := range map[string]any{"classification": checks.Classification, "classifier": checks.Classifier, "playbooks": checks.Playbooks, "history": checks.History, "Requested": checks.Requested, "Held": checks.Held, "Captured": checks.Captured, "policy_version": checks.PolicyVersion, "encoder": checks.Encoder, "unresolved": checks.Unresolved} {
+		for key, value := range map[string]any{"classification": checks.Classification, "classifier": checks.Classifier, "playbooks": checks.Playbooks, "history": checks.History, "history_hash": checks.HistoryHash, "Requested": checks.Requested, "Held": checks.Held, "Captured": checks.Captured, "policy_version": checks.PolicyVersion, "encoder": checks.Encoder, "unresolved": checks.Unresolved} {
 			stored[key] = value
 		}
 		packet.Hash = evidenceHash(mustJSON(stored))
 		_, e = tx.Exec(ctx, `INSERT INTO evidence_snapshots(id,intent_id,intent_version,consent_version,history_revision,content_digest,schema_version,policy_version,classifier_version,encoder_version,template_version,evidence,created_at,evidence_hash) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`, packet.ID, id, i.Version, p.consent, p.revision, i.Digest, domain.ContractVersion, PaymentPolicy, engine.Classifier.ModelVersion, engine.Encoder.EncoderVersion, investigation.TemplateVersion, mustJSON(stored), s.Clock.Now(), packet.Hash)
+		packet.History.Matches = matches
 		return e
 	})
 	packet.OriginalMessage = message
@@ -392,6 +437,12 @@ func (s *Service) validateReleaseSources(ctx context.Context, id, evidenceID str
 	}
 	if _, err := s.Investigation.Revalidate(ctx, ev.Playbooks); err != nil {
 		return proof, domain.Fail("PUBLIC_SOURCES_UNAVAILABLE", 503)
+	}
+	if ev.History.Status == domain.LookupOK {
+		index, err := s.Investigation.HistoryIndex(ctx, s.Investigation.Config.HistoryAlias)
+		if err != nil || index != ev.History.IndexVersion {
+			return proof, domain.Fail("PRIVATE_SOURCES_UNAVAILABLE", 503)
+		}
 	}
 	return sourceValidation{evidenceID: evidenceID, hash: evidenceHash(raw)}, nil
 }

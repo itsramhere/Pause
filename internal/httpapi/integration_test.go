@@ -369,7 +369,14 @@ func TestFoundationPostgres(t *testing.T) {
 			if e != nil {
 				t.Fatal(e)
 			}
-			_, e = f.db.Pool.Exec(ctx, `INSERT INTO memberships(id,household_id,user_id,role) VALUES($1,$2,$3,$4)`, uuid.NewString(), f.actor("senior", 1).HouseholdID, id, item.role)
+			memberID := uuid.NewString()
+			if item.role == "reviewer" {
+				// Creation selects the first enrolled active reviewer by membership
+				// ID. This unrelated access-test actor must not randomly replace the
+				// original reviewer in the subsequent same-assignment fixture.
+				memberID = "ffffffff-ffff-4fff-bfff-ffffffffffff"
+			}
+			_, e = f.db.Pool.Exec(ctx, `INSERT INTO memberships(id,household_id,user_id,role) VALUES($1,$2,$3,$4)`, memberID, f.actor("senior", 1).HouseholdID, id, item.role)
 			if e != nil {
 				t.Fatal(e)
 			}
@@ -431,6 +438,7 @@ func TestFoundationPostgres(t *testing.T) {
 		if e != nil || !i.Consent.History {
 			t.Fatal("consent lost on restart", e)
 		}
+		f.clock.now = f.clock.now.Add(time.Microsecond)
 		current, _, e := f.svc.Create(ctx, f.actor("senior", 1), intake("90", true), "history-context-01", "synthetic-test")
 		if e != nil {
 			t.Fatal(e)

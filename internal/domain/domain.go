@@ -184,6 +184,8 @@ type EvidenceDTO struct {
 	ReasonCode       string  `json:"reason_code"`
 }
 type Intent struct {
+	SyntheticHistory *SyntheticHistory  `json:"synthetic_history,omitempty"`
+	HistoryRevision  int64              `json:"history_revision"`
 	ID               string             `json:"id"`
 	Version          int                `json:"version"`
 	Binding          Binding            `json:"binding"`
@@ -197,6 +199,12 @@ type Intent struct {
 	MessageExpiresAt time.Time          `json:"message_expires_at"`
 	Checkout         CheckoutDTO        `json:"checkout"`
 	Evidence         EvidenceDTO        `json:"evidence"`
+}
+
+// Synthetic outcomes are display provenance, never provider payment states.
+type SyntheticHistory struct {
+	Scenario string `json:"scenario"`
+	Status   string `json:"status"`
 }
 type Task struct {
 	SnapshotHash  string    `json:"snapshot_hash"`

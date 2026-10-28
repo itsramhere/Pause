@@ -3,6 +3,8 @@ export type Contact = { id: string; name: string; relationship: string }
 export type Configuration = { merchant_id: string; merchant_label: string; currency: string; max_amount_minor: number; message_retention_hours: number; payment_status: string; paypal_client_id: string }
 export type Binding = { intent_id: string; version: number; amount_minor: number; currency: string; payee_id: string; subject_contact_id: string; purpose: string }
 export type Intent = {
+	 synthetic_history?: { scenario: string; status: string };
+	 history_revision: number;
  id: string; version: number; binding: Binding; content_digest: string; payment_status: string; verification_status: string; review_status: string;
  consent: { version: number; history: boolean; training: boolean }; created_at: string; message_expires_at: string; decision_deadline: string;
  checkout: { status: string; provider_order_id: string | null; authorization_id: string | null; capture_id: string | null; reason_code: string };

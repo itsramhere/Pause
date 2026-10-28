@@ -21,7 +21,7 @@ func main() {
 	jobs := &store.Jobs{DB: a.DB, Clock: a.Clock}
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
-	log.Info("worker_started", "projection_dispatch", "UNAVAILABLE")
+	log.Info("worker_started", "projection_dispatch", "ENABLED")
 	for {
 		if e = a.TickPayments(ctx); e != nil {
 			log.Error("payment_scan_failed", "reason_code", "DATABASE_UNAVAILABLE")
@@ -38,6 +38,16 @@ func main() {
 		}
 		if e = a.CleanupMessages(ctx); e != nil {
 			log.Error("retention_cleanup_failed", "reason_code", "DATABASE_UNAVAILABLE")
+		}
+		for n := 0; n < 20; n++ {
+			worked, err := a.WorkHistoryOnce(ctx)
+			if err != nil {
+				log.Error("history_projection_failed", "reason_code", "PRIVATE_PROJECTION_UNAVAILABLE")
+				break
+			}
+			if !worked {
+				break
+			}
 		}
 		if e = jobs.ReapExhausted(ctx); e != nil {
 			log.Error("job_cleanup_failed")

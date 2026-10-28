@@ -1,5 +1,7 @@
 # Public investigation and exact confirmation (P03)
 
+Private history is now implemented in P04; see [the patterns runbook](patterns.md).
+
 Pause uses a trained English multilabel linear classifier and a separate pinned
 Apache-2.0 MiniLM encoder. The public corpus contains 18 original summaries linked
 to three actually checked FTC guidance pages. General guidance states July 2023;
@@ -96,8 +98,9 @@ Evidence uses fixed label descriptions and approved local source references.
 It never invents a quotation, contact response or identity finding. The original
 message is hydrated under normal encrypted-message retention rather than copied
 into persisted snapshots. Internal PG totals are not exposed as history context
-in P03. When history consent applies, P04 private retrieval is UNAVAILABLE and
-release stays blocked. Opt-out is NOT_APPLICABLE; it never trains a model.
+in P03. When history consent applies, P04 requires the separate private index, a successful
+scoped lookup and current canonical history. A missing private dependency blocks
+release. Opt-out is NOT_APPLICABLE; it never trains a model.
 
 ## Verification and operational notes
 

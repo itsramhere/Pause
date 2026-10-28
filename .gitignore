@@ -36,10 +36,12 @@ build/
 /paypal-webhooks
 /webhook-relay
 /investigation-setup
+/history-setup
+/patterns-seed
 coverage.out
 coverage/
 
-# Local data, uploads, and logs
+# Local data, private search projections, reindex dumps, uploads, and raw test logs
 /data/
 /uploads/
 *.db
@@ -47,7 +49,7 @@ coverage/
 *.db-wal
 *.log
 
-# Publish only reviewed, sanitized payment/retrieval/acceptance evidence.
+# Publish only the explicitly allowlisted, reviewed acceptance receipts below.
 # Raw traces, credentials, private messages and vectors stay in /data/.
 /evidence/*
 !/evidence/p02-sandbox-order-2026-10-27.json
@@ -55,6 +57,7 @@ coverage/
 !/evidence/p03-sandbox-2026-10-27.json
 !/evidence/p03-public-retrieval-2026-10-27.json
 !/evidence/p03-debugging-2026-10-27.json
+!/evidence/p04-patterns-2026-10-28.json
 
 # Test and browser artifacts
 playwright-report/

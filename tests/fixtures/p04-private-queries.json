@@ -1,0 +1,5 @@
+[
+ {"id":"development-paraphrase","text":"Could you cover my ride to the medical appointment and the pharmacy supplies?","expect":"permitted_prior_context"},
+ {"id":"development-no-match","text":"Quasar spectroscopy and basalt mineral lattice crystallography","expect":"successful_empty"},
+ {"id":"development-literal","text":"scheduled clinic ride medication purchase","expect":"permitted_prior_context"}
+]

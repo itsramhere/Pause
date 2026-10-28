@@ -308,6 +308,7 @@ func (s *Service) Cancel(ctx context.Context, a domain.Actor, id string, expecte
 // ReleaseEligibility is a private, typed capability produced only by a current
 // PG evidence/policy check. P02 has no public capture route or fixture switch.
 type releaseEligibility struct {
+	pattern                          bool
 	rationale                        string
 	intent, digest, evidence, review string
 	version, consent                 int
@@ -319,6 +320,7 @@ type releaseEvidence struct {
 	Classifier                domain.ClassifierManifest `json:"classifier"`
 	Playbooks                 domain.SearchResult       `json:"playbooks"`
 	History                   domain.SearchResult       `json:"history"`
+	HistoryHash               string                    `json:"history_hash"`
 	Requested, Held, Captured int64
 	PolicyVersion             string                 `json:"policy_version"`
 	Encoder                   domain.EncoderManifest `json:"encoder"`
@@ -398,6 +400,9 @@ func (s *Service) eligibility(ctx context.Context, tx pgx.Tx, p paymentRow, a do
 		if hash != domain.Hash(mustJSON(stored)) || packet.Receipt.CorpusHash != s.Investigation.CorpusHash || packet.Receipt.ConcreteIndex != investigation.IndexVersion || ev.Playbooks.IndexVersion != investigation.IndexVersion || ev.Playbooks.MappingVersion != "playbooks-v1" || ev.Playbooks.FusionVersion != investigation.FusionVersion || len(s.Investigation.Sources(ev.Playbooks)) != len(ev.Playbooks.Hits) || ev.Classifier.ArtifactHash != s.Investigation.Classifier.ArtifactHash || ev.Encoder.ArtifactHash != s.Investigation.Encoder.ArtifactHash {
 			return reject()
 		}
+		if p.history && (packet.History.Template != domain.HistoryTemplate || packet.History.Policy != domain.PatternPolicy || ev.History.MappingVersion != investigation.HistoryMapping || ev.History.FusionVersion != investigation.FusionVersion || packet.History.Receipt.ConcreteIndex != ev.History.IndexVersion) {
+			return reject()
+		}
 	}
 	var released int
 	e = tx.QueryRow(ctx, `SELECT count(*) FROM model_releases WHERE approved_at IS NOT NULL AND ((kind='classifier' AND version=$1 AND artifact_hash=$2 AND manifest=$5::jsonb) OR (kind='encoder' AND version=$3 AND artifact_hash=$4 AND manifest=$6::jsonb))`, classifier, ev.Classifier.ArtifactHash, encoder, ev.Encoder.ArtifactHash, mustJSON(ev.Classifier), mustJSON(ev.Encoder)).Scan(&released)
@@ -440,7 +445,18 @@ func (s *Service) eligibility(ctx context.Context, tx pgx.Tx, p paymentRow, a do
 	if requested != ev.Requested || held != ev.Held || captured != ev.Captured {
 		return reject()
 	}
-	return releaseEligibility{intent: p.cmd.IntentID, digest: p.cmd.Digest, evidence: evidenceID, version: p.cmd.Version, consent: p.consent, revision: p.revision, requested: requested, held: held, captured: captured}, nil
+	pattern := false
+	if p.history {
+		history, err := s.canonicalHistory(ctx, tx, p)
+		if err != nil {
+			return cap, err
+		}
+		if history.SnapshotHash == "" || history.SnapshotHash != ev.HistoryHash {
+			return cap, domain.Fail("HISTORY_REVIEW_REQUIRED", 409)
+		}
+		pattern = patternAttention(history)
+	}
+	return releaseEligibility{pattern: pattern, intent: p.cmd.IntentID, digest: p.cmd.Digest, evidence: evidenceID, version: p.cmd.Version, consent: p.consent, revision: p.revision, requested: requested, held: held, captured: captured}, nil
 }
 func mustJSON(v any) []byte { b, _ := json.Marshal(v); return b }
 
@@ -482,7 +498,11 @@ func (s *Service) reserveCapture(ctx context.Context, tx pgx.Tx, p *paymentRow, 
 		return domain.Fail("RELEASE_EVIDENCE_REQUIRED", 409)
 	}
 	review := uuid.NewString()
-	if _, e := tx.Exec(ctx, `INSERT INTO reviews(id,intent_id,intent_version,content_digest,reviewer_id,evidence_id,decision,reason_code,created_at,rationale) VALUES($1,$2,$3,$4,$5,$6,'APPROVED','CURRENT_POLICY_ELIGIBLE',$7,$8)`, review, p.cmd.IntentID, p.cmd.Version, p.cmd.Digest, a.UserID, cap.evidence, s.Clock.Now(), cap.rationale); e != nil {
+	reason := "CURRENT_POLICY_ELIGIBLE"
+	if cap.pattern {
+		reason = "PATTERN_REVIEWED_WITH_RATIONALE"
+	}
+	if _, e := tx.Exec(ctx, `INSERT INTO reviews(id,intent_id,intent_version,content_digest,reviewer_id,evidence_id,decision,reason_code,created_at,rationale) VALUES($1,$2,$3,$4,$5,$6,'APPROVED',$9,$7,$8)`, review, p.cmd.IntentID, p.cmd.Version, p.cmd.Digest, a.UserID, cap.evidence, s.Clock.Now(), cap.rationale, reason); e != nil {
 		return e
 	}
 	if _, e := tx.Exec(ctx, `UPDATE payment_intents SET review_status='APPROVED' WHERE id=$1`, p.cmd.IntentID); e != nil {

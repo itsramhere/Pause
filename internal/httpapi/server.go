@@ -256,6 +256,10 @@ func message(code string) string {
 		return "This record is unavailable."
 	case "VERSION_CONFLICT", "CONSENT_VERSION_CONFLICT":
 		return "This record changed. Reload and try again."
+	case "HISTORY_REVIEW_REQUIRED", "EVIDENCE_CONFLICT", "RELEASE_EVIDENCE_REQUIRED":
+		return "The request or its evidence changed. Run message checks, refresh the evidence, and review it again."
+	case "PRIVATE_SOURCES_UNAVAILABLE":
+		return "Private history search is unavailable. Retry the checks before approving. Cancellation and subject responses remain available."
 	case "VERSION_BOUND":
 		return "This version is already bound to checkout."
 	case "INVALID_AMOUNT":

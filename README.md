@@ -10,10 +10,34 @@ identity, prove an emergency, or authorize payment.
 
 ## Current implementation
 
-**Phase 3 is complete in its documented prototype scope.** All P03-T01 through
+**Phase 4 implementation and automated verification are complete.** Real
+consent-scoped Elasticsearch projection/retrieval, canonical PostgreSQL timelines,
+separate financial totals, fixed review rules, cleanup/reindexing and transactional
+stale-review checks are implemented. See the [patterns runbook](docs/patterns.md)
+and [independent P04 debugging report](docs/patterns-debugging-2026-10-28.md). The UI
+shows sourced excerpts, explicit seeded-history labels and review operands. No
+new live PayPal receipt is claimed for P04; the earlier sandbox evidence remains
+linked below.
+
+The final P04 checks passed **305 Go tests/subtests** in both normal and Windows
+race-detector runs, with zero failed or skipped test cases. **Three rendered
+frontend tests**, **11 offline approved-artifact Python tests**, Go vet, all command
+builds and frontend typecheck/build also passed. Actual private Elastic checks
+covered scoped lexical/vector retrieval, consent withdrawal, physical text/vector
+cleanup, delayed writes, reindex/rollback and stale-review rejection. The
+[sanitized P04 receipt](evidence/p04-patterns-2026-10-28.json) records measured
+results, source hashes and the separate test-only payment scope.
+
+Browser verification remains partial: the consent-off desktop flow was observed,
+but mobile layout, updated-card screenshots, a fresh three-account browser journey
+and a controlled in-flight fetch timing replay remain unverified. Hosted CI has
+not yet been observed. These limits do not imply final release readiness or
+predictive effectiveness; final held-out evaluation remains P06 work.
+
+**Phase 3 was completed in its documented prototype scope.** All P03-T01 through
 P03-T17 acceptance cases passed independent implementation/debugging checks on
 October 27, 2026. Predictive effectiveness remains limited, as detailed below;
-private history and final held-out evaluation remain P04 and P06 work.
+final held-out evaluation remains P06 work.
 
 P01–P03 implement scoped sessions, explicit versioned intake, encrypted retained
 messages, durable sandbox payment commands/reconciliation, a trained TF-IDF linear
@@ -21,8 +45,8 @@ classifier, a separately pinned MiniLM encoder, real public Elastic retrieval,
 exact enrolled-account confirmation and guarded reviewer approval or decline.
 There is no generative model, LLM API key, or generative fallback.
 
-The final PostgreSQL-backed Go suite passed **286 tests/subtests** in both normal
-and race-detector runs, with zero failures or skips. **11 Python tests**, Go vet
+The earlier P03 PostgreSQL-backed Go suite passed **286 tests/subtests** in both
+normal and race-detector runs, with zero failures or skips. **11 Python tests**, Go vet
 and command builds, frontend typecheck/build, and the diff check passed. Real
 Elastic checks also rejected deleted, inactive, revised and changed public
 sources, then restored the original documents and recovered a successful lookup.
@@ -85,11 +109,12 @@ The [runtime report](models/runtime-budget.json) records actual startup, memory 
 CPU latency from development probes. SetFit experimentation is deferred.
 
 The public corpus has 18 original summaries with source/revision/review metadata.
-No private messages are trained on or indexed here. Related-request private
-retrieval, consent-aware projection/deletion, timeline and user-facing aggregate
-patterns belong to P04. Until then, history opt-in remains an unavailable mandatory
-lookup and blocks release; opt-out is NOT_APPLICABLE. History permission never
-means training permission.
+Private messages are never trained on or added to the public corpus. Opted-in
+history is indexed separately with the pinned encoder, current permission checks
+and vector/text cleanup. PostgreSQL supplies the complete permitted timeline and
+separate requested, held, captured, pending, unknown and seeded-history totals.
+History opt-in requires a successful current private lookup before release;
+opt-out is NOT_APPLICABLE. History permission never means training permission.
 
 ## Scope
 
@@ -102,11 +127,12 @@ anomaly learning and native apps remain outside this iteration.
 ## Run and verify
 
 Follow the foundation and payment setup for PostgreSQL and paired sandbox
-credentials. Apply migrations through version 6. Preserve populated environment
+credentials. Apply migrations through version 7. Preserve populated environment
 files; select an ignored local configuration with ENV_FILE. Start API and worker
 separately. The investigation runbook describes exact Python dependency locks,
 reproducible artifact training/download, private service authentication and public
-index ingestion through cmd/investigation-setup. Public setup does not depend on
+index ingestion through cmd/investigation-setup. Run cmd/history-setup for the
+separate private index and cmd/worker for durable projection dispatch. Public setup does not depend on
 ignored planning files.
 
 The repository includes the frozen public synthetic splits, reviewed manifests,
@@ -115,8 +141,9 @@ files, populated environment files, local databases and raw verification logs ar
 ignored. Recreate the weights using the runbook; do not regenerate the frozen
 splits with `--curate` or use final test/relevance cases for development tuning.
 
-Run the actual PostgreSQL suite with TEST_DATABASE_URL, then go vet ./... and the
-frontend build. Python unittest loads the actual approved classifier and encoder
+Run the actual PostgreSQL suite with TEST_DATABASE_URL and set P04_LIVE_ELASTIC=1
+to include actual private retrieval/cleanup tests. Run go vet ./..., the frontend
+build, and npm.cmd --prefix web test. Python unittest loads the approved classifier and encoder
 for runtime/contract checks. The 40-case product fixture catalog references
 executable Go authority, payment and retrieval tests. Test-only provider/search
 adapters do not count as live sandbox evidence. Windows race checks require CGO
