@@ -30,6 +30,30 @@ synthetic accounts (two-hour expiry, rate-limited).
 
 ![Reviewer evidence view on mobile](images/screenshot-reviewer-mobile.png)
 
+## Why this is different from the usual "protect your parents" app
+
+Almost everything in this category is **detection**: a browser extension that
+scores messages, a monitoring app that watches activity, a bank alert after the
+money already moved. Detection runs *after* the pressure has landed, makes a
+statistical guess about a conversation it isn't part of — and usually surveils
+the exact person it claims to protect.
+
+Pause is a **checkpoint, not a watchdog**:
+
+| The usual approach | Pause |
+|---|---|
+| A model guesses "this message looks scammy" | The person the message claims to come from confirms or denies the **exact purchase** — amount, merchant, time — from their own authenticated session |
+| Warnings and training, before or after the fact | The **payment itself waits**: PayPal authorization is held and capture needs three independent parties to line up |
+| Anomaly scoring watches the senior's behavior | **No surveillance.** The senior runs the pause, sees everything the reviewer sees, and can cancel at any moment |
+| A fraud score silently decides | Signals are one input among required checks; abstention, missing checks or unsupported language **block release**; a human reviewer records a signed rationale |
+| "We blocked it!" claims | The UI reports only **provider-confirmed** CAPTURED/VOIDED; unknown outcomes stay visibly in reconciliation |
+
+Two more lines we refused to cross: Pause never locks an older adult's money or
+reports to their family behind their back, and private messages are never used
+for model training — related-request history is opt-in and deletable. The PayPal
+integration isn't a bolt-on, either: the authorize-hold → conditional-capture
+primitive is *the* mechanism that makes a verification window possible.
+
 ## How a purchase moves through Pause
 
 ```
@@ -60,6 +84,47 @@ synthetic accounts (two-hour expiry, rate-limited).
 6. **Provider-confirmed outcomes only.** Durable workers dispatch and reconcile
    PayPal operations with heartbeats. The UI shows CAPTURED or VOIDED only after
    PayPal confirms; an in-flight capture can never be silently undone.
+
+## Try the demo: five minutes, three browser profiles
+
+Sign each seeded account in from a **separate browser profile** (password
+`Synthetic-Pause-password!`; tabs in one profile share a session).
+
+**The stopped-request story (the scam that doesn't land):**
+
+1. **Senior** (`senior1@example.test`) — *New request* → pick the enrolled
+   relative, enter **$900.00**, purpose "Emergency supplies purchase", paste the
+   urgent message ("The medical emergency needs more supplies today. Please pay
+   for the emergency purchase."), allow related-request history → save →
+   *Continue to PayPal Sandbox* → approve the authorization with a sandbox
+   buyer. The record turns **Authorization held** and the deadline countdown
+   starts.
+2. **Contact** (`subject1@example.test`) — the exact purchase appears in their
+   inbox: $900.00 to the real receiving merchant, with the answer window
+   counting down. Answer **"No, I did not request it."** Release is now blocked
+   and a provider void is requested automatically.
+3. **Reviewer** (`reviewer1@example.test`) — open the case, *Run message
+   checks*, and read the evidence packet: message signals, FTC-sourced pattern
+   matches, the private request history, the authenticated denial, live
+   provider state. Approval stays unavailable — the request was denied — and
+   the stepper lands on **Cancellation confirmed** with a PayPal receipt.
+
+**The confirmed-purchase story (the system working as designed):** repeat with
+**$1.00**, "Planned supplies purchase" and a calm message; the contact
+confirms, the reviewer reads the same evidence, records a rationale, approves —
+and the stepper reaches **Captured · provider confirmed**.
+
+**Two resilience demos built in:**
+
+- *Lost callback* — approve in PayPal, then close the tab before Pause sees it.
+  On the saved request, *Check PayPal approval* recovers the exact outcome.
+- *Worker down* — stop the worker while a void/capture is in flight; the record
+  reads **Outcome being checked** and reconciliation resolves it when the
+  worker returns. Nothing is guessed.
+
+Prefer a guided sandbox? The login page's **isolated judge scenario** mints a
+disposable three-account household — two-hour expiry, real PayPal Sandbox
+responses on test money, bounded to two orders / $1,000 per run.
 
 ## Why the checks are credible
 

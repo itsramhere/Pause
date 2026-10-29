@@ -1,4 +1,4 @@
-# Local strategy, research, implementation plans, and private evidence
+# Local strategy and planning notes
 /planning/
 
 # Environment files and credentials; commit sanitized examples only
@@ -6,88 +6,41 @@
 .env.*
 !.env.example
 !.env.*.example
-.envrc
-.direnv/
 *.pem
 *.key
-*.p12
-*.pfx
-/secrets/
-/.aws/
 
-
-# JavaScript / TypeScript dependencies and generated output
+# Node dependencies and built frontend
 node_modules/
 dist/
-build/
-.next/
-.vite/
-*.tsbuildinfo
 
-# Go binaries, local tooling, and coverage
+# Go builds, test binaries and coverage
 /bin/
-/tmp/
 *.exe
 *.test
-# Default output names from native Go builds on Linux/macOS
-/api
-/worker
-/migrate
-/seed
-/paypal-webhooks
-/webhook-relay
-/investigation-setup
-/history-setup
-/patterns-seed
-/demo-seed
-/ops
-/eval
 coverage.out
-coverage/
 
-# Local data, private search projections, reindex dumps, uploads, and raw test logs
+# Local data, browser artifacts, raw logs
 /data/
-/uploads/
-*.db
-*.db-shm
-*.db-wal
+/datasets/raw-private/
 *.log
 
-# Local documentation and verification evidence
+# Withdrawn phase documentation and evidence (removed from the repository;
+# local copies may still exist on disk)
 /docs/
 /evidence/
 
-# Test and browser artifacts
+# Playwright failure artifacts
 playwright-report/
 test-results/
-.cache/
 
-# Editor and operating-system files
-.idea/
-.vscode/
-.DS_Store
-Thumbs.db
-Desktop.ini
-
-# Python tooling used for local analysis
+# Python bytecode and virtualenvs
 .venv/
 .venv-*/
-venv/
 __pycache__/
 *.py[cod]
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-*.egg-info/
 .coverage
-.coverage.*
-htmlcov/
-.tox/
-.nox/
-.uv-cache/
 
-# Local ML weights, downloaded encoder files and unreviewed model output.
-# Publish only the reviewed P03 manifests, reports and documentation below.
+# Trained/downloaded model artifacts; commit reviewed manifests only
 /models/*
 !/models/README.md
 !/models/classifier-card.md
@@ -97,21 +50,16 @@ htmlcov/
 !/models/validation-report.json
 !/models/runtime-budget.json
 !/models/source-freeze.manifest.json
-/datasets/raw-private/
-/ml/.venv/
-/artifacts/
-/.model-cache/
-/.huggingface/
-*.joblib
-*.pkl
-*.pickle
-*.safetensors
-*.pt
-*.pth
-*.ckpt
 *.onnx
-*.npy
-*.npz
+*.safetensors
+*.pkl
+*.joblib
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
 
 # Stray credential captures and scratch test scripts
 cookies.txt
