@@ -1,0 +1,395 @@
+{
+  "scope": "Fresh actual local PayPal Sandbox outcomes with manually approved buyers, separate authenticated synthetic actors, approved classifier/encoder and both actual Elastic scopes. Not hosted acceptance.",
+  "environment": "sandbox",
+  "amount_minor_each": 100,
+  "currency": "USD",
+  "manual_buyer_approvals": true,
+  "buyer_handoff": "Standalone provider approval URLs stayed on review order. Provider GET confirmed APPROVED; the normal scoped authorize route resumed the saved orders. No provider or application status was overridden.",
+  "classifier": {
+    "schema_version": "pause-evidence-v1",
+    "status": "RELEASED",
+    "model_version": "tfidf-linear-v1",
+    "artifact_hash": "6a7d7707bc24329519a548aa0ba2f53998c9fbd1f38d9fdc214b32aafd497b07",
+    "label_schema_version": "pause-signals-v1",
+    "preprocessing_version": "word12-char35-v1",
+    "labels": [
+      "urgent_payment_pressure",
+      "secrecy_pressure",
+      "impersonation_style_request",
+      "advance_fee_or_release_fee"
+    ],
+    "thresholds": {
+      "urgent_payment_pressure": 0.05,
+      "secrecy_pressure": 0.2,
+      "impersonation_style_request": 0.1,
+      "advance_fee_or_release_fee": 0.35
+    },
+    "dataset_hash": "0a696454b16ba259b74bd457eb276bcb3bdccc986bab39abc723e3540b2aeba6",
+    "split_hash": "89d21bd220408ae4315ab26c560fcf5edf93705e2bb6894d0ba5a0b16ef3dc3a",
+    "seed": 42,
+    "dependency_lock_hash": "e37154abff531c05d58f77b85774a641af4625ddec9050ca4ff3b15216a34a3c",
+    "code_revision": "6542307a7252b1ce038d18ba4068fa34a09e562e+p03-source",
+    "language": "en"
+  },
+  "encoder": {
+    "schema_version": "pause-evidence-v1",
+    "status": "RELEASED",
+    "encoder_version": "minilm-l6-1110a243-v1",
+    "artifact_hash": "e8cbc0408bd6993d8bc25a07a7ab162394573a11c2333510501561ff8caa7f18",
+    "upstream_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "license": "Apache-2.0",
+    "preprocessing_version": "mean256-l2-v1",
+    "dimension": 384,
+    "normalized": true,
+    "similarity": "cosine"
+  },
+  "positive": {
+    "intent_id": "f6b8d9a5-182f-4c97-abfc-6758dda0ee89",
+    "binding": {
+      "schema": "pause-binding-v1",
+      "intent_id": "f6b8d9a5-182f-4c97-abfc-6758dda0ee89",
+      "version": 1,
+      "amount_minor": 100,
+      "currency": "USD",
+      "payee_id": "4XDLGF4ER6RT4",
+      "subject_contact_id": "eafe1715-03d0-4295-9679-8eabdbba8c79",
+      "purpose": "Synthetic P06 planned pharmacy supplies"
+    },
+    "independent_actor_ids": {
+      "senior": "3e87110b-cc53-4acf-b022-01c69185bd92",
+      "subject": "3723fd49-360d-44a3-a5d8-4262e41345b2",
+      "reviewer": "a6abbd82-fee1-429a-98dd-8922ef6369fe"
+    },
+    "payment_status": "CAPTURED",
+    "provider_terminal": {
+      "OrderID": "4XC43518BX250622D",
+      "AuthorizationID": "9VX46016NX0374358",
+      "CaptureID": "4LS00167HP3451505",
+      "Status": "CAPTURED",
+      "Confirmed": true,
+      "AmountMinor": 100,
+      "Currency": "USD",
+      "PayeeID": "4XDLGF4ER6RT4",
+      "Environment": "sandbox",
+      "DebugID": "ca51990867d2e",
+      "OrderStatus": "COMPLETED",
+      "AuthorizationStatus": "CAPTURED",
+      "CaptureStatus": "COMPLETED"
+    },
+    "observed_at": "2026-10-28T11:22:47.512379+00:00",
+    "terminal_verified": true,
+    "operations": [
+      {
+        "attempts": 1,
+        "dead_letter_at": null,
+        "debug_id": "f6471081d9bba",
+        "environment": "sandbox",
+        "error_code": null,
+        "job_error_code": null,
+        "kind": "CREATE_ORDER",
+        "lease_until": null,
+        "operation_id": "841024bd-a309-4efc-9d37-b24a602fe3f2",
+        "provider_request_id": "6c5e0b61-7d81-4158-a344-d0497d215e09",
+        "provider_status": "AWAITING_PAYER",
+        "request_hash": "51164eb3442618aae32fa700fdb441900f5044ffdc2e230aaf3fb38b1770ad1b",
+        "state": "CONFIRMED"
+      },
+      {
+        "attempts": 1,
+        "dead_letter_at": null,
+        "debug_id": "ca5198e9eac43",
+        "environment": "sandbox",
+        "error_code": null,
+        "job_error_code": null,
+        "kind": "AUTHORIZE",
+        "lease_until": null,
+        "operation_id": "79eb165f-ab6c-4706-850e-d518a09cf3c7",
+        "provider_request_id": "d19ee07f-2d19-40ed-8a31-bdc5b7e5ad52",
+        "provider_status": "HELD",
+        "request_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "state": "CONFIRMED"
+      },
+      {
+        "attempts": 1,
+        "dead_letter_at": null,
+        "debug_id": "ca51990756b07",
+        "environment": "sandbox",
+        "error_code": null,
+        "job_error_code": null,
+        "kind": "CAPTURE",
+        "lease_until": null,
+        "operation_id": "e34d5a26-62bc-42e6-bb6d-81782705d389",
+        "provider_request_id": "1e156353-f50c-4cee-a38d-a5f70f8a5613",
+        "provider_status": "CAPTURED",
+        "request_hash": "0950ac790bb2cdfe46d74a1c5d372f01598c32d6beffd93d40240bc952072c67",
+        "state": "CONFIRMED"
+      }
+    ],
+    "initial_evidence": {
+      "classifier": "ABSTAIN",
+      "public": "OK",
+      "public_source_ids": [
+        "voice",
+        "fake-support",
+        "crypto"
+      ],
+      "private": {
+        "status": "OK",
+        "policy_version": "pause-pattern-policy-v1",
+        "template_version": "private-history-template-v1",
+        "totals": {
+          "requested_minor": 22100,
+          "held_minor": 0,
+          "captured_minor": 0,
+          "pending_minor": 0,
+          "unknown_minor": 0,
+          "seeded_captured_minor": 22000
+        },
+        "timeline_rows": 3,
+        "context_sources": [
+          {
+            "intent_id": "7c28519a-b7f0-468e-8b3c-088e640d9d49",
+            "version": 1,
+            "source": "SYNTHETIC_SEEDED_HISTORY"
+          },
+          {
+            "intent_id": "9481606b-da21-467e-b0aa-73be481f012c",
+            "version": 1,
+            "source": "SYNTHETIC_SEEDED_HISTORY"
+          }
+        ]
+      }
+    },
+    "worker_restart": {
+      "checkpoint": "Worker stopped before guarded review reserved capture; restarted with the same database/configuration.",
+      "application_before_restart": "CAPTURE_PENDING",
+      "operation_before_restart": {
+        "attempts": 0,
+        "dead_letter_at": null,
+        "debug_id": null,
+        "environment": "sandbox",
+        "error_code": null,
+        "job_error_code": null,
+        "kind": "CAPTURE",
+        "lease_until": null,
+        "operation_id": "e34d5a26-62bc-42e6-bb6d-81782705d389",
+        "provider_request_id": "1e156353-f50c-4cee-a38d-a5f70f8a5613",
+        "provider_status": null,
+        "request_hash": "0950ac790bb2cdfe46d74a1c5d372f01598c32d6beffd93d40240bc952072c67",
+        "state": "RESERVED"
+      },
+      "provider_before_restart": {
+        "OrderID": "4XC43518BX250622D",
+        "AuthorizationID": "9VX46016NX0374358",
+        "CaptureID": "",
+        "Status": "HELD",
+        "Confirmed": true,
+        "AmountMinor": 100,
+        "Currency": "USD",
+        "PayeeID": "4XDLGF4ER6RT4",
+        "Environment": "sandbox",
+        "DebugID": "ca5198fd2ec0a",
+        "OrderStatus": "COMPLETED",
+        "AuthorizationStatus": "CREATED",
+        "CaptureStatus": ""
+      },
+      "one_capture_operation": true,
+      "same_request_id_after_restart": true,
+      "dispatch_attempts": 1
+    },
+    "final_evidence": {
+      "id": "42c6909e-842c-4a53-81f7-3d7f79407ac8",
+      "evidence_hash": "dc5152bc4412d0c8b8d610709f1d6beba4c923e668de864e138c47849dd6298f",
+      "verification": {
+        "expires_at": "2026-10-28T16:58:19.061764+05:30",
+        "responded_at": "2026-10-28T16:51:29.562048+05:30",
+        "scope": "Records the enrolled account's response, not proof that the event happened.",
+        "snapshot_hash": "41a0eacee4bf455e2c1b4788badf71fda524ce938ae5b83bc1e0d4e506edb4aa",
+        "status": "CONFIRMED",
+        "subject_user_id": "3723fd49-360d-44a3-a5d8-4262e41345b2"
+      },
+      "classifier": "ABSTAIN",
+      "public": "OK",
+      "public_source_ids": [
+        "voice",
+        "fake-support",
+        "crypto"
+      ],
+      "private": {
+        "status": "OK",
+        "policy_version": "pause-pattern-policy-v1",
+        "template_version": "private-history-template-v1",
+        "totals": {
+          "requested_minor": 22100,
+          "held_minor": 100,
+          "captured_minor": 0,
+          "pending_minor": 0,
+          "unknown_minor": 0,
+          "seeded_captured_minor": 22000
+        },
+        "timeline_rows": 3,
+        "context_sources": [
+          {
+            "intent_id": "7c28519a-b7f0-468e-8b3c-088e640d9d49",
+            "version": 1,
+            "source": "SYNTHETIC_SEEDED_HISTORY"
+          },
+          {
+            "intent_id": "9481606b-da21-467e-b0aa-73be481f012c",
+            "version": 1,
+            "source": "SYNTHETIC_SEEDED_HISTORY"
+          }
+        ]
+      },
+      "missing_checks": []
+    }
+  },
+  "denied": {
+    "intent_id": "2431bd13-deb5-4004-8b80-9dbc1f4310ea",
+    "binding": {
+      "schema": "pause-binding-v1",
+      "intent_id": "2431bd13-deb5-4004-8b80-9dbc1f4310ea",
+      "version": 1,
+      "amount_minor": 100,
+      "currency": "USD",
+      "payee_id": "4XDLGF4ER6RT4",
+      "subject_contact_id": "eafe1715-03d0-4295-9679-8eabdbba8c79",
+      "purpose": "Synthetic P06 denied pharmacy purchase"
+    },
+    "independent_actor_ids": {
+      "senior": "3e87110b-cc53-4acf-b022-01c69185bd92",
+      "subject": "3723fd49-360d-44a3-a5d8-4262e41345b2",
+      "reviewer": "a6abbd82-fee1-429a-98dd-8922ef6369fe"
+    },
+    "payment_status": "VOIDED",
+    "provider_terminal": {
+      "OrderID": "1DC94906JD3721354",
+      "AuthorizationID": "8TB3112920659022L",
+      "CaptureID": "",
+      "Status": "VOIDED",
+      "Confirmed": true,
+      "AmountMinor": 100,
+      "Currency": "USD",
+      "PayeeID": "4XDLGF4ER6RT4",
+      "Environment": "sandbox",
+      "DebugID": "ca5199b1418e9",
+      "OrderStatus": "COMPLETED",
+      "AuthorizationStatus": "VOIDED",
+      "CaptureStatus": ""
+    },
+    "observed_at": "2026-10-28T11:29:59.793223+00:00",
+    "terminal_verified": true,
+    "operations": [
+      {
+        "attempts": 1,
+        "dead_letter_at": null,
+        "debug_id": "f437492c2dd5f",
+        "environment": "sandbox",
+        "error_code": null,
+        "job_error_code": null,
+        "kind": "CREATE_ORDER",
+        "lease_until": null,
+        "operation_id": "b8a4ce4a-3a4e-4b36-b26b-abc4a9009d44",
+        "provider_request_id": "691c0a1d-ddca-410a-80a3-8612dcd1f72a",
+        "provider_status": "AWAITING_PAYER",
+        "request_hash": "3d044ba0ddd62335cec923da962717291f93beff101c91a395642d751864e508",
+        "state": "CONFIRMED"
+      },
+      {
+        "attempts": 1,
+        "dead_letter_at": null,
+        "debug_id": "f186855004f0c",
+        "environment": "sandbox",
+        "error_code": null,
+        "job_error_code": null,
+        "kind": "AUTHORIZE",
+        "lease_until": null,
+        "operation_id": "c66d5279-d964-4b72-9879-8cd868218a56",
+        "provider_request_id": "9c939c3b-81ad-4b4c-a6f3-9ef0638acb88",
+        "provider_status": "HELD",
+        "request_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "state": "CONFIRMED"
+      },
+      {
+        "attempts": 1,
+        "dead_letter_at": null,
+        "debug_id": "ca5199b042b48",
+        "environment": "sandbox",
+        "error_code": null,
+        "job_error_code": null,
+        "kind": "VOID",
+        "lease_until": null,
+        "operation_id": "73b4e68a-2acf-4495-b18e-fab8fa3a2759",
+        "provider_request_id": "23702fa1-441d-4376-bc98-f2ace7ee5f55",
+        "provider_status": "VOIDED",
+        "request_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "state": "CONFIRMED"
+      }
+    ],
+    "initial_evidence": {
+      "classifier": "OK",
+      "public": "OK",
+      "public_source_ids": [
+        "advance-promise",
+        "fake-support",
+        "immediate-emergency"
+      ],
+      "private": {
+        "status": "OK",
+        "policy_version": "pause-pattern-policy-v1",
+        "template_version": "private-history-template-v1",
+        "totals": {
+          "requested_minor": 22200,
+          "held_minor": 0,
+          "captured_minor": 100,
+          "pending_minor": 0,
+          "unknown_minor": 0,
+          "seeded_captured_minor": 22000
+        },
+        "timeline_rows": 4,
+        "context_sources": [
+          {
+            "intent_id": "7c28519a-b7f0-468e-8b3c-088e640d9d49",
+            "version": 1,
+            "source": "SYNTHETIC_SEEDED_HISTORY"
+          },
+          {
+            "intent_id": "f6b8d9a5-182f-4c97-abfc-6758dda0ee89",
+            "version": 1,
+            "source": "USER_SUBMITTED"
+          },
+          {
+            "intent_id": "9481606b-da21-467e-b0aa-73be481f012c",
+            "version": 1,
+            "source": "SYNTHETIC_SEEDED_HISTORY"
+          }
+        ]
+      }
+    },
+    "search_outage": {
+      "actual_task_local_elastic_stopped": true,
+      "api_readiness": 200,
+      "release_readiness": 503,
+      "evidence": {
+        "classifier": "OK",
+        "public": "UNAVAILABLE",
+        "private": "UNAVAILABLE",
+        "missing_checks": [
+          "Successful approved public lookup",
+          "Successful current private history lookup (run message checks to refresh)",
+          "Current independent subject confirmation"
+        ]
+      },
+      "approval_rejection": "PUBLIC_SOURCES_UNAVAILABLE",
+      "denial_and_provider_void_completed_before_search_restart": true,
+      "capture_operations": 0,
+      "elasticsearch_restored": true
+    }
+  },
+  "source_sha256": {
+    "internal/app/payments.go": "242b25e1182c50b541a14bf54e3229e102fe14c41deb61e5dff632bbae47b2eb",
+    "internal/app/investigation.go": "d0bb2a4b025552e80d422bc730704a3d6a75548613a6ccf45012696fa956431d",
+    "internal/paypal/client.go": "5e75f6cd9ac3ed958225aced23545915eb262eb824b6ba06247f17ee4c16de6b",
+    "ml/src/pause_ml/runtime.py": "c4e3fe61da364b87f2d722edfd9cb186915dc352ce46096ca6fdaccc2c35f681"
+  }
+}

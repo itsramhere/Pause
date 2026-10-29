@@ -28,6 +28,28 @@ def validate_release_metadata(classifier, encoder, details):
     if digest(encoded(details['file_sha256'])) != encoder.get('artifact_hash'):
         raise ValueError('encoder manifest mismatch')
 
+def validate_encoder_snapshot(snapshot, files):
+    snapshot = Path(snapshot).resolve(strict=True)
+    entries = list(snapshot.rglob('*'))
+    for path in entries:
+        if path.is_symlink() or not path.resolve().is_relative_to(snapshot):
+            raise ValueError('untrusted encoder artifact path')
+        if not path.is_dir() and not path.is_file():
+            raise ValueError('untrusted encoder artifact path')
+    actual = {path.relative_to(snapshot).as_posix() for path in entries if path.is_file()}
+    # Loaders also discover optional sidecars, including added_tokens.json and
+    # adapter configs. Every file they can discover must be approved, not just
+    # the required files. Check this before any deserialization.
+    if actual != set(files):
+        raise ValueError('unapproved encoder files')
+    for name, checksum in files.items():
+        path = Path(name)
+        if path.is_absolute() or '..' in path.parts:
+            raise ValueError('untrusted encoder artifact path')
+        if digest((snapshot/path).read_bytes()) != checksum:
+            raise ValueError('encoder checksum mismatch')
+    return snapshot
+
 class Runtime:
     def __init__(self):
         started=time.perf_counter()
@@ -44,10 +66,7 @@ class Runtime:
         artifact=ROOT/'models/classifier.joblib'
         if digest(artifact.read_bytes())!=self.classifier['artifact_hash']: raise ValueError('classifier checksum mismatch')
         if digest((ROOT/'ml/requirements.lock.txt').read_bytes())!=self.classifier['dependency_lock_hash']: raise ValueError('dependency lock mismatch')
-        snapshot=Path(os.environ.get('ENCODER_SNAPSHOT_PATH',str(ROOT/'models/encoder'))).resolve()
-        if digest(encoded(details['file_sha256']))!=self.encoder['artifact_hash']: raise ValueError('encoder manifest mismatch')
-        for name, checksum in details['file_sha256'].items():
-            if Path(name).is_absolute() or '..' in Path(name).parts or digest((snapshot/name).read_bytes())!=checksum: raise ValueError('encoder checksum mismatch')
+        snapshot=validate_encoder_snapshot(os.environ.get('ENCODER_SNAPSHOT_PATH',str(ROOT/'models/encoder')),details['file_sha256'])
         # Hash verification precedes deserialization. Only an offline operator can
         # install a release; HTTP has no artifact/model-path selector.
         self.model=joblib.load(artifact)

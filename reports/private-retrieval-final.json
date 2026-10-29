@@ -1,0 +1,376 @@
+{
+  "available": 10,
+  "denominator": 10,
+  "encoder": {
+    "schema_version": "pause-evidence-v1",
+    "status": "RELEASED",
+    "encoder_version": "minilm-l6-1110a243-v1",
+    "artifact_hash": "e8cbc0408bd6993d8bc25a07a7ab162394573a11c2333510501561ff8caa7f18",
+    "upstream_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "license": "Apache-2.0",
+    "preprocessing_version": "mean256-l2-v1",
+    "dimension": 384,
+    "normalized": true,
+    "similarity": "cosine"
+  },
+  "fusion": "go-rrf60-v1",
+  "mapping": "history-v1",
+  "queries_sha256": "c2b4846f0d9fe36385efb1f12ba1b1966bda57ef94d7e3fd8af0616a054673cb",
+  "revoked_stale_hit_suppressed": true,
+  "rows": [
+    {
+      "available": true,
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "ride"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": []
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "ride"
+          ]
+        }
+      },
+      "duration_ms": 51,
+      "query_id": "private-01"
+    },
+    {
+      "available": true,
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "ride"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "ride"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "ride"
+          ]
+        }
+      },
+      "duration_ms": 63,
+      "query_id": "private-02"
+    },
+    {
+      "available": true,
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "medicine"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": []
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "medicine"
+          ]
+        }
+      },
+      "duration_ms": 134,
+      "query_id": "private-03"
+    },
+    {
+      "available": true,
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "medicine"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "medicine"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "medicine"
+          ]
+        }
+      },
+      "duration_ms": 46,
+      "query_id": "private-04"
+    },
+    {
+      "available": true,
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.6666666666666666,
+          "recall_at_3": 1,
+          "relevant_count": 2,
+          "top3_ids": [
+            "ride",
+            "medicine"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": []
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.6666666666666666,
+          "recall_at_3": 1,
+          "relevant_count": 2,
+          "top3_ids": [
+            "ride",
+            "medicine"
+          ]
+        }
+      },
+      "duration_ms": 107,
+      "query_id": "private-05"
+    },
+    {
+      "available": true,
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.6666666666666666,
+          "recall_at_3": 1,
+          "relevant_count": 2,
+          "top3_ids": [
+            "ride",
+            "medicine"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": []
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.6666666666666666,
+          "recall_at_3": 1,
+          "relevant_count": 2,
+          "top3_ids": [
+            "ride",
+            "medicine"
+          ]
+        }
+      },
+      "duration_ms": 68,
+      "query_id": "private-06"
+    },
+    {
+      "available": true,
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "ride"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": []
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "ride"
+          ]
+        }
+      },
+      "duration_ms": 57,
+      "query_id": "private-07"
+    },
+    {
+      "available": true,
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "medicine"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": []
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "medicine"
+          ]
+        }
+      },
+      "duration_ms": 56,
+      "query_id": "private-08"
+    },
+    {
+      "available": true,
+      "branches": {
+        "fused": {
+          "correct_no_match": true,
+          "no_match_case": true,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": []
+        },
+        "lexical": {
+          "correct_no_match": true,
+          "no_match_case": true,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": []
+        },
+        "vector": {
+          "correct_no_match": true,
+          "no_match_case": true,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": []
+        }
+      },
+      "duration_ms": 59,
+      "query_id": "private-09"
+    },
+    {
+      "available": true,
+      "branches": {
+        "fused": {
+          "correct_no_match": true,
+          "no_match_case": true,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": []
+        },
+        "lexical": {
+          "correct_no_match": true,
+          "no_match_case": true,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": []
+        },
+        "vector": {
+          "correct_no_match": true,
+          "no_match_case": true,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": []
+        }
+      },
+      "duration_ms": 53,
+      "query_id": "private-10"
+    }
+  ],
+  "schema_version": "pause-final-private-relevance-v1",
+  "scope": "Ten authored synthetic queries, two authored prior sources; not a real-world relevance estimate. Query text/gold never indexed; separate from three P04 development probes. All unavailable attempts remain in denominator.",
+  "scope_violations": 0,
+  "template": "private-history-template-v1"
+}

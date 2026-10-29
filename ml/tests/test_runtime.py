@@ -48,6 +48,28 @@ class ApprovedRuntimeTests(unittest.TestCase):
     (root/'models/classifier.joblib').write_bytes(b'not an approved pickle')
     with self.assertRaisesRegex(ValueError,'checksum'):Runtime()
     loader.assert_not_called()
+ def test_unapproved_encoder_sidecar_never_deserializes(self):
+  import joblib, shutil, subprocess, sys
+  import pause_ml.runtime as module
+  with TemporaryDirectory() as temp:
+   root=Path(temp);(root/'models').mkdir();(root/'ml').mkdir()
+   for name in ['classifier.manifest.json','classifier.joblib','encoder.manifest.json','encoder.files.json']:
+    shutil.copyfile(ROOT/'models'/name,root/'models'/name)
+   shutil.copyfile(ROOT/'ml/requirements.lock.txt',root/'ml/requirements.lock.txt')
+   shutil.copytree(ROOT/'models/encoder',root/'models/encoder')
+   # Transformers discovers this unmanifested legacy tokenizer sidecar.
+   (root/'models/encoder/added_tokens.json').write_text('{"unreviewed":30522}')
+   with patch.object(module,'ROOT',root),patch.dict('os.environ',ENCODER_SNAPSHOT_PATH=str(root/'models/encoder')),patch('joblib.load',wraps=joblib.load) as loader:
+    with self.assertRaisesRegex(ValueError,'unapproved encoder files'):Runtime()
+    loader.assert_not_called()
+   (root/'scripts').mkdir()
+   shutil.copyfile(ROOT/'scripts/verify-artifacts.py',root/'scripts/verify-artifacts.py')
+   source=root/'ml/src/pause_ml';source.mkdir(parents=True)
+   for name in ['__init__.py','runtime.py','train.py']:
+    shutil.copyfile(ROOT/'ml/src/pause_ml'/name,source/name)
+   checked=subprocess.run([sys.executable,'-B','-O',str(root/'scripts/verify-artifacts.py')],cwd=root,capture_output=True,text=True,timeout=15)
+   self.assertNotEqual(0,checked.returncode)
+   self.assertIn('unapproved encoder files',checked.stderr)
  def test_classifier_update_cannot_change_encoder_vectors(self):
   text='Independent search embedding space.';body=dict(text=text,input_digest=digest(text.encode()),encoder_version=self.runtime.encoder['encoder_version'])
   before=self.runtime.embed(body)
@@ -59,6 +81,6 @@ class ApprovedRuntimeTests(unittest.TestCase):
   for _ in range(30):
    st=time.perf_counter();self.classify('Synthetic ordinary merchant purchase; verify through the enrolled account.');lat.append((time.perf_counter()-st)*1000)
    text='Public emergency payment pattern.';st=time.perf_counter();self.runtime.embed(dict(text=text,input_digest=digest(text.encode()),encoder_version=self.runtime.encoder['encoder_version']));embedding.append((time.perf_counter()-st)*1000)
-  save(ROOT/'models/runtime-budget.json',dict(startup=self.runtime.budget,classify_ms=dict(p50=float(np.percentile(lat,50)),p95=float(np.percentile(lat,95))),embed_ms=dict(p50=float(np.percentile(embedding,50)),p95=float(np.percentile(embedding,95))),scope='30 synthetic development probes; final test and relevance queries unopened',concurrency_limit=2))
+  save(ROOT/'data/runtime-budget-latest.json',dict(startup=self.runtime.budget,classify_ms=dict(p50=float(np.percentile(lat,50)),p95=float(np.percentile(lat,95))),embed_ms=dict(p50=float(np.percentile(embedding,50)),p95=float(np.percentile(embedding,95))),scope='30 synthetic development probes; separate from frozen final evaluations',concurrency_limit=2))
 
 if __name__=='__main__':unittest.main()

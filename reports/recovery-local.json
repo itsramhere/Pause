@@ -1,0 +1,61 @@
+{
+  "classifier_artifact_hash": "6a7d7707bc24329519a548aa0ba2f53998c9fbd1f38d9fdc214b32aafd497b07",
+  "cleanup_failure_pending_then_retried": true,
+  "cleanup_ms": 10163,
+  "elastic_version": "9.5.5",
+  "encoder_artifact_hash": "e8cbc0408bd6993d8bc25a07a7ab162394573a11c2333510501561ff8caa7f18",
+  "fresh_pattern_rationale_resolved": true,
+  "fresh_reindex_and_rollback_passed": true,
+  "in_flight_reindex_revocation_race_passed": true,
+  "in_flight_upsert_revocation_race_passed": true,
+  "physical_text_and_vector_absent": true,
+  "queries": [
+    {
+      "candidates": [
+        {
+          "id": "70aa6032-c6ff-4888-8707-b13eb6f1d4d7",
+          "keyword_rank": 0,
+          "vector_rank": 1
+        }
+      ],
+      "encoder": "minilm-l6-1110a243-v1",
+      "fusion": "go-rrf60-v1",
+      "hit_count": 1,
+      "index": "pause-request-history-v1-live-aa47647d4a764e0e81dc3068caeb35c5",
+      "query_id": "development-paraphrase",
+      "status": "OK"
+    },
+    {
+      "candidates": [],
+      "encoder": "minilm-l6-1110a243-v1",
+      "fusion": "go-rrf60-v1",
+      "hit_count": 0,
+      "index": "pause-request-history-v1-live-aa47647d4a764e0e81dc3068caeb35c5",
+      "query_id": "development-no-match",
+      "status": "OK"
+    },
+    {
+      "candidates": [
+        {
+          "id": "70aa6032-c6ff-4888-8707-b13eb6f1d4d7",
+          "keyword_rank": 1,
+          "vector_rank": 1
+        }
+      ],
+      "encoder": "minilm-l6-1110a243-v1",
+      "fusion": "go-rrf60-v1",
+      "hit_count": 1,
+      "index": "pause-request-history-v1-live-aa47647d4a764e0e81dc3068caeb35c5",
+      "query_id": "development-literal",
+      "status": "OK"
+    }
+  ],
+  "recorded_at_utc": "2026-10-28T07:59:41.2494957Z",
+  "retention_text_and_vector_cleanup_passed": true,
+  "revocation_replay_rejected": true,
+  "scope": "Actual local Elastic and approved inference; PostgreSQL disposable schema; payment adapter is test-only, not new PayPal evidence",
+  "stale_review_rejected": true,
+  "worker_outbox_dispatch_passed": true,
+  "wrong_dimension_rejected": true,
+  "wrong_encoder_alias_switch_rejected": true
+}

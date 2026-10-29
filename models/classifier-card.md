@@ -9,7 +9,9 @@ Data: 400 CC0 authored synthetic rows, 100 template families, conservatively
 connected into ten disjoint clause clusters. Train 240 / validation 80 / test 80.
 One author audited template/context labels; no independent annotator study or
 real-world representative dataset exists. This is a small, repetitive synthetic
-pilot. The final test file remains unopened for selection until P06.
+pilot. Selection finished before the final test was opened in P06. See
+[the frozen final report](../reports/classifier-final.json); no model or
+threshold was changed after opening it.
 
 The word unigram/bigram plus character 3–5 TF-IDF vectorizers and balanced
 one-versus-rest logistic regressions fit training rows only. Seed 42, C 4.

@@ -67,6 +67,18 @@ func TestP05BrowserJourneys(t *testing.T) {
 	if os.Getenv("P05_BROWSER") != "1" {
 		t.Skip("P05_BROWSER=1 runs Chromium journeys against isolated PostgreSQL and deterministic adapters")
 	}
+	runBrowserFixture(t, "browser.mjs", true)
+}
+
+func TestP06CheckoutApprovalRecovery(t *testing.T) {
+	if os.Getenv("P05_BROWSER") != "1" {
+		t.Skip("P05_BROWSER=1 runs isolated Chromium checkout recovery")
+	}
+	runBrowserFixture(t, "checkout-recovery.mjs", false)
+}
+
+func runBrowserFixture(t *testing.T, script string, requireCapture bool) {
+	t.Helper()
 	f := newFixture(t)
 	f.clock.now = time.Now().UTC()
 	f.svc.Config.Environment = "test"
@@ -96,7 +108,7 @@ func TestP05BrowserJourneys(t *testing.T) {
 	defer func() { stop(); <-done }()
 	testCtx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
 	defer cancel()
-	command := exec.CommandContext(testCtx, "node", "../../web/tests/browser.mjs")
+	command := exec.CommandContext(testCtx, "node", "../../web/tests/"+script)
 	command.Env = append(os.Environ(), "P05_BASE_URL="+server.URL)
 	out, e := command.CombinedOutput()
 	t.Log(string(out))
@@ -104,7 +116,7 @@ func TestP05BrowserJourneys(t *testing.T) {
 		t.Fatal(e)
 	}
 	var captured, voided int
-	if e = f.db.Pool.QueryRow(context.Background(), `SELECT count(*) FILTER(WHERE payment_status='CAPTURED'),count(*) FILTER(WHERE payment_status='VOIDED') FROM payment_intents`).Scan(&captured, &voided); e != nil || captured < 1 || voided < 1 {
+	if e = f.db.Pool.QueryRow(context.Background(), `SELECT count(*) FILTER(WHERE payment_status='CAPTURED'),count(*) FILTER(WHERE payment_status='VOIDED') FROM payment_intents`).Scan(&captured, &voided); e != nil || (requireCapture && captured < 1) || voided < 1 {
 		t.Fatal("canonical terminal outcomes", captured, voided, e)
 	}
 }

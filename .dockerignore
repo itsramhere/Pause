@@ -1,0 +1,23 @@
+.git
+.github
+.env
+.env.*
+planning
+docs
+data
+evidence
+bin
+**/node_modules
+**/.venv
+.venv*
+**/__pycache__
+**/dist
+**/*.log
+**/*.exe
+**/*.key
+**/*.pem
+secrets
+artifacts
+uploads
+# Approved model files intentionally enter only the private inference image.
+# Never build with an unreviewed model directory.

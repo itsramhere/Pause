@@ -61,3 +61,24 @@ func TestDemoConfigurationIsExplicitAndNonProduction(t *testing.T) {
 		t.Fatal("production scenario launcher accepted")
 	}
 }
+
+func TestP06PrivateNetworkAndProxyConfiguration(t *testing.T) {
+	env := validEnv()
+	get := func(k string) string { return env[k] }
+	env["APP_ENV"] = "production"
+	env["APP_BASE_URL"] = "https://pause.example"
+	env["ML_SERVICE_URL"] = "http://inference:8090"
+	env["ML_SERVICE_TOKEN"] = strings.Repeat("x", 32)
+	if _, err := From(get); err == nil {
+		t.Fatal("implicit HTTP trust")
+	}
+	env["DEPENDENCY_PRIVATE_HTTP_HOSTS"] = "inference"
+	env["TRUSTED_PROXY_CIDRS"] = "10.42.0.0/24"
+	if _, err := From(get); err != nil {
+		t.Fatal(err)
+	}
+	env["TRUSTED_PROXY_CIDRS"] = "0.0.0.0/0"
+	if _, err := From(get); err == nil {
+		t.Fatal("unbounded proxy trust")
+	}
+}

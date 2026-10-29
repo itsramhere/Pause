@@ -1,0 +1,32 @@
+{
+  "scope": "Actual local Linux Go/PostgreSQL checks; not a GitHub Actions or hosted deployment receipt.",
+  "checks": {
+    "go": {
+      "counts": {
+        "pass": 323,
+        "skip": 4
+      },
+      "gated_tests": [
+        "TestP05BrowserJourneys",
+        "TestP06CheckoutApprovalRecovery",
+        "TestP06FrozenPrivateRelevance",
+        "TestP04LivePrivateRetrievalRevocationReindexAndReview"
+      ]
+    },
+    "race": {
+      "counts": {
+        "pass": 323,
+        "skip": 4
+      },
+      "gated_tests": [
+        "TestP05BrowserJourneys",
+        "TestP06CheckoutApprovalRecovery",
+        "TestP06FrozenPrivateRelevance",
+        "TestP04LivePrivateRetrievalRevocationReindexAndReview"
+      ]
+    },
+    "go_vet": "PASS"
+  },
+  "image": "sha256:a358bffcac052850e6462d3d5834421e6d9d293cb342b90c7877e083f895da1c",
+  "result": "PASS"
+}

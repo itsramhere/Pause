@@ -1,0 +1,40 @@
+name: Dependency and disclosure checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  go-and-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./cmd/... ./internal/...
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci && npm audit && npm run build
+        working-directory: web
+      - run: python -m unittest discover -s scripts/tests -v
+      - run: python scripts/security-scan.py
+  python-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pip-audit==2.10.1
+      # Advisory job: the frozen inference dependency findings are explicitly
+      # triaged in deploy/SECURITY.md. Never silently upgrade the approved model
+      # environment or imply that this report is a production certification.
+      - run: pip-audit -r ml/requirements.lock.txt --extra-index-url https://download.pytorch.org/whl/cpu --format json --output python-audit.json
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-dependency-audit
+          path: python-audit.json

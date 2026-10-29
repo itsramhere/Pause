@@ -1,0 +1,12 @@
+[
+ {"id":"private-01","text":"Can you help cover the taxi fare for my appointment?","relevant":["ride"]},
+ {"id":"private-02","text":"The vehicle taking me to the clinic needs paying.","relevant":["ride"]},
+ {"id":"private-03","text":"I need assistance buying the prescribed tablets.","relevant":["medicine"]},
+ {"id":"private-04","text":"Could you purchase my pharmacy refill?","relevant":["medicine"]},
+ {"id":"private-05","text":"Please review the ride and prescription purchases together.","relevant":["ride","medicine"]},
+ {"id":"private-06","text":"How much did the medical trip and medication requests ask for?","relevant":["ride","medicine"]},
+ {"id":"private-07","text":"The cab fare for the health centre visit is due.","relevant":["ride"]},
+ {"id":"private-08","text":"The chemist has the medication ready for collection.","relevant":["medicine"]},
+ {"id":"private-09","text":"Neutrino oscillations and stellar nucleosynthesis.","relevant":[]},
+ {"id":"private-10","text":"Tectonic basalt crystal lattice diffraction.","relevant":[]}
+]

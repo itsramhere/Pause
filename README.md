@@ -2,200 +2,158 @@
 
 **Time to check the story before a supported payment goes through.**
 
-Pause lets an older adult check whether an enrolled relative requested an exact
-merchant purchase before a supported PayPal authorization is captured. A trained
-English message-signal classifier and sourced public Elasticsearch matches help
-an independently signed-in reviewer assess the request. They do not establish
-identity, prove an emergency, or authorize payment.
+Pause is a checkout-side verification layer for the PayPal emergency-scam pattern:
+an urgent message pressures someone into paying *right now*, and the verification
+call they needed to make gets skipped. Pause makes that step unavoidable. A
+purchase is recorded as exact transaction fields, a PayPal **authorization is
+placed on hold** (not captured), the named relative independently confirms or
+denies the request from their own authenticated session, and an assigned reviewer
+reads a sourced evidence packet before capture is ever reserved.
 
-## Current implementation
+Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/).
 
-**Phase 5 product flows are implemented.** Senior intake now leads through an
-explicit history choice, purchase summary, PayPal authorization, independent
-answer, review and accurate waiting/final states. The contact inbox and reviewer
-case view keep entered facts, classifier signals, sourced playbooks, authenticated
-answers and complete versus retrieved history distinct. Refresh/retry, stale
-review, consent withdrawal, outages, keyboard actions and phone layouts have
-dedicated checks. See the [experience runbook](docs/experience.md) and
-[verification report](docs/experience-verification-2026-10-28.md).
+| Login (three independent sessions) | Password |
+|---|---|
+| `senior1@example.test` — records the purchase, approves in PayPal Sandbox | `Synthetic-Pause-password!` |
+| `subject1@example.test` — the enrolled contact; confirms or denies | `Synthetic-Pause-password!` |
+| `reviewer1@example.test` — reads evidence, approves or declines | `Synthetic-Pause-password!` |
 
-An opt-in judge launcher and `cmd/demo-seed` create isolated synthetic households
-with independently signed-in, expiring accounts. Persistent creation/order/value
-limits bound the demo. Reset cancels/reconciles existing payments and retains
-unresolved commands before allowing a fresh launch. Apply migrations through
-**version 8**. No browser role switch or developer privilege is supplied.
+Sign each role in from a **separate browser profile** — tabs share a session. The
+login page also offers a one-click **isolated judge scenario** with disposable
+synthetic accounts (two-hour expiry, rate-limited).
 
-The new browser suite runs real Go routes and PostgreSQL with explicitly test-only
-provider/classifier/search adapters. It covers confirmed/approved capture and
-denied void across independent sessions; these are **simulated provider results**.
-A separate mobile probe used the supplied synthetic account with actual local
-ML/Elastic, then abandoned its draft without creating a PayPal order. A subsequent
-user-approved **$1.00 actual sandbox purchase was captured**, with independent
-contact/reviewer sign-ins and a matching authoritative PayPal GET. See the
-[P05 capture receipt](evidence/p05-sandbox-capture-2026-10-28.json), including the
-disclosed recovery of two synthetic test-account passwords. A screen-reader
-walkthrough and hosted CI observation
-remain release checks. This phase does not claim improved predictive performance.
+## What it looks like
 
-The [independent P05 debugging pass](docs/experience-debugging-2026-10-28.md)
-fixed stale action notices and completed receipts losing their recorded contact
-answer after expiry. Full normal/race suites passed 320 tests/subtests each;
-final targeted expiry and browser regressions also passed. Native Chrome 200%
-reflow was inspected. The fresh $1 sandbox denial/void replay now completed:
-independent denial, provider-confirmed VOIDED, no capture and rejected approval.
-The confirmation window expired during checkout, exposing and fixing a blocked
-denial action while preserving positive-confirmation expiry. See the
-[actual P05 void receipt](evidence/p05-sandbox-void-2026-10-28.json). No credential
-reset or payment-state override was used for that replay.
+![Login](images/screenshot-login.png)
 
-**Phase 4 implementation and automated verification are complete.** Real
-consent-scoped Elasticsearch projection/retrieval, canonical PostgreSQL timelines,
-separate financial totals, fixed review rules, cleanup/reindexing and transactional
-stale-review checks are implemented. See the [patterns runbook](docs/patterns.md)
-and [independent P04 debugging report](docs/patterns-debugging-2026-10-28.md). The UI
-shows sourced excerpts, explicit seeded-history labels and review operands. No
-new live PayPal receipt is claimed for P04; the earlier sandbox evidence remains
-linked below.
+![Purchase record with lifecycle stepper](images/screenshot-record.png)
 
-The final P04 checks passed **305 Go tests/subtests** in both normal and Windows
-race-detector runs, with zero failed or skipped test cases. **Three rendered
-frontend tests**, **11 offline approved-artifact Python tests**, Go vet, all command
-builds and frontend typecheck/build also passed. Actual private Elastic checks
-covered scoped lexical/vector retrieval, consent withdrawal, physical text/vector
-cleanup, delayed writes, reindex/rollback and stale-review rejection. The
-[sanitized P04 receipt](evidence/p04-patterns-2026-10-28.json) records measured
-results, source hashes and the separate test-only payment scope.
+![Reviewer evidence view on mobile](images/screenshot-reviewer-mobile.png)
 
-At the P04 handoff, only the consent-off desktop flow had been observed in a
-browser. P05 adds phone screenshots, independent account journeys and a controlled
-in-flight response replay, within the fixture/actual-service boundaries described
-above. Hosted CI is still unobserved; final held-out evaluation remains P06 work.
+## How a purchase moves through Pause
 
-**Phase 3 was completed in its documented prototype scope.** All P03-T01 through
-P03-T17 acceptance cases passed independent implementation/debugging checks on
-October 27, 2026. Predictive effectiveness remains limited, as detailed below;
-final held-out evaluation remains P06 work.
+```
+ DRAFT ──▶ AWAITING_PAYER ──▶ HELD ──▶ CAPTURE_PENDING ──▶ CAPTURED
+   │             │               │  │
+   │             │               │  └──▶ VOID_PENDING ──▶ VOIDED
+   │             └──▶ ABANDONED  └──▶ RECONCILING (worker resolves with PayPal)
+```
 
-P01–P03 implement scoped sessions, explicit versioned intake, encrypted retained
-messages, durable sandbox payment commands/reconciliation, a trained TF-IDF linear
-classifier, a separately pinned MiniLM encoder, real public Elastic retrieval,
-exact enrolled-account confirmation and guarded reviewer approval or decline.
-There is no generative model, LLM API key, or generative fallback.
+1. **Record the exact purchase.** The senior enters amount, receiving merchant,
+   purpose and the received message as structured fields. Pasted text can never
+   fill or replace transaction fields, and messages are encrypted at rest.
+2. **Authorize, don't pay.** PayPal SDK buyer approval creates an
+   **authorization** — a hold on funding, no capture. Pause controls the
+   money only inside its integrated checkout.
+3. **Independent answer.** The enrolled contact receives the exact purchase
+   (amount, merchant, creation time) in their own session and answers within a
+   15-minute window inside the 30-minute decision deadline. A denial blocks
+   release and triggers a void regardless of search availability.
+4. **Evidence, not vibes.** The reviewer sees: trained message-signal classifier
+   output, sourced public scam-pattern matches (FTC corpus via hybrid
+   keyword/vector retrieval with RRF fusion), the consented private request
+   history, the authenticated contact answer, and live PayPal provider state.
+5. **Explicit decision.** Capture is reserved only when the server re-checks —
+   right at release time — the bound purchase version, evidence hash, current
+   confirmation, unexpired answer, passing checks and deadline. A stale packet is
+   rejected with `409` and the reviewer must re-read the updated evidence.
+6. **Provider-confirmed outcomes only.** Durable workers dispatch and reconcile
+   PayPal operations with heartbeats. The UI shows CAPTURED or VOIDED only after
+   PayPal confirms; an in-flight capture can never be silently undone.
 
-The earlier P03 PostgreSQL-backed Go suite passed **286 tests/subtests** in both
-normal and race-detector runs, with zero failures or skips. **11 Python tests**, Go vet
-and command builds, frontend typecheck/build, and the diff check passed. Real
-Elastic checks also rejected deleted, inactive, revised and changed public
-sources, then restored the original documents and recovered a successful lookup.
+## Why the checks are credible
 
-Two real $1.00 USD merchant purchases completed through three independent
-application sessions: confirmed/approved capture and denied/declined void. The
-[sanitized P03 receipt](evidence/p03-sandbox-2026-10-27.json) includes authoritative
-provider GET results and exact IDs. Buyer approval was performed manually through
-the PayPal SDK; no provider state was simulated. The merchant receives a capture,
-not the relative named in the story.
+- **Exactness is structural.** Verification binds to a content digest of the
+  transaction fields; correcting a purchase invalidates earlier answers.
+- **Retrieval with receipts.** Public matches render original curated summaries
+  with publisher, source date and review metadata — never generated text.
+- **Honest abstention.** Classifier abstention, unsupported language, unavailable
+  lookup or failed checks *block release* instead of silently degrading.
+- **Privacy by design.** Related-request history is strictly opt-in, never used
+  for training, searchable only through consent-checked projections, and deleted
+  on withdrawal with cleanup the UI reports on.
+- **Measured, not marketed.** The linear classifier's validation micro F1 is
+  ~.764 vs .772 for fixed rules — the reports say so plainly, including 72/80
+  abstention findings. [Model card](models/classifier-card.md) ·
+  [validation report](models/validation-report.json) ·
+  [measured reports](reports/)
 
-See the [investigation runbook](docs/investigation.md),
-[implementation evidence](docs/investigation-implementation-2026-10-27.md),
-[independent debugging report](docs/investigation-debugging-2026-10-27.md),
-[model card](models/classifier-card.md), [payment setup](docs/payments.md), and
-[foundation setup](docs/foundation.md).
+## Engineering
 
-## How the current flow works
+| Layer | What's there |
+|---|---|
+| API | Go 1.26, session auth (hashed CSRF, Origin checks), optimistic concurrency (`expected_version`) everywhere, idempotency keys on every payment command, encrypted message storage, trusted-proxy chain handling |
+| Payments | PayPal Sandbox authorize/void/capture, durable dispatch worker with heartbeats and reconciliation, exhausted-void retry, provider-state recovery for lost checkout callbacks |
+| Search | Elasticsearch hybrid retrieval (BM25 + pinned encoder vectors, RRF fused in Go), separate public playbook and consented private-history indexes |
+| ML | Private Python inference service: frozen TF-IDF linear classifier + fixed encoder, manifests and hashes verified before use, no generative models |
+| Frontend | React 19 + Vite, self-hosted fonts, lifecycle stepper / status badges / deadline countdown, keyboard-complete flows |
+| Deploy | Multi-stage Docker build, compose stack (API, worker, inference, PostgreSQL, Elasticsearch, Caddy HTTPS), guarded operator commands (`cmd/ops`) |
 
-1. The senior selects an existing enrolled contact and enters amount, currency,
-   actual merchant, purpose and the received message. Text cannot replace those
-   transaction fields or create a trusted contact.
-2. A small trained multilabel classifier reports urgency, secrecy,
-   impersonation-style or advance-fee signals. The fixed search encoder supports
-   public keyword/vector retrieval. Go combines ranks with RRF and renders
-   original curated summaries linked to their FTC sources.
-3. The addressed subject's own authenticated session answers the exact purchase,
-   including receiving merchant and creation time. Its fifteen-minute task TTL
-   is bounded by the thirty-minute application deadline. Confirmation is evidence
-   only; denial blocks release and requests guarded void independently of search.
-4. PayPal SDK buyer approval creates an authorization without immediate capture.
-   The assigned reviewer reads current evidence and records a rationale. Release
-   rechecks the bound version, independent answer, approved artifacts, mandatory
-   lookup, current policy, evidence hash and deadline before reserving capture.
-5. Durable workers dispatch and reconcile provider operations. The UI reports
-   CAPTURED or VOIDED only after provider confirmation. Unknown outcomes remain
-   under reconciliation; cancellation cannot undo an in-flight capture.
+**Testing is part of the design.** The [browser journey
+suite](web/tests/browser.mjs) drives the real UI against disposable-schema
+PostgreSQL with deterministic PayPal/classifier/search adapters: full capture,
+denied void, stale-packet rejection, lost-response and double-submit recovery,
+checkout-callback recovery, session-scope attacks, consent races, keyboard-only
+intake, and layout gates (no horizontal overflow at 320/390 px or 200% zoom,
+44 px touch targets). Go race-detector runs, adversarial fixtures and a
+40-case executable safety catalog back the same boundaries. CI runs the
+PostgreSQL suite, race checks, web tests and the Python runtime contract tests.
 
-Successful empty retrieval does not mean a request is safe. Valid abstention
-requires reviewer attention. Unsupported/unavailable analysis blocks release;
-subject answers and cancellation remain available. Contact confirmation records
-that enrolled account's statement; it does not prove an event objectively occurred.
+## Run it locally
 
-## Data and measured limitations
+```bash
+# 1. PostgreSQL
+docker run -d --name pause-pg -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=pause -p 54321:5432 postgres:16-alpine
 
-The pilot uses 400 CC0 synthetic labeled examples, grouped into ten shared-clause
-clusters before a 240/80/80 train/validation/test split. Only one author audited
-labels. TF-IDF preprocessing and weights use train only; thresholds use validation
-only. The final classifier test and 30 frozen retrieval queries remain sealed for
-P06. Runtime development tests are separate from those final evaluations.
+# 2. Configure (sandbox credentials, session/encryption keys)
+cp .env.example .env   # fill in PAYPAL_* and the two KEY values
 
-The linear model's validation micro F1 is about .764 versus .772 for fixed rules,
-with eight benign validation false triggers. No advantage over rules or real-world
-effectiveness is claimed. See [the complete validation report](models/validation-report.json).
-The independent development audit found 72 of 80 validation messages abstained;
-an ordinary quoted scam warning also triggered false signals. These results
-limit present usefulness and remain visible in the debugging report. No model or
-threshold was tuned after those probes.
-The [runtime report](models/runtime-budget.json) records actual startup, memory and
-CPU latency from development probes. SetFit experimentation is deferred.
+# 3. Migrate, seed demo accounts, build the UI, start the API
+DATABASE_URL='postgres://postgres:postgres@127.0.0.1:54321/pause?sslmode=disable' go run ./cmd/migrate
+DATABASE_URL='postgres://postgres:postgres@127.0.0.1:54321/pause?sslmode=disable' SEED_PASSWORD='Synthetic-Pause-password!' go run ./cmd/seed
+npm --prefix web install && npm --prefix web run build
+DATABASE_URL='postgres://postgres:postgres@127.0.0.1:54321/pause?sslmode=disable' go run ./cmd/api
+# → http://127.0.0.1:8080  (set APP_BASE_URL to the origin you browse from)
+```
 
-The public corpus has 18 original summaries with source/revision/review metadata.
-Private messages are never trained on or added to the public corpus. Opted-in
-history is indexed separately with the pinned encoder, current permission checks
-and vector/text cleanup. PostgreSQL supplies the complete permitted timeline and
-separate requested, held, captured, pending, unknown and seeded-history totals.
-History opt-in requires a successful current private lookup before release;
-opt-out is NOT_APPLICABLE. History permission never means training permission.
+Normal startup never seeds people or history. Migrations run through **version 9**.
 
-## Scope
+```bash
+# Verify
+go vet ./... && go test ./...
+TEST_DATABASE_URL='postgres://...' go test ./internal/httpapi        # disposable-schema suite
+TEST_DATABASE_URL='postgres://...' P05_BROWSER=1 \
+  go test ./internal/httpapi -run 'TestP05|TestP06'                  # browser journeys
+npm --prefix web test                                                # SSR copy/behavior tests
+```
 
-English text and USD purchases through one controlled sandbox merchant are
-supported. Pause controls capture only in integrated checkout flows. It cannot
-intercept arbitrary PayPal transfers, bank wires or purchases elsewhere. Guardian
-conflict protection, generative models, institutional verification, personalized
-anomaly learning and native apps remain outside this iteration.
+Full deployment, HTTPS, index bootstrap and recovery drills:
+[deploy/README.md](deploy/README.md). Private inference setup:
+[ml/README.md](ml/README.md). Search setup: [search/README.md](search/README.md).
+Residual security notes: [deploy/SECURITY.md](deploy/SECURITY.md).
 
-## Run and verify
+## Scope and limits (read this)
 
-Follow the foundation and payment setup for PostgreSQL and paired sandbox
-credentials. Apply migrations through version 8. Preserve populated environment
-files; select an ignored local configuration with ENV_FILE. Start API and worker
-separately. The investigation runbook describes exact Python dependency locks,
-reproducible artifact training/download, private service authentication and public
-index ingestion through cmd/investigation-setup. Run cmd/history-setup for the
-separate private index and cmd/worker for durable projection dispatch. Public setup does not depend on
-ignored planning files.
+- English messages, USD, one controlled sandbox merchant. Pause cannot intercept
+  PayPal transfers, wires or purchases made outside integrated checkout.
+- The classifier is roughly on par with fixed rules and is treated as one signal,
+  never as proof. Successful empty retrieval is not a safety finding.
+- A confirmed answer records what the enrolled account *says*; it does not prove
+  an emergency happened. Reviewer judgment stays in the loop by design.
+- Hosted acceptance (public HTTPS deployment, live webhook verification, hosted
+  capture/void drills) is the remaining open work beyond the local evidence.
 
-The repository includes the frozen public synthetic splits, reviewed manifests,
-source code and sanitized acceptance evidence. Model weights, downloaded encoder
-files, populated environment files, local databases and raw verification logs are
-ignored. Recreate the weights using the runbook; do not regenerate the frozen
-splits with `--curate` or use final test/relevance cases for development tuning.
+## Repository map
 
-Run the actual PostgreSQL suite with TEST_DATABASE_URL and set P04_LIVE_ELASTIC=1
-to include actual private retrieval/cleanup tests. Run go vet ./..., the frontend
-build, and npm.cmd --prefix web test. Python unittest loads the approved classifier and encoder
-for runtime/contract checks. The 40-case product fixture catalog references
-executable Go authority, payment and retrieval tests. Test-only provider/search
-adapters do not count as live sandbox evidence. Windows race checks require CGO
-and a compatible C compiler as documented in the P02 acceptance report.
-Ten additional concrete adversarial fixtures exercise intake, addressed tasks,
-evidence and corrected versions. The independent report records actual-artifact,
-real Elastic source withdrawal/restoration, PostgreSQL and race results separately.
-
-GitHub Actions runs the PostgreSQL Go checks (including the race detector), web
-checks, and Python runtime tests. Its Python job installs the locked environment,
-trains from the existing train/validation splits and downloads the pinned public
-encoder in its disposable checkout. This CI build does not approve a deployment
-release or replace the recorded sandbox evidence.
-
-The historical PayPal spike and P00 toy ML/search probes remain separate
-feasibility evidence. The product ignores the spike's legacy AI_* settings.
-
-Pause is being developed for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/).
+```
+cmd/            api, worker, migrate, seed, ops, eval, demo-seed, setup tools
+internal/       app (domain), httpapi, store, auth, investigation, config
+migrations/     01–09, applied through the migrate command
+web/            React frontend + Playwright journey suite (web/tests)
+ml/             private inference service, frozen manifests, runtime budget
+search/         retrieval configuration and frozen evaluation sets
+models/         reviewed classifier card, manifests, validation report
+deploy/         Docker/compose/Caddy runbook + security notes
+reports/        measured hardening, disclosure, dependency and acceptance evidence
+```

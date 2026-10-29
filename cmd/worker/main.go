@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"github.com/google/uuid"
 	"os"
 	"time"
 
@@ -22,6 +24,7 @@ func main() {
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
 	log.Info("worker_started", "projection_dispatch", "ENABLED")
+	workerID := uuid.NewString()
 	for {
 		if e = a.TickPayments(ctx); e != nil {
 			log.Error("payment_scan_failed", "reason_code", "DATABASE_UNAVAILABLE")
@@ -52,6 +55,11 @@ func main() {
 		if e = jobs.ReapExhausted(ctx); e != nil {
 			log.Error("job_cleanup_failed")
 		}
+		healthCtx, cancelHealth := context.WithTimeout(ctx, 3*time.Second)
+		if e = a.Heartbeat(healthCtx, workerID); e != nil {
+			log.Error("worker_heartbeat_failed", "reason_code", "DATABASE_UNAVAILABLE")
+		}
+		cancelHealth()
 		// Only expired transient records are pruned; unresolved provider operations,
 		// audit events and projection tombstones remain durable for reconciliation.
 		if _, e = a.DB.Pool.Exec(ctx, `WITH sessions_deleted AS (DELETE FROM sessions WHERE expires_at<=$1), buckets_deleted AS (DELETE FROM login_buckets WHERE window_start<$2) DELETE FROM idempotency_records WHERE expires_at<=$1`, a.Clock.Now(), a.Clock.Now().Add(-24*time.Hour)); e != nil {

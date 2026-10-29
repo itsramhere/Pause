@@ -15,8 +15,19 @@ func Open(ctx context.Context, dsn string) (*Store, error) {
 	if e != nil {
 		return nil, e
 	}
-	cfg.MaxConns = 10
+	// Respect explicit pgx pool_max_conns in hosted DSNs. Bound idle retention.
+	if cfg.MaxConns > 10 {
+		cfg.MaxConns = 10
+	}
+	cfg.MaxConnIdleTime = 5 * time.Minute
+	cfg.MaxConnLifetime = 30 * time.Minute
 	cfg.ConnConfig.ConnectTimeout = 3 * time.Second
+	if cfg.ConnConfig.RuntimeParams["statement_timeout"] == "" {
+		cfg.ConnConfig.RuntimeParams["statement_timeout"] = "15000"
+	}
+	if cfg.ConnConfig.RuntimeParams["lock_timeout"] == "" {
+		cfg.ConnConfig.RuntimeParams["lock_timeout"] = "5000"
+	}
 	p, e := pgxpool.NewWithConfig(ctx, cfg)
 	if e != nil {
 		return nil, e

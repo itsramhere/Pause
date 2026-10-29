@@ -1,0 +1,1377 @@
+{
+  "available": 30,
+  "classifier": {
+    "schema_version": "pause-evidence-v1",
+    "status": "RELEASED",
+    "model_version": "tfidf-linear-v1",
+    "artifact_hash": "6a7d7707bc24329519a548aa0ba2f53998c9fbd1f38d9fdc214b32aafd497b07",
+    "label_schema_version": "pause-signals-v1",
+    "preprocessing_version": "word12-char35-v1",
+    "labels": [
+      "urgent_payment_pressure",
+      "secrecy_pressure",
+      "impersonation_style_request",
+      "advance_fee_or_release_fee"
+    ],
+    "thresholds": {
+      "advance_fee_or_release_fee": 0.35,
+      "impersonation_style_request": 0.1,
+      "secrecy_pressure": 0.2,
+      "urgent_payment_pressure": 0.05
+    },
+    "dataset_hash": "0a696454b16ba259b74bd457eb276bcb3bdccc986bab39abc723e3540b2aeba6",
+    "split_hash": "89d21bd220408ae4315ab26c560fcf5edf93705e2bb6894d0ba5a0b16ef3dc3a",
+    "seed": 42,
+    "dependency_lock_hash": "e37154abff531c05d58f77b85774a641af4625ddec9050ca4ff3b15216a34a3c",
+    "code_revision": "6542307a7252b1ce038d18ba4068fa34a09e562e+p03-source",
+    "language": "en"
+  },
+  "corpus_sha256": "a75608f122278b546a15df1eba700086a8ecfe628f1f8a2a6377ec058c847837",
+  "denominator": 30,
+  "encoder": {
+    "schema_version": "pause-evidence-v1",
+    "status": "RELEASED",
+    "encoder_version": "minilm-l6-1110a243-v1",
+    "artifact_hash": "e8cbc0408bd6993d8bc25a07a7ab162394573a11c2333510501561ff8caa7f18",
+    "upstream_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "license": "Apache-2.0",
+    "preprocessing_version": "mean256-l2-v1",
+    "dimension": 384,
+    "normalized": true,
+    "similarity": "cosine"
+  },
+  "fusion": "go-rrf60-v1",
+  "latency_ms": {
+    "p50": 85,
+    "p95": 187
+  },
+  "mapping": "playbooks-v1",
+  "private_evaluation": "Separate integration report; do not conflate public relevance with scope/privacy or workflow correctness",
+  "query_sha256": "2b71cbc6df9fc2b6e7598f891c5f6a808d7a2dd45e2c3fe9fdb67253313a739d",
+  "rows": [
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "voice",
+            "family-emergency",
+            "advance-promise"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "advance-promise",
+            "voice",
+            "urgent-threat"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "family-emergency",
+            "voice",
+            "talk-trusted"
+          ]
+        }
+      },
+      "duration_ms": 917,
+      "gold_count": 2,
+      "query_id": "public-01",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "talk-trusted",
+            "family-emergency",
+            "pretend-government"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "talk-trusted",
+            "immediate-emergency",
+            "loan-insurance"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "family-emergency",
+            "authority-relative",
+            "secrecy"
+          ]
+        }
+      },
+      "duration_ms": 187,
+      "gold_count": 1,
+      "query_id": "public-02",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "secrecy",
+            "known-channel",
+            "loan-paperwork"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "secrecy",
+            "known-channel",
+            "urgent-threat"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "secrecy",
+            "known-channel",
+            "authority-relative"
+          ]
+        }
+      },
+      "duration_ms": 137,
+      "gold_count": 1,
+      "query_id": "public-03",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "voice",
+            "advance-promise",
+            "secrecy"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "urgent-threat",
+            "advance-promise",
+            "immediate-emergency"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "voice",
+            "secrecy",
+            "talk-trusted"
+          ]
+        }
+      },
+      "duration_ms": 137,
+      "gold_count": 1,
+      "query_id": "public-04",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "family-emergency",
+            "authority-relative",
+            "secrecy"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "advance-promise",
+            "authority-relative",
+            "family-emergency"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "family-emergency",
+            "authority-relative",
+            "secrecy"
+          ]
+        }
+      },
+      "duration_ms": 115,
+      "gold_count": 2,
+      "query_id": "public-05",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "authority-relative",
+            "advance-promise",
+            "fake-support"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "authority-relative",
+            "known-channel",
+            "advance-promise"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "authority-relative",
+            "family-emergency",
+            "pretend-government"
+          ]
+        }
+      },
+      "duration_ms": 120,
+      "gold_count": 1,
+      "query_id": "public-06",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "family-emergency",
+            "known-channel",
+            "authority-relative"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "advance-promise",
+            "family-emergency",
+            "known-channel"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "family-emergency",
+            "known-channel",
+            "secrecy"
+          ]
+        }
+      },
+      "duration_ms": 98,
+      "gold_count": 1,
+      "query_id": "public-07",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.6666666666666666,
+          "recall_at_3": 1,
+          "relevant_count": 2,
+          "top3_ids": [
+            "voice",
+            "known-channel",
+            "secrecy"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.6666666666666666,
+          "recall_at_3": 1,
+          "relevant_count": 2,
+          "top3_ids": [
+            "voice",
+            "known-channel",
+            "advance-promise"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.6666666666666666,
+          "recall_at_3": 1,
+          "relevant_count": 2,
+          "top3_ids": [
+            "voice",
+            "known-channel",
+            "authority-relative"
+          ]
+        }
+      },
+      "duration_ms": 84,
+      "gold_count": 2,
+      "query_id": "public-08",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "immediate-emergency",
+            "family-emergency",
+            "known-channel"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "immediate-emergency",
+            "advance-promise",
+            "urgent-threat"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "immediate-emergency",
+            "family-emergency",
+            "fake-support"
+          ]
+        }
+      },
+      "duration_ms": 127,
+      "gold_count": 1,
+      "query_id": "public-09",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "immediate-emergency",
+            "voice",
+            "known-channel"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "immediate-emergency",
+            "advance-promise",
+            "secrecy"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "family-emergency",
+            "immediate-emergency",
+            "voice"
+          ]
+        }
+      },
+      "duration_ms": 175,
+      "gold_count": 2,
+      "query_id": "public-10",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "known-channel",
+            "authority-relative",
+            "secrecy"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "known-channel",
+            "fake-support",
+            "advance-promise"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "known-channel",
+            "authority-relative",
+            "secrecy"
+          ]
+        }
+      },
+      "duration_ms": 107,
+      "gold_count": 1,
+      "query_id": "public-11",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "family-emergency",
+            "known-channel",
+            "secrecy"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "family-emergency",
+            "known-channel",
+            "urgent-threat"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "known-channel",
+            "family-emergency",
+            "authority-relative"
+          ]
+        }
+      },
+      "duration_ms": 103,
+      "gold_count": 1,
+      "query_id": "public-12",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "pretend-government",
+            "talk-trusted",
+            "family-emergency"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "known-channel",
+            "talk-trusted",
+            "pretend-government"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "pretend-government",
+            "talk-trusted",
+            "family-emergency"
+          ]
+        }
+      },
+      "duration_ms": 80,
+      "gold_count": 2,
+      "query_id": "public-13",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "pretend-government",
+            "advance-promise",
+            "authority-relative"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "advance-promise",
+            "pretend-government",
+            "authority-relative"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "pretend-government",
+            "authority-relative",
+            "family-emergency"
+          ]
+        }
+      },
+      "duration_ms": 80,
+      "gold_count": 1,
+      "query_id": "public-14",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "immediate-emergency",
+            "talk-trusted",
+            "family-emergency"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "crypto",
+            "immediate-emergency",
+            "talk-trusted"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "loan-paperwork",
+            "immediate-emergency",
+            "talk-trusted"
+          ]
+        }
+      },
+      "duration_ms": 73,
+      "gold_count": 1,
+      "query_id": "public-15",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "voice",
+            "talk-trusted",
+            "advance-promise"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "talk-trusted",
+            "advance-promise",
+            "voice"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "fake-support",
+            "family-emergency",
+            "voice"
+          ]
+        }
+      },
+      "duration_ms": 70,
+      "gold_count": 1,
+      "query_id": "public-16",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "gift-card",
+            "advance-promise",
+            "loan-guarantee"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "gift-card",
+            "advance-promise",
+            "loan-insurance"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "gift-card",
+            "known-channel",
+            "loan-guarantee"
+          ]
+        }
+      },
+      "duration_ms": 65,
+      "gold_count": 1,
+      "query_id": "public-17",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "voice",
+            "family-emergency",
+            "advance-promise"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "advance-promise",
+            "voice",
+            "urgent-threat"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "voice",
+            "fake-support",
+            "gift-card"
+          ]
+        }
+      },
+      "duration_ms": 94,
+      "gold_count": 1,
+      "query_id": "public-18",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "crypto",
+            "talk-trusted",
+            "advance-promise"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "crypto",
+            "urgent-threat",
+            "advance-promise"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "talk-trusted",
+            "crypto",
+            "fake-support"
+          ]
+        }
+      },
+      "duration_ms": 85,
+      "gold_count": 1,
+      "query_id": "public-19",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "crypto",
+            "fake-support",
+            "talk-trusted"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "known-channel",
+            "crypto",
+            "fake-support"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "crypto",
+            "talk-trusted",
+            "fake-support"
+          ]
+        }
+      },
+      "duration_ms": 100,
+      "gold_count": 1,
+      "query_id": "public-20",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "fake-support",
+            "family-emergency",
+            "known-channel"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "advance-promise",
+            "fake-support",
+            "known-channel"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "fake-support",
+            "family-emergency",
+            "talk-trusted"
+          ]
+        }
+      },
+      "duration_ms": 102,
+      "gold_count": 1,
+      "query_id": "public-21",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "advance-promise",
+            "fake-support",
+            "family-emergency"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "advance-promise",
+            "fake-support",
+            "urgent-threat"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "fake-support",
+            "advance-promise",
+            "family-emergency"
+          ]
+        }
+      },
+      "duration_ms": 78,
+      "gold_count": 1,
+      "query_id": "public-22",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "talk-trusted",
+            "advance-promise",
+            "crypto"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "talk-trusted",
+            "crypto",
+            "urgent-threat"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "talk-trusted",
+            "advance-promise",
+            "loan-processing"
+          ]
+        }
+      },
+      "duration_ms": 66,
+      "gold_count": 1,
+      "query_id": "public-23",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "advance-promise",
+            "loan-paperwork",
+            "loan-processing"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "advance-promise",
+            "loan-processing",
+            "loan-paperwork"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "loan-paperwork",
+            "loan-processing",
+            "advance-promise"
+          ]
+        }
+      },
+      "duration_ms": 71,
+      "gold_count": 2,
+      "query_id": "public-24",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "loan-insurance",
+            "loan-processing",
+            "advance-promise"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 0.5,
+          "relevant_count": 1,
+          "top3_ids": [
+            "loan-insurance",
+            "advance-promise",
+            "loan-processing"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.6666666666666666,
+          "recall_at_3": 1,
+          "relevant_count": 2,
+          "top3_ids": [
+            "loan-insurance",
+            "loan-processing",
+            "loan-guarantee"
+          ]
+        }
+      },
+      "duration_ms": 63,
+      "gold_count": 2,
+      "query_id": "public-25",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "loan-paperwork",
+            "advance-promise",
+            "loan-processing"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "advance-promise",
+            "loan-paperwork",
+            "talk-trusted"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "loan-paperwork",
+            "loan-processing",
+            "advance-promise"
+          ]
+        }
+      },
+      "duration_ms": 64,
+      "gold_count": 1,
+      "query_id": "public-26",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "ordinary-fee",
+            "loan-insurance",
+            "pretend-government"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "ordinary-fee",
+            "known-channel",
+            "crypto"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "ordinary-fee",
+            "loan-insurance",
+            "loan-paperwork"
+          ]
+        }
+      },
+      "duration_ms": 64,
+      "gold_count": 1,
+      "query_id": "public-27",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "ordinary-fee",
+            "loan-guarantee",
+            "loan-insurance"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "loan-guarantee",
+            "ordinary-fee",
+            "known-channel"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "ordinary-fee",
+            "loan-insurance",
+            "loan-guarantee"
+          ]
+        }
+      },
+      "duration_ms": 84,
+      "gold_count": 1,
+      "query_id": "public-28",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "advance-promise",
+            "loan-processing",
+            "fake-support"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "advance-promise",
+            "fake-support",
+            "talk-trusted"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": false,
+          "precision_at_3": 0.3333333333333333,
+          "recall_at_3": 1,
+          "relevant_count": 1,
+          "top3_ids": [
+            "advance-promise",
+            "loan-processing",
+            "loan-paperwork"
+          ]
+        }
+      },
+      "duration_ms": 74,
+      "gold_count": 1,
+      "query_id": "public-29",
+      "status": "OK"
+    },
+    {
+      "branches": {
+        "fused": {
+          "correct_no_match": false,
+          "no_match_case": true,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "family-emergency",
+            "loan-insurance",
+            "secrecy"
+          ]
+        },
+        "lexical": {
+          "correct_no_match": false,
+          "no_match_case": true,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "loan-insurance",
+            "gift-card",
+            "voice"
+          ]
+        },
+        "vector": {
+          "correct_no_match": false,
+          "no_match_case": true,
+          "precision_at_3": 0,
+          "recall_at_3": 0,
+          "relevant_count": 0,
+          "top3_ids": [
+            "immediate-emergency",
+            "family-emergency",
+            "pretend-government"
+          ]
+        }
+      },
+      "duration_ms": 75,
+      "gold_count": 0,
+      "query_id": "public-30",
+      "status": "OK"
+    }
+  ],
+  "schema_version": "pause-final-public-retrieval-v1",
+  "scope": "Previously sealed synthetic public relevance set only; source IDs, no text/vectors/secrets. No runtime no-match threshold exists; poor no-match is a result, never safety assurance.",
+  "template": "public-evidence-template-v1",
+  "unavailable": 0
+}

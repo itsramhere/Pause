@@ -1,0 +1,78 @@
+{
+  "scope": "Local Linux containers, isolated empty PG, real approved inference and Elastic. No hosted HTTPS/webhook/payment outcome claimed.",
+  "/": {
+    "status": 200,
+    "nosniff": "nosniff",
+    "frame_options": "DENY"
+  },
+  "/healthz": {
+    "status": 200,
+    "nosniff": "nosniff",
+    "frame_options": "DENY"
+  },
+  "/readyz": {
+    "status": 200,
+    "nosniff": "nosniff",
+    "frame_options": "DENY"
+  },
+  "/release-readyz": {
+    "status": 503
+  },
+  "/api/session": {
+    "status": 401
+  },
+  "/api/operations/status": {
+    "status": 401
+  },
+  "images": {
+    "pause-app:p06-local": "sha256:a3c094f9685fb532d7d0fc7cd429863ba97ad1df2ae4e750d28419977d4681cb",
+    "pause-inference:p06-local": "sha256:f09223d7031b00835da40ba09c920b268f96b1ad778ed7020c20f02c59153e1e",
+    "postgres:18.1": "sha256:1090bc3a8ccfb0b55f78a494d76f8d603434f7e4553543d6e807bc7bd6bbd17f",
+    "docker.elastic.co/elasticsearch/elasticsearch:9.5.5": "sha256:13b4a40bb095774f5fda635e45fd5677cc6a26565e42b24997b0c72b88e75984"
+  },
+  "public_queries": {
+    "denominator": 30,
+    "available_before": 30,
+    "available_during_inference_outage": 0,
+    "unavailable_during_outage": 30,
+    "available_after_restart": 30,
+    "api_readiness_during_outage": 200,
+    "scope": "Previously opened public set reused for availability only; no new quality claim or threshold change."
+  },
+  "inference": {
+    "status": "OK",
+    "schema_version": "pause-evidence-v1",
+    "budget": {
+      "startup_ms": 9629.54,
+      "rss_bytes": 461905920,
+      "peak_rss_bytes": 461905920
+    },
+    "classifier_artifact_hash": "6a7d7707bc24329519a548aa0ba2f53998c9fbd1f38d9fdc214b32aafd497b07",
+    "encoder_artifact_hash": "e8cbc0408bd6993d8bc25a07a7ab162394573a11c2333510501561ff8caa7f18"
+  },
+  "database_outage": {
+    "liveness": {
+      "status": 200,
+      "nosniff": "nosniff",
+      "frame_options": "DENY"
+    },
+    "api_readiness": {
+      "status": 503
+    }
+  },
+  "database_recovered_readiness": {
+    "status": 200,
+    "nosniff": "nosniff",
+    "frame_options": "DENY"
+  },
+  "worker_status": {
+    "overdue_voids": 0,
+    "old_reconciliations": 0,
+    "failed_jobs": 0,
+    "queue_lag_seconds": 0,
+    "failed_verification": 0,
+    "pending_private_deletes": 0,
+    "worker_healthy": true,
+    "alerts": []
+  }
+}

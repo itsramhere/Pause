@@ -1,0 +1,2997 @@
+{
+  "classifier": {
+    "schema_version": "pause-evidence-v1",
+    "status": "RELEASED",
+    "model_version": "tfidf-linear-v1",
+    "artifact_hash": "6a7d7707bc24329519a548aa0ba2f53998c9fbd1f38d9fdc214b32aafd497b07",
+    "label_schema_version": "pause-signals-v1",
+    "preprocessing_version": "word12-char35-v1",
+    "labels": [
+      "urgent_payment_pressure",
+      "secrecy_pressure",
+      "impersonation_style_request",
+      "advance_fee_or_release_fee"
+    ],
+    "thresholds": {
+      "advance_fee_or_release_fee": 0.35,
+      "impersonation_style_request": 0.1,
+      "secrecy_pressure": 0.2,
+      "urgent_payment_pressure": 0.05
+    },
+    "dataset_hash": "0a696454b16ba259b74bd457eb276bcb3bdccc986bab39abc723e3540b2aeba6",
+    "split_hash": "89d21bd220408ae4315ab26c560fcf5edf93705e2bb6894d0ba5a0b16ef3dc3a",
+    "seed": 42,
+    "dependency_lock_hash": "e37154abff531c05d58f77b85774a641af4625ddec9050ca4ff3b15216a34a3c",
+    "code_revision": "6542307a7252b1ce038d18ba4068fa34a09e562e+p03-source",
+    "language": "en"
+  },
+  "denominator": 40,
+  "encoder": {
+    "schema_version": "pause-evidence-v1",
+    "status": "RELEASED",
+    "encoder_version": "minilm-l6-1110a243-v1",
+    "artifact_hash": "e8cbc0408bd6993d8bc25a07a7ab162394573a11c2333510501561ff8caa7f18",
+    "upstream_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "license": "Apache-2.0",
+    "preprocessing_version": "mean256-l2-v1",
+    "dimension": 384,
+    "normalized": true,
+    "similarity": "cosine"
+  },
+  "fixture_sha256": "793326f1776be279171ad545cc6eecb936bea17aa684d54feddb9cce6170e1fa",
+  "fusion": "go-rrf60-v1",
+  "policy": "pause-pattern-policy-v1",
+  "recorded_at": "2026-10-28T07:47:38.970195Z",
+  "rows": [
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "transport-1",
+      "lookup_status": "OK",
+      "prior_rows": 0,
+      "retrieval_ms": 34,
+      "step": 1,
+      "totals": {
+        "requested_minor": 4000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "immediate-emergency",
+            "secrecy",
+            "voice"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "OK",
+      "id": "transport-2",
+      "lookup_status": "OK",
+      "prior_rows": 1,
+      "retrieval_ms": 28,
+      "step": 2,
+      "totals": {
+        "requested_minor": 22000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "family-emergency",
+            "advance-promise",
+            "gift-card"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "OK",
+      "id": "transport-3",
+      "lookup_status": "OK",
+      "prior_rows": 2,
+      "retrieval_ms": 31,
+      "step": 3,
+      "totals": {
+        "requested_minor": 112000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL",
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "family-emergency",
+            "known-channel",
+            "secrecy"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 2,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL",
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL",
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "transport-4",
+      "lookup_status": "OK",
+      "prior_rows": 3,
+      "retrieval_ms": 31,
+      "step": 4,
+      "totals": {
+        "requested_minor": 115000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure"
+          ],
+          "source_ids": [
+            "advance-promise",
+            "voice",
+            "fake-support"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "groceries-1",
+      "lookup_status": "OK",
+      "prior_rows": 0,
+      "retrieval_ms": 21,
+      "step": 1,
+      "totals": {
+        "requested_minor": 2000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "talk-trusted",
+            "voice",
+            "immediate-emergency"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "groceries-2",
+      "lookup_status": "OK",
+      "prior_rows": 1,
+      "retrieval_ms": 29,
+      "step": 2,
+      "totals": {
+        "requested_minor": 5000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": [
+            "talk-trusted",
+            "advance-promise",
+            "voice"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "groceries-3",
+      "lookup_status": "OK",
+      "prior_rows": 2,
+      "retrieval_ms": 23,
+      "step": 3,
+      "totals": {
+        "requested_minor": 9000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "voice",
+            "gift-card",
+            "known-channel"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "groceries-4",
+      "lookup_status": "OK",
+      "prior_rows": 3,
+      "retrieval_ms": 24,
+      "step": 4,
+      "totals": {
+        "requested_minor": 11500,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": [
+            "talk-trusted",
+            "secrecy",
+            "advance-promise"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "fees-1",
+      "lookup_status": "OK",
+      "prior_rows": 0,
+      "retrieval_ms": 27,
+      "step": 1,
+      "totals": {
+        "requested_minor": 5000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 2,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "advance_fee_or_release_fee"
+          ],
+          "source_ids": [
+            "loan-processing",
+            "loan-paperwork",
+            "loan-insurance"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 2,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "advance_fee_or_release_fee"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "fees-2",
+      "lookup_status": "OK",
+      "prior_rows": 1,
+      "retrieval_ms": 26,
+      "step": 2,
+      "totals": {
+        "requested_minor": 15000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request",
+            "advance_fee_or_release_fee"
+          ],
+          "source_ids": [
+            "loan-insurance",
+            "loan-paperwork",
+            "loan-processing"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request",
+            "advance_fee_or_release_fee"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "fees-3",
+      "lookup_status": "OK",
+      "prior_rows": 2,
+      "retrieval_ms": 27,
+      "step": 3,
+      "totals": {
+        "requested_minor": 40000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "advance_fee_or_release_fee"
+          ],
+          "source_ids": [
+            "advance-promise",
+            "loan-paperwork",
+            "loan-processing"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "advance_fee_or_release_fee"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "fees-4",
+      "lookup_status": "OK",
+      "prior_rows": 3,
+      "retrieval_ms": 33,
+      "step": 4,
+      "totals": {
+        "requested_minor": 80000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request",
+            "advance_fee_or_release_fee"
+          ],
+          "source_ids": [
+            "advance-promise",
+            "loan-paperwork",
+            "loan-processing"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request",
+            "advance_fee_or_release_fee"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "OK",
+      "id": "authority-1",
+      "lookup_status": "OK",
+      "prior_rows": 0,
+      "retrieval_ms": 37,
+      "step": 1,
+      "totals": {
+        "requested_minor": 3000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 2,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "family-emergency",
+            "secrecy",
+            "voice"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 2,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "OK",
+      "id": "authority-2",
+      "lookup_status": "OK",
+      "prior_rows": 1,
+      "retrieval_ms": 24,
+      "step": 2,
+      "totals": {
+        "requested_minor": 18000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "family-emergency",
+            "fake-support",
+            "secrecy"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "authority-3",
+      "lookup_status": "OK",
+      "prior_rows": 2,
+      "retrieval_ms": 22,
+      "step": 3,
+      "totals": {
+        "requested_minor": 78000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "voice",
+            "secrecy",
+            "loan-paperwork"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "authority-4",
+      "lookup_status": "OK",
+      "prior_rows": 3,
+      "retrieval_ms": 26,
+      "step": 4,
+      "totals": {
+        "requested_minor": 168000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure"
+          ],
+          "source_ids": [
+            "advance-promise",
+            "immediate-emergency",
+            "fake-support"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "ordinary-fee-1",
+      "lookup_status": "OK",
+      "prior_rows": 0,
+      "retrieval_ms": 43,
+      "step": 1,
+      "totals": {
+        "requested_minor": 1000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": [
+            "loan-processing",
+            "loan-paperwork",
+            "advance-promise"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "ordinary-fee-2",
+      "lookup_status": "OK",
+      "prior_rows": 1,
+      "retrieval_ms": 25,
+      "step": 2,
+      "totals": {
+        "requested_minor": 3000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": [
+            "ordinary-fee",
+            "loan-paperwork",
+            "loan-guarantee"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "ordinary-fee-3",
+      "lookup_status": "OK",
+      "prior_rows": 2,
+      "retrieval_ms": 25,
+      "step": 3,
+      "totals": {
+        "requested_minor": 6000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request",
+            "advance_fee_or_release_fee"
+          ],
+          "source_ids": [
+            "known-channel",
+            "secrecy",
+            "talk-trusted"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request",
+            "advance_fee_or_release_fee"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "ordinary-fee-4",
+      "lookup_status": "OK",
+      "prior_rows": 3,
+      "retrieval_ms": 20,
+      "step": 4,
+      "totals": {
+        "requested_minor": 10000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": [
+            "secrecy",
+            "advance-promise",
+            "talk-trusted"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "repair-1",
+      "lookup_status": "OK",
+      "prior_rows": 0,
+      "retrieval_ms": 24,
+      "step": 1,
+      "totals": {
+        "requested_minor": 5000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": [
+            "advance-promise",
+            "immediate-emergency",
+            "fake-support"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "repair-2",
+      "lookup_status": "OK",
+      "prior_rows": 1,
+      "retrieval_ms": 25,
+      "step": 2,
+      "totals": {
+        "requested_minor": 15000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "talk-trusted",
+            "secrecy",
+            "voice"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "repair-3",
+      "lookup_status": "OK",
+      "prior_rows": 2,
+      "retrieval_ms": 23,
+      "step": 3,
+      "totals": {
+        "requested_minor": 45000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "family-emergency",
+            "advance-promise",
+            "known-channel"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "repair-4",
+      "lookup_status": "OK",
+      "prior_rows": 3,
+      "retrieval_ms": 28,
+      "step": 4,
+      "totals": {
+        "requested_minor": 135000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL",
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "fake-support",
+            "loan-paperwork",
+            "talk-trusted"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 2,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL",
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL",
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "UNSUPPORTED",
+      "id": "unsupported-1",
+      "lookup_status": "OK",
+      "prior_rows": 0,
+      "retrieval_ms": 26,
+      "step": 1,
+      "totals": {
+        "requested_minor": 2000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": [
+            "known-channel",
+            "ordinary-fee",
+            "authority-relative"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "UNSUPPORTED",
+      "id": "unsupported-2",
+      "lookup_status": "OK",
+      "prior_rows": 1,
+      "retrieval_ms": 21,
+      "step": 2,
+      "totals": {
+        "requested_minor": 5000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": [
+            "talk-trusted",
+            "loan-guarantee",
+            "crypto"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "unsupported-3",
+      "lookup_status": "OK",
+      "prior_rows": 2,
+      "retrieval_ms": 35,
+      "step": 3,
+      "totals": {
+        "requested_minor": 9000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": [
+            "talk-trusted",
+            "secrecy",
+            "voice"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "unsupported-4",
+      "lookup_status": "OK",
+      "prior_rows": 3,
+      "retrieval_ms": 23,
+      "step": 4,
+      "totals": {
+        "requested_minor": 14000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": [
+            "crypto",
+            "talk-trusted",
+            "authority-relative"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "voice-1",
+      "lookup_status": "OK",
+      "prior_rows": 0,
+      "retrieval_ms": 22,
+      "step": 1,
+      "totals": {
+        "requested_minor": 4000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "voice",
+            "family-emergency",
+            "authority-relative"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "voice-2",
+      "lookup_status": "OK",
+      "prior_rows": 1,
+      "retrieval_ms": 26,
+      "step": 2,
+      "totals": {
+        "requested_minor": 12000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "voice",
+            "family-emergency",
+            "authority-relative"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "voice-3",
+      "lookup_status": "OK",
+      "prior_rows": 2,
+      "retrieval_ms": 24,
+      "step": 3,
+      "totals": {
+        "requested_minor": 36000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "voice",
+            "known-channel",
+            "fake-support"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "voice-4",
+      "lookup_status": "OK",
+      "prior_rows": 3,
+      "retrieval_ms": 23,
+      "step": 4,
+      "totals": {
+        "requested_minor": 108000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL",
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure"
+          ],
+          "source_ids": [
+            "immediate-emergency",
+            "family-emergency",
+            "talk-trusted"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 2,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL",
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL",
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "planned-1",
+      "lookup_status": "OK",
+      "prior_rows": 0,
+      "retrieval_ms": 29,
+      "step": 1,
+      "totals": {
+        "requested_minor": 4000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "immediate-emergency",
+            "talk-trusted",
+            "fake-support"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "planned-2",
+      "lookup_status": "OK",
+      "prior_rows": 1,
+      "retrieval_ms": 25,
+      "step": 2,
+      "totals": {
+        "requested_minor": 10000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "advance-promise",
+            "gift-card",
+            "loan-insurance"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "planned-3",
+      "lookup_status": "OK",
+      "prior_rows": 2,
+      "retrieval_ms": 22,
+      "step": 3,
+      "totals": {
+        "requested_minor": 19000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": [
+            "immediate-emergency",
+            "pretend-government",
+            "gift-card"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "planned-4",
+      "lookup_status": "OK",
+      "prior_rows": 3,
+      "retrieval_ms": 19,
+      "step": 4,
+      "totals": {
+        "requested_minor": 29000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "voice",
+            "fake-support",
+            "ordinary-fee"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 3,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "boundary-1",
+      "lookup_status": "OK",
+      "prior_rows": 0,
+      "retrieval_ms": 19,
+      "step": 1,
+      "totals": {
+        "requested_minor": 10000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request",
+            "advance_fee_or_release_fee"
+          ],
+          "source_ids": [
+            "talk-trusted",
+            "voice",
+            "advance-promise"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "impersonation_style_request",
+            "advance_fee_or_release_fee"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "boundary-2",
+      "lookup_status": "OK",
+      "prior_rows": 1,
+      "retrieval_ms": 21,
+      "step": 2,
+      "totals": {
+        "requested_minor": 40000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 2,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [],
+          "source_ids": [
+            "fake-support",
+            "advance-promise",
+            "crypto"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 2,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "CURRENT_AMOUNT_ESCALATION"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "boundary-3",
+      "lookup_status": "OK",
+      "prior_rows": 2,
+      "retrieval_ms": 20,
+      "step": 3,
+      "totals": {
+        "requested_minor": 100000,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "voice",
+            "pretend-government",
+            "fake-support"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 0,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 4,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "classifier_status": "ABSTAIN",
+      "id": "boundary-4",
+      "lookup_status": "OK",
+      "prior_rows": 3,
+      "retrieval_ms": 19,
+      "step": 4,
+      "totals": {
+        "requested_minor": 100001,
+        "held_minor": 0,
+        "captured_minor": 0,
+        "pending_minor": 0,
+        "unknown_minor": 0,
+        "seeded_captured_minor": 0
+      },
+      "variants": {
+        "full": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": true
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": [
+            "immediate-emergency",
+            "family-emergency",
+            "secrecy"
+          ]
+        },
+        "rules": {
+          "attention_reason_count": 1,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": false,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL"
+          ],
+          "signal_labels": [],
+          "source_ids": []
+        },
+        "rules_classifier": {
+          "attention_reason_count": 5,
+          "authenticated_answer_present": false,
+          "evidence_components_present": {
+            "authenticated_answer": false,
+            "causal_authoritative_inputs": true,
+            "classifier": true,
+            "public_retrieval": false
+          },
+          "human_approval_required": true,
+          "payment_release_performed": false,
+          "rule_reasons": [
+            "SEVEN_DAY_REQUESTED_TOTAL"
+          ],
+          "signal_labels": [
+            "urgent_payment_pressure",
+            "secrecy_pressure",
+            "impersonation_style_request"
+          ],
+          "source_ids": []
+        }
+      }
+    }
+  ],
+  "schema_version": "pause-workflow-ablation-v1",
+  "scope": "Causal authored synthetic evidence/reason ablation; no real payment or authenticated answer is fabricated; PG/payment authority is evaluated by separate executable 40-case catalog. No scam prediction accuracy claim.",
+  "template": "private-history-template-v1"
+}

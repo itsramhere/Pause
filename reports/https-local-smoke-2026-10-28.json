@@ -1,0 +1,14 @@
+{
+  "scope": "Fresh local Linux Compose HTTPS/proxy/cookie/authority smoke; no provider credentials or payments; not hosted acceptance.",
+  "started_at": "2026-10-28T11:14:40.219677+00:00",
+  "certificate_validation": "Dedicated test-client CA; hostname verification enabled; host trust store unchanged.",
+  "fresh_project": "pause-p06-tls-398499ebcbfa",
+  "checks": {
+    "clean_bootstrap": "PASS",
+    "verified_tls_headers": "PASS",
+    "independent_sessions_secure_cookies_origin_csrf_roles": "PASS",
+    "proxy_forwarding_and_demo_throttle": "PASS",
+    "logout_revokes_sessions": "PASS"
+  },
+  "result": "PASS"
+}

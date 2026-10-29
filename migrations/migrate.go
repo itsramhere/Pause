@@ -14,7 +14,7 @@ import (
 //go:embed *.sql
 var files embed.FS
 
-const Version = 8
+const Version = 9
 
 func Apply(ctx context.Context, pool *pgxpool.Pool) error {
 	tx, e := pool.Begin(ctx)

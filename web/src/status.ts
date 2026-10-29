@@ -1,7 +1,7 @@
 import type { Intent } from './api'
 export const paymentCopy: Record<string, { title: string; detail: string }> = {
  DRAFT: { title: 'Ready to review your details', detail: 'No payment has been authorized. Check the summary before opening PayPal.' },
- AWAITING_PAYER: { title: 'Waiting for PayPal approval', detail: 'Approve the authorization in PayPal Sandbox. If you already approved, the result is still being checked. Keep this request; do not create another purchase.' },
+ AWAITING_PAYER: { title: 'Waiting for PayPal approval', detail: 'Approve the authorization in PayPal Sandbox. If you already approved, choose Check PayPal approval to continue this saved purchase.' },
  HELD: { title: 'Authorization confirmed', detail: 'PayPal confirmed an authorization. This purchase has not been captured.' },
  CAPTURE_PENDING: { title: 'Capture in progress', detail: 'The reviewer requested payment. Completion is not confirmed. Cancellation cannot immediately stop a capture already in progress.' },
  CAPTURED: { title: 'Captured · provider confirmed', detail: 'PayPal confirmed payment to the receiving merchant shown below. The named relative does not receive these funds.' },

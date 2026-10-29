@@ -1,0 +1,29 @@
+{
+  "scope": "Actual local candidate read-only smoke; supplied synthetic senior login; no order created, consent changed or payment dispatched by this probe",
+  "/healthz": {
+    "status": 200,
+    "result": {
+      "status": "alive"
+    }
+  },
+  "/readyz": {
+    "status": 200,
+    "result": {
+      "migration_version": 9,
+      "status": "ready"
+    }
+  },
+  "/release-readyz": {
+    "status": 200,
+    "result": {
+      "status": "ready"
+    }
+  },
+  "login_status": 200,
+  "actor_role": "senior",
+  "session_status": 200,
+  "contacts_status": 200,
+  "intents_status": 200,
+  "saved_request_count": 12,
+  "senior_operations_forbidden": true
+}

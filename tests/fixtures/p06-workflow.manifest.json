@@ -1,0 +1,6 @@
+{
+  "schema_version": "pause-workflow-ablation-v1",
+  "count": 40,
+  "sha256": "793326f1776be279171ad545cc6eecb936bea17aa684d54feddb9cce6170e1fa",
+  "scope": "Authored causal synthetic ablations, separate from classifier/retrieval tests and 40 executable authority fixtures; not performance generalization evidence"
+}

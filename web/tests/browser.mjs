@@ -79,6 +79,10 @@ try {
  async function openReviewer(purpose) {
   await r.getByRole('button', { name: 'Refresh status' }).click()
   await r.getByRole('button', { name: new RegExp(purpose) }).click()
+  // Denial can finish while the reviewer's earlier HELD projection is still
+  // rendering. Wait for the terminal projection before choosing its action.
+  // Otherwise a Run-checks button can disappear between count() and click().
+  if (purpose === 'P05 unrequested purchase') await expect(r.getByRole('heading', { name: 'Cancellation confirmed', exact: true })).toBeVisible({ timeout: 20000 })
   if (purpose !== 'P05 unrequested purchase' && purpose !== 'P05 private context request') await expect(r.locator('.investigation').getByText('Contact answer: Enrolled account confirmed this request.', { exact: true })).toBeVisible({ timeout: 15000 })
   const checks = r.getByRole('button', { name: /Run message checks|Retry message checks/ })
   if (await checks.count()) await checks.click()

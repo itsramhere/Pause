@@ -15,6 +15,7 @@
 /secrets/
 /.aws/
 
+
 # JavaScript / TypeScript dependencies and generated output
 node_modules/
 dist/
@@ -39,6 +40,8 @@ build/
 /history-setup
 /patterns-seed
 /demo-seed
+/ops
+/eval
 coverage.out
 coverage/
 
@@ -50,19 +53,9 @@ coverage/
 *.db-wal
 *.log
 
-# Publish only the explicitly allowlisted, reviewed acceptance receipts below.
-# Raw traces, credentials, private messages and vectors stay in /data/.
-/evidence/*
-!/evidence/p02-sandbox-order-2026-10-27.json
-!/evidence/p02-sandbox-authorize-void-2026-10-27.json
-!/evidence/p03-sandbox-2026-10-27.json
-!/evidence/p03-public-retrieval-2026-10-27.json
-!/evidence/p03-debugging-2026-10-27.json
-!/evidence/p04-patterns-2026-10-28.json
-!/evidence/p05-experience-2026-10-28.json
-!/evidence/p05-sandbox-capture-2026-10-28.json
-!/evidence/p05-debugging-2026-10-28.json
-!/evidence/p05-sandbox-void-2026-10-28.json
+# Local documentation and verification evidence
+/docs/
+/evidence/
 
 # Test and browser artifacts
 playwright-report/
@@ -119,3 +112,7 @@ htmlcov/
 *.onnx
 *.npy
 *.npz
+
+# Stray credential captures and scratch test scripts
+cookies.txt
+*.tmp.mjs

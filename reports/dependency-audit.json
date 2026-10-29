@@ -1,0 +1,67 @@
+{
+  "scope": "Local dependency scanner results; call reachability and conditional Python paths triaged in deploy/SECURITY.md. No blanket security certification.",
+  "go": {
+    "tool_version": "1.9.0",
+    "runtime": "go1.26.10",
+    "called_vulnerabilities": [],
+    "module_only_advisories": [
+      "GO-2026-5932"
+    ]
+  },
+  "npm": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "python": {
+    "tool_version": "2.10.1",
+    "packages": [
+      {
+        "name": "filelock",
+        "version": "3.32.3",
+        "advisories": [
+          "CVE-2026-112907",
+          "CVE-2026-112913",
+          "CVE-2026-112940"
+        ]
+      },
+      {
+        "name": "pip",
+        "version": "25.0.1",
+        "advisories": [
+          "PYSEC-2026-1795",
+          "PYSEC-2026-1796",
+          "PYSEC-2026-196",
+          "PYSEC-2026-2875",
+          "PYSEC-2026-2876",
+          "PYSEC-2026-3721"
+        ]
+      },
+      {
+        "name": "setuptools",
+        "version": "78.1.0",
+        "advisories": [
+          "GHSA-xmj3-9gf7-h52w",
+          "PYSEC-2025-49",
+          "PYSEC-2026-3447"
+        ]
+      },
+      {
+        "name": "transformers",
+        "version": "4.57.1",
+        "advisories": [
+          "PYSEC-2025-217",
+          "PYSEC-2025-218",
+          "PYSEC-2026-2288",
+          "PYSEC-2026-2289",
+          "PYSEC-2026-2290",
+          "PYSEC-2026-3929",
+          "PYSEC-2026-4174"
+        ]
+      }
+    ]
+  }
+}

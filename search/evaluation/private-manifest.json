@@ -1,0 +1,6 @@
+{
+  "schema_version": "pause-private-relevance-v1",
+  "count": 10,
+  "sha256": "c2b4846f0d9fe36385efb1f12ba1b1966bda57ef94d7e3fd8af0616a054673cb",
+  "scope": "P06 authored frozen queries; first opened in P06; report retains actual input hash; no tuning/indexing"
+}

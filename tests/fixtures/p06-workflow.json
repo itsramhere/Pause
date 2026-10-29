@@ -1,0 +1,402 @@
+[
+  {
+    "id": "transport-1",
+    "sequence": "transport",
+    "step": 1,
+    "amount_minor": 4000,
+    "purpose": "Synthetic transport merchant purchase 1",
+    "text": "Can you cover my ride to the clinic after our usual call?",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "transport-2",
+    "sequence": "transport",
+    "step": 2,
+    "amount_minor": 18000,
+    "purpose": "Synthetic transport merchant purchase 2",
+    "text": "Please help buy the pharmacy supplies for the appointment.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "transport-3",
+    "sequence": "transport",
+    "step": 3,
+    "amount_minor": 90000,
+    "purpose": "Synthetic transport merchant purchase 3",
+    "text": "Send the payment now, keep this payment secret from the family. I am your grandson on a new number.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "transport-4",
+    "sequence": "transport",
+    "step": 4,
+    "amount_minor": 3000,
+    "purpose": "Synthetic transport merchant purchase 4",
+    "text": "I did not request that purchase. Please wait for our regular call.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "groceries-1",
+    "sequence": "groceries",
+    "step": 1,
+    "amount_minor": 2000,
+    "purpose": "Synthetic groceries merchant purchase 1",
+    "text": "Please buy groceries next week after our usual call.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "groceries-2",
+    "sequence": "groceries",
+    "step": 2,
+    "amount_minor": 3000,
+    "purpose": "Synthetic groceries merchant purchase 2",
+    "text": "Let us compare the grocery invoice together before paying.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "groceries-3",
+    "sequence": "groceries",
+    "step": 3,
+    "amount_minor": 4000,
+    "purpose": "Synthetic groceries merchant purchase 3",
+    "text": "Our planned household purchase is ready at the usual merchant.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "groceries-4",
+    "sequence": "groceries",
+    "step": 4,
+    "amount_minor": 2500,
+    "purpose": "Synthetic groceries merchant purchase 4",
+    "text": "The next order can wait until we discuss it on Sunday.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "fees-1",
+    "sequence": "fees",
+    "step": 1,
+    "amount_minor": 5000,
+    "purpose": "Synthetic fees merchant purchase 1",
+    "text": "The promised loan requires an advance processing fee.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "fees-2",
+    "sequence": "fees",
+    "step": 2,
+    "amount_minor": 10000,
+    "purpose": "Synthetic fees merchant purchase 2",
+    "text": "Buy insurance up front to guarantee the loan release.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "fees-3",
+    "sequence": "fees",
+    "step": 3,
+    "amount_minor": 25000,
+    "purpose": "Synthetic fees merchant purchase 3",
+    "text": "Pay the clearance fee immediately to unlock the grant.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "fees-4",
+    "sequence": "fees",
+    "step": 4,
+    "amount_minor": 40000,
+    "purpose": "Synthetic fees merchant purchase 4",
+    "text": "The promised prize needs another release payment today.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "authority-1",
+    "sequence": "authority",
+    "step": 1,
+    "amount_minor": 3000,
+    "purpose": "Synthetic authority merchant purchase 1",
+    "text": "I am the officer handling your relative; pay my account.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "authority-2",
+    "sequence": "authority",
+    "step": 2,
+    "amount_minor": 15000,
+    "purpose": "Synthetic authority merchant purchase 2",
+    "text": "Your cousin needs a lawyer payment on a new account.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "authority-3",
+    "sequence": "authority",
+    "step": 3,
+    "amount_minor": 60000,
+    "purpose": "Synthetic authority merchant purchase 3",
+    "text": "The caller demands secrecy and an immediate payment for release.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "authority-4",
+    "sequence": "authority",
+    "step": 4,
+    "amount_minor": 90000,
+    "purpose": "Synthetic authority merchant purchase 4",
+    "text": "Do not call anyone to check. Pay within five minutes.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "ordinary-fee-1",
+    "sequence": "ordinary-fee",
+    "step": 1,
+    "amount_minor": 1000,
+    "purpose": "Synthetic ordinary-fee merchant purchase 1",
+    "text": "The merchant lists a delivery fee; review the invoice together.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "ordinary-fee-2",
+    "sequence": "ordinary-fee",
+    "step": 2,
+    "amount_minor": 2000,
+    "purpose": "Synthetic ordinary-fee merchant purchase 2",
+    "text": "An ordinary application fee does not guarantee approval.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "ordinary-fee-3",
+    "sequence": "ordinary-fee",
+    "step": 3,
+    "amount_minor": 3000,
+    "purpose": "Synthetic ordinary-fee merchant purchase 3",
+    "text": "Please keep the receipt private in your records and discuss with family.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "ordinary-fee-4",
+    "sequence": "ordinary-fee",
+    "step": 4,
+    "amount_minor": 4000,
+    "purpose": "Synthetic ordinary-fee merchant purchase 4",
+    "text": "Scam warning: never pay someone who demands secrecy.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "repair-1",
+    "sequence": "repair",
+    "step": 1,
+    "amount_minor": 5000,
+    "purpose": "Synthetic repair merchant purchase 1",
+    "text": "We can compare the repair quote at your convenience.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "repair-2",
+    "sequence": "repair",
+    "step": 2,
+    "amount_minor": 10000,
+    "purpose": "Synthetic repair merchant purchase 2",
+    "text": "The replacement equipment has a new written quote to discuss.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "repair-3",
+    "sequence": "repair",
+    "step": 3,
+    "amount_minor": 30000,
+    "purpose": "Synthetic repair merchant purchase 3",
+    "text": "Pay urgently for the replacement kit and tell nobody.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "repair-4",
+    "sequence": "repair",
+    "step": 4,
+    "amount_minor": 90000,
+    "purpose": "Synthetic repair merchant purchase 4",
+    "text": "Transfer at once or the booking is lost.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "unsupported-1",
+    "sequence": "unsupported",
+    "step": 1,
+    "amount_minor": 2000,
+    "purpose": "Synthetic unsupported merchant purchase 1",
+    "text": "मुझे अभी पैसे भेजें",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "unsupported-2",
+    "sequence": "unsupported",
+    "step": 2,
+    "amount_minor": 3000,
+    "purpose": "Synthetic unsupported merchant purchase 2",
+    "text": "Veuillez payer demain",
+    "language": "fr",
+    "history_allowed": true
+  },
+  {
+    "id": "unsupported-3",
+    "sequence": "unsupported",
+    "step": 3,
+    "amount_minor": 4000,
+    "purpose": "Synthetic unsupported merchant purchase 3",
+    "text": "hello",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "unsupported-4",
+    "sequence": "unsupported",
+    "step": 4,
+    "amount_minor": 5000,
+    "purpose": "Synthetic unsupported merchant purchase 4",
+    "text": "qxzv blrp zzzz xyqq",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "voice-1",
+    "sequence": "voice",
+    "step": 1,
+    "amount_minor": 4000,
+    "purpose": "Synthetic voice merchant purchase 1",
+    "text": "A caller sounds like my grandson and wants a ride purchased.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "voice-2",
+    "sequence": "voice",
+    "step": 2,
+    "amount_minor": 8000,
+    "purpose": "Synthetic voice merchant purchase 2",
+    "text": "A familiar voice asks for medicine through an unfamiliar account.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "voice-3",
+    "sequence": "voice",
+    "step": 3,
+    "amount_minor": 24000,
+    "purpose": "Synthetic voice merchant purchase 3",
+    "text": "Grandma it is me, I cannot use my usual account; please buy this.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "voice-4",
+    "sequence": "voice",
+    "step": 4,
+    "amount_minor": 72000,
+    "purpose": "Synthetic voice merchant purchase 4",
+    "text": "Keep quiet about the transfer. Rush the emergency transport money.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "planned-1",
+    "sequence": "planned",
+    "step": 1,
+    "amount_minor": 4000,
+    "purpose": "Synthetic planned merchant purchase 1",
+    "text": "Our scheduled clinic ride costs forty dollars. Please check with me.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "planned-2",
+    "sequence": "planned",
+    "step": 2,
+    "amount_minor": 6000,
+    "purpose": "Synthetic planned merchant purchase 2",
+    "text": "Here is the planned pharmacy shopping list for our usual call.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "planned-3",
+    "sequence": "planned",
+    "step": 3,
+    "amount_minor": 9000,
+    "purpose": "Synthetic planned merchant purchase 3",
+    "text": "Our planned household order is ready. Take your time to confirm.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "planned-4",
+    "sequence": "planned",
+    "step": 4,
+    "amount_minor": 10000,
+    "purpose": "Synthetic planned merchant purchase 4",
+    "text": "Please verify the final ordinary purchase through the enrolled account.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "boundary-1",
+    "sequence": "boundary",
+    "step": 1,
+    "amount_minor": 10000,
+    "purpose": "Synthetic boundary merchant purchase 1",
+    "text": "Please check the exact purchase before paying.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "boundary-2",
+    "sequence": "boundary",
+    "step": 2,
+    "amount_minor": 30000,
+    "purpose": "Synthetic boundary merchant purchase 2",
+    "text": "We should review this additional merchant request together.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "boundary-3",
+    "sequence": "boundary",
+    "step": 3,
+    "amount_minor": 60000,
+    "purpose": "Synthetic boundary merchant purchase 3",
+    "text": "Please independently confirm this purchase at your usual account.",
+    "language": "en",
+    "history_allowed": true
+  },
+  {
+    "id": "boundary-4",
+    "sequence": "boundary",
+    "step": 4,
+    "amount_minor": 1,
+    "purpose": "Synthetic boundary merchant purchase 4",
+    "text": "No emergency, this small purchase can wait for discussion.",
+    "language": "en",
+    "history_allowed": true
+  }
+]

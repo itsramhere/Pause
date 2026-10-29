@@ -1,0 +1,75 @@
+{
+  "scope": "Isolated local Linux containers; no public HTTPS, provider credentials, payment or hosted claim.",
+  "steps": {
+    "healthy": {
+      "/": 200,
+      "/healthz": 200,
+      "/readyz": 200,
+      "/release-readyz": 503,
+      "/api/session": 401,
+      "/api/operations/status": 401
+    },
+    "public_before_outage": {
+      "denominator": 30,
+      "available": 30,
+      "unavailable": 0
+    },
+    "private_inference": {
+      "unauthenticated": 401,
+      "ready": 200,
+      "no_training": 404
+    },
+    "inference_stopped": {
+      "denominator": 30,
+      "available": 0,
+      "unavailable": 30
+    },
+    "api_during_inference_outage": {
+      "/healthz": 200,
+      "/readyz": 200,
+      "/api/session": 401
+    },
+    "inference_recovered": {
+      "denominator": 30,
+      "available": 30,
+      "unavailable": 0
+    },
+    "elastic_stopped": {
+      "denominator": 30,
+      "available": 0,
+      "unavailable": 30
+    },
+    "api_during_elastic_outage": {
+      "/healthz": 200,
+      "/readyz": 200
+    },
+    "elastic_recovered": {
+      "denominator": 30,
+      "available": 30,
+      "unavailable": 0
+    },
+    "database_stopped": {
+      "/healthz": 200,
+      "/readyz": 503
+    },
+    "recovered_operations": {
+      "overdue_voids": 0,
+      "old_reconciliations": 0,
+      "failed_jobs": 0,
+      "queue_lag_seconds": 0,
+      "failed_verification": 0,
+      "pending_private_deletes": 0,
+      "worker_healthy": true,
+      "alerts": []
+    },
+    "database_and_worker_recovered": {
+      "/healthz": 200,
+      "/readyz": 200
+    }
+  },
+  "images": {
+    "pause-app:p06-local": "sha256:97e3b5e408b480e4956f000eded2ba464e1223a0b0f63dc3ca2c282d2157a01e",
+    "pause-inference:p06-local": "sha256:f6580aeeddcf21c9181e333cf7ccea4bbda0d37db31b10485344f39bfa45243f"
+  },
+  "result": "PASS"
+}

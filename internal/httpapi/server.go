@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"net/netip"
 	"os"
 	"path/filepath"
 	"strings"
@@ -51,6 +52,15 @@ func (s *Server) Handler() http.Handler {
 	r.Use(s.security)
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) { write(w, 200, map[string]string{"status": "alive"}) })
 	r.Get("/readyz", s.ready)
+	r.Get("/release-readyz", func(w http.ResponseWriter, r *http.Request) {
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+		if s.App.ReleaseReady(ctx) != nil {
+			write(w, 503, map[string]string{"status": "unready"})
+			return
+		}
+		write(w, 200, map[string]string{"status": "ready"})
+	})
 	r.Post("/api/webhooks/paypal", func(w http.ResponseWriter, r *http.Request) {
 		r.Body = http.MaxBytesReader(w, r.Body, 256*1024)
 		raw, e := io.ReadAll(r.Body)
@@ -72,10 +82,7 @@ func (s *Server) Handler() http.Handler {
 			if !s.decode(w, r, &in) {
 				return
 			}
-			peer, _, err := net.SplitHostPort(r.RemoteAddr)
-			if err != nil {
-				peer = r.RemoteAddr
-			}
+			peer := s.peer(r)
 			out, e := s.App.LaunchDemo(r.Context(), in.Scenario, peer)
 			s.respond(w, r, out, e, 201)
 		})
@@ -93,6 +100,10 @@ func (s *Server) Handler() http.Handler {
 		r.Group(func(r chi.Router) {
 			r.Use(s.authenticate)
 			r.Get("/session", func(w http.ResponseWriter, r *http.Request) { write(w, 200, map[string]any{"actor": session(r).Actor}) })
+			r.With(s.requireRole(domain.Reviewer)).Get("/operations/status", func(w http.ResponseWriter, r *http.Request) {
+				out, e := s.App.OperationalStatus(r.Context(), session(r).Actor)
+				s.respond(w, r, out, e, 200)
+			})
 			r.Post("/auth/logout", s.logout)
 			r.Get("/configuration", func(w http.ResponseWriter, r *http.Request) {
 				c := s.App.Config
@@ -361,6 +372,10 @@ func (s *Server) security(next http.Handler) http.Handler {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("Referrer-Policy", "no-referrer")
 		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+		if s.App.Config.SecureCookies {
+			w.Header().Set("Strict-Transport-Security", "max-age=31536000")
+		}
 		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' https://www.paypal.com https://www.paypalobjects.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.paypal.com https://*.paypalobjects.com; img-src 'self' data: https://*.paypal.com https://*.paypalobjects.com; frame-src https://*.paypal.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
 		if r.Method != "GET" && r.Method != "HEAD" && r.Method != "OPTIONS" && r.URL.Path != "/api/webhooks/paypal" {
 			if r.Header.Get("Origin") != s.App.Config.Origin || r.Header.Get("Sec-Fetch-Site") == "cross-site" {
@@ -418,10 +433,7 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	if !s.decode(w, r, &in) {
 		return
 	}
-	ip, _, e := net.SplitHostPort(r.RemoteAddr)
-	if e != nil {
-		ip = r.RemoteAddr
-	}
+	ip := s.peer(r)
 	old := ""
 	if c, e := r.Cookie(SessionCookie); e == nil {
 		old = c.Value
@@ -487,6 +499,40 @@ func (s *Server) static(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, p)
 }
 func session(r *http.Request) auth.Session { return r.Context().Value(sessionKey).(auth.Session) }
+
+// Only an explicitly trusted immediate proxy can supply a forwarding chain.
+// Walk right-to-left, stopping at the first untrusted peer. Never trust a
+// client-supplied leftmost value or use forwarding headers for TLS/cookies.
+func (s *Server) peer(r *http.Request) string {
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		host = r.RemoteAddr
+	}
+	ip, err := netip.ParseAddr(host)
+	if err != nil {
+		return "unknown"
+	}
+	trusted := func(a netip.Addr) bool {
+		for _, p := range s.App.Config.TrustedProxies {
+			if p.Contains(a.Unmap()) {
+				return true
+			}
+		}
+		return false
+	}
+	chain := strings.Split(r.Header.Get("X-Forwarded-For"), ",")
+	if len(chain) > 16 {
+		return ip.String()
+	}
+	for n := len(chain) - 1; n >= 0 && trusted(ip); n-- {
+		next, err := netip.ParseAddr(strings.TrimSpace(chain[n]))
+		if err != nil {
+			return ip.String()
+		}
+		ip = next
+	}
+	return ip.Unmap().String()
+}
 func correlation(r *http.Request) string {
 	s, _ := r.Context().Value(correlationKey).(string)
 	return s
@@ -511,6 +557,9 @@ func (w *responseWriter) Write(b []byte) (int, error) {
 }
 func (s *Server) observe(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx, cancel := context.WithTimeout(r.Context(), 18*time.Second)
+		defer cancel()
+		r = r.WithContext(ctx)
 		id := uuid.NewString()
 		w.Header().Set("X-Request-ID", id)
 		r = r.WithContext(context.WithValue(r.Context(), correlationKey, id))

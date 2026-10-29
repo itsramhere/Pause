@@ -1,0 +1,7 @@
+{
+  "scope": "Candidate tracked/untracked nonignored text files and built frontend; exact configured server secrets plus private-key header. Raw ignored logs and local evidence are not publishable inputs.",
+  "local_p06_logs_included": true,
+  "files": 231,
+  "configured_secret_count": 5,
+  "findings": []
+}

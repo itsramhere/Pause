@@ -1,0 +1,821 @@
+{
+  "schema_version": "pause-final-classifier-v1",
+  "scope": "80 previously sealed synthetic rows; single-author/small-data; no tuning, fitting or threshold selection",
+  "opened_at": "2026-10-28T07:44:30Z",
+  "candidate": "previously selected TF-IDF linear release",
+  "provenance": {
+    "classifier": {
+      "schema_version": "pause-evidence-v1",
+      "status": "RELEASED",
+      "model_version": "tfidf-linear-v1",
+      "artifact_hash": "6a7d7707bc24329519a548aa0ba2f53998c9fbd1f38d9fdc214b32aafd497b07",
+      "label_schema_version": "pause-signals-v1",
+      "preprocessing_version": "word12-char35-v1",
+      "labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ],
+      "thresholds": {
+        "urgent_payment_pressure": 0.05,
+        "secrecy_pressure": 0.2,
+        "impersonation_style_request": 0.1,
+        "advance_fee_or_release_fee": 0.35
+      },
+      "dataset_hash": "0a696454b16ba259b74bd457eb276bcb3bdccc986bab39abc723e3540b2aeba6",
+      "split_hash": "89d21bd220408ae4315ab26c560fcf5edf93705e2bb6894d0ba5a0b16ef3dc3a",
+      "seed": 42,
+      "dependency_lock_hash": "e37154abff531c05d58f77b85774a641af4625ddec9050ca4ff3b15216a34a3c",
+      "code_revision": "6542307a7252b1ce038d18ba4068fa34a09e562e+p03-source",
+      "language": "en"
+    },
+    "encoder": {
+      "schema_version": "pause-evidence-v1",
+      "status": "RELEASED",
+      "encoder_version": "minilm-l6-1110a243-v1",
+      "artifact_hash": "e8cbc0408bd6993d8bc25a07a7ab162394573a11c2333510501561ff8caa7f18",
+      "upstream_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+      "license": "Apache-2.0",
+      "preprocessing_version": "mean256-l2-v1",
+      "dimension": 384,
+      "normalized": true,
+      "similarity": "cosine"
+    },
+    "split_manifest_sha256": "89d21bd220408ae4315ab26c560fcf5edf93705e2bb6894d0ba5a0b16ef3dc3a",
+    "split_hashes": {
+      "train": "5f92a88607c35c38d01fd031b05e71966e278afa182a138f802bdcc0ed7d498c",
+      "validation": "2a56ebf38c32176a0d11b65870144b35874c2eb5ee7c83caa96b2d2442bbd596",
+      "test": "a1c6d1b7d71358a1373ae945fa73f05ca3a4bc70b47e9108bfca1e497b67bdd1"
+    },
+    "source_hashes": {
+      "ml/src/pause_ml/evaluate.py": "2484a968a4ca183f4976efc4c36af8f14bfaa361c71c68d035f4afa67b45e888",
+      "ml/src/pause_ml/runtime.py": "c1a256403d51231ff27900449c562a989ac03cd22be631b21c5be51b89f24932",
+      "ml/src/pause_ml/train.py": "e8264bff8b4354607db8feab835d7a0a2e730c8b2882e63eb09a22bcf211e75d"
+    },
+    "git_revision": "a7147acda4ee6ae81bc22b5fe9c0967e39049093",
+    "working_tree": "See candidate verification report; SHA256 source hashes describe evaluator/runtime",
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 124 Stepping 0, AuthenticAMD",
+    "dependencies": {
+      "numpy": "2.2.6",
+      "scikit-learn": "1.7.2",
+      "torch": "2.9.0+cpu",
+      "transformers": "4.57.1",
+      "psutil": "7.2.2"
+    }
+  },
+  "leakage_audit": {
+    "group_overlap": [],
+    "exact_overlap": [],
+    "token_jaccard_090_cross_split_pairs": 0,
+    "preprocessing": "train only; validation-only thresholds; fixed release loaded"
+  },
+  "denominator": 80,
+  "availability": {
+    "ABSTAIN": 60,
+    "OK": 20
+  },
+  "per_label": {
+    "urgent_payment_pressure": {
+      "precision": 0.5555555555555556,
+      "recall": 1.0,
+      "f1": 0.7142857142857143,
+      "support": 40,
+      "missed_signals": 0
+    },
+    "secrecy_pressure": {
+      "precision": 0.8163265306122449,
+      "recall": 1.0,
+      "f1": 0.898876404494382,
+      "support": 40,
+      "missed_signals": 0
+    },
+    "impersonation_style_request": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1": 0.8,
+      "support": 32,
+      "missed_signals": 0
+    },
+    "advance_fee_or_release_fee": {
+      "precision": 0.8571428571428571,
+      "recall": 1.0,
+      "f1": 0.9230769230769231,
+      "support": 24,
+      "missed_signals": 0
+    }
+  },
+  "score_metrics_scope": "Triggered scores include ABSTAIN rows; UNAVAILABLE/UNSUPPORTED retained as all-negative and counted separately; no selective removal",
+  "benign": {
+    "support": 8,
+    "false_triggers": 4
+  },
+  "latency_ms": {
+    "p50": 2.5357999984407797,
+    "p95": 3.491220007708762,
+    "startup": 10544.18369999621
+  },
+  "cpu_seconds": 0.453125,
+  "rss_bytes": 416174080,
+  "unsupported_and_abstention_probes": [
+    {
+      "id": "unsupported-script",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "id": "unsupported-language",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "id": "short-input",
+      "status": "ABSTAIN"
+    },
+    {
+      "id": "unknown-input",
+      "status": "ABSTAIN"
+    }
+  ],
+  "rows": [
+    {
+      "message_id": "signal-0-00-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-0-00-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-0-00-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-0-00-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-0-01-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-0-01-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-0-01-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-0-01-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-1-00-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-1-00-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-1-00-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-1-00-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-1-01-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-1-01-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-1-01-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-1-01-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ]
+    },
+    {
+      "message_id": "signal-2-00-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "signal-2-00-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "signal-2-00-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "signal-2-00-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "signal-2-01-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "signal-2-01-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "signal-2-01-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "signal-2-01-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "signal-3-00-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "signal-3-00-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "signal-3-00-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "signal-3-00-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "signal-3-01-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "signal-3-01-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "signal-3-01-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "signal-3-01-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "signal-4-00-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "signal-4-00-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "signal-4-00-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "signal-4-00-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "signal-4-01-0",
+      "status": "ABSTAIN",
+      "triggered_labels": []
+    },
+    {
+      "message_id": "signal-4-01-1",
+      "status": "ABSTAIN",
+      "triggered_labels": []
+    },
+    {
+      "message_id": "signal-4-01-2",
+      "status": "ABSTAIN",
+      "triggered_labels": []
+    },
+    {
+      "message_id": "signal-4-01-3",
+      "status": "ABSTAIN",
+      "triggered_labels": []
+    },
+    {
+      "message_id": "combined-00-01-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-00-01-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-00-01-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-00-01-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-00-02-0",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-00-02-1",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-00-02-2",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-00-02-3",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-00-13-0",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-00-13-1",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-00-13-2",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-00-13-3",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-00-012-0",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-00-012-1",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-00-012-2",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-00-012-3",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-00-0123-0",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-00-0123-1",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-00-0123-2",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-00-0123-3",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-01-01-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ]
+    },
+    {
+      "message_id": "combined-01-01-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ]
+    },
+    {
+      "message_id": "combined-01-01-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ]
+    },
+    {
+      "message_id": "combined-01-01-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ]
+    },
+    {
+      "message_id": "combined-01-02-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-01-02-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-01-02-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-01-02-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-01-13-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-01-13-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-01-13-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-01-13-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-01-012-0",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-01-012-1",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-01-012-2",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-01-012-3",
+      "status": "ABSTAIN",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ]
+    },
+    {
+      "message_id": "combined-01-0123-0",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-01-0123-1",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-01-0123-2",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    },
+    {
+      "message_id": "combined-01-0123-3",
+      "status": "OK",
+      "triggered_labels": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ]
+    }
+  ],
+  "limitations": [
+    "Not a fraud/identity/emergency accuracy estimate",
+    "ABSTAIN requires review; no score authorizes capture",
+    "Near-duplicate diagnostic is token Jaccard only, not a semantic leakage certification",
+    "Any subsequent performance claim after tuning needs a fresh held-out set"
+  ]
+}

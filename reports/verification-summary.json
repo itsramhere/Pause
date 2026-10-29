@@ -1,0 +1,298 @@
+{
+  "go": {
+    "pass": 325,
+    "skip": 1
+  },
+  "authority_catalog": [
+    {
+      "id": 1,
+      "test": "TestP03IndependentSubjectAuthority/confirm-no-capture",
+      "result": "pass"
+    },
+    {
+      "id": 2,
+      "test": "TestP03IndependentSubjectAuthority/deny-void-without-analysis",
+      "result": "pass"
+    },
+    {
+      "id": 3,
+      "test": "TestP03IndependentSubjectAuthority/wrong-digest",
+      "result": "pass"
+    },
+    {
+      "id": 4,
+      "test": "TestP03IndependentSubjectAuthority/wrong-version",
+      "result": "pass"
+    },
+    {
+      "id": 5,
+      "test": "TestP03IndependentSubjectAuthority/wrong-snapshot",
+      "result": "pass"
+    },
+    {
+      "id": 6,
+      "test": "TestP03IndependentSubjectAuthority/late-answer",
+      "result": "pass"
+    },
+    {
+      "id": 7,
+      "test": "TestP03IndependentSubjectAuthority/foreign-subject",
+      "result": "pass"
+    },
+    {
+      "id": 8,
+      "test": "TestP03IndependentSubjectAuthority/senior-cannot-answer",
+      "result": "pass"
+    },
+    {
+      "id": 9,
+      "test": "TestP03IndependentSubjectAuthority/duplicate-answer",
+      "result": "pass"
+    },
+    {
+      "id": 10,
+      "test": "TestP03IndependentSubjectAuthority/deduplicated-task",
+      "result": "pass"
+    },
+    {
+      "id": 11,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/empty-success",
+      "result": "pass"
+    },
+    {
+      "id": 12,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/unavailable-playbooks",
+      "result": "pass"
+    },
+    {
+      "id": 13,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/wrong-artifact",
+      "result": "pass"
+    },
+    {
+      "id": 14,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/stale-totals",
+      "result": "pass"
+    },
+    {
+      "id": 15,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/consent-change",
+      "result": "pass"
+    },
+    {
+      "id": 16,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/denied-subject",
+      "result": "pass"
+    },
+    {
+      "id": 17,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/stale-history",
+      "result": "pass"
+    },
+    {
+      "id": 18,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/invalidated",
+      "result": "pass"
+    },
+    {
+      "id": 19,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/wrong-envelope",
+      "result": "pass"
+    },
+    {
+      "id": 20,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/expired-confirmation",
+      "result": "pass"
+    },
+    {
+      "id": 21,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/inactive-subject",
+      "result": "pass"
+    },
+    {
+      "id": 22,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/future-evidence",
+      "result": "pass"
+    },
+    {
+      "id": 23,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/old-evidence",
+      "result": "pass"
+    },
+    {
+      "id": 24,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/replayed-other-intent",
+      "result": "pass"
+    },
+    {
+      "id": 25,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/missing-config",
+      "result": "pass"
+    },
+    {
+      "id": 26,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/wrong-encoder",
+      "result": "pass"
+    },
+    {
+      "id": 27,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/hits",
+      "result": "pass"
+    },
+    {
+      "id": 28,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/empty",
+      "result": "pass"
+    },
+    {
+      "id": 29,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/vector-timeout",
+      "result": "pass"
+    },
+    {
+      "id": 30,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/foreign-index",
+      "result": "pass"
+    },
+    {
+      "id": 31,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/wrong-revision",
+      "result": "pass"
+    },
+    {
+      "id": 32,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/wrong-space",
+      "result": "pass"
+    },
+    {
+      "id": 33,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/unapproved-id",
+      "result": "pass"
+    },
+    {
+      "id": 34,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/partial-shard",
+      "result": "pass"
+    },
+    {
+      "id": 35,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/alias-mismatch",
+      "result": "pass"
+    },
+    {
+      "id": 36,
+      "test": "TestP03TaskBindsExactMerchantPurchase",
+      "result": "pass"
+    },
+    {
+      "id": 37,
+      "test": "TestP03EvidenceHashSurvivesPostgresJSONBAndRejectsTampering",
+      "result": "pass"
+    },
+    {
+      "id": 38,
+      "test": "TestP03RoutesRequireOwnSessionCSRFAndRole",
+      "result": "pass"
+    },
+    {
+      "id": 39,
+      "test": "TestP02CaptureVoidAndDoubleApprovalRace",
+      "result": "pass"
+    },
+    {
+      "id": 40,
+      "test": "TestApprovedEngineRejectsRedirectsAndTamperedInference",
+      "result": "pass"
+    }
+  ],
+  "race": {
+    "pass": 322,
+    "skip": 3
+  },
+  "public": {
+    "denominator": 30,
+    "available": 30,
+    "branches": {
+      "lexical": {
+        "positive_queries": 29,
+        "mean_recall_at_3": 0.6724137931034483,
+        "mean_precision_at_3": 0.25555555555555554,
+        "no_match_support": 1,
+        "correct_no_match": 0
+      },
+      "vector": {
+        "positive_queries": 29,
+        "mean_recall_at_3": 0.8103448275862069,
+        "mean_precision_at_3": 0.31111111111111106,
+        "no_match_support": 1,
+        "correct_no_match": 0
+      },
+      "fused": {
+        "positive_queries": 29,
+        "mean_recall_at_3": 0.7586206896551724,
+        "mean_precision_at_3": 0.28888888888888886,
+        "no_match_support": 1,
+        "correct_no_match": 0
+      }
+    }
+  },
+  "private": {
+    "denominator": 10,
+    "available": 10,
+    "branches": {
+      "lexical": {
+        "positive_queries": 8,
+        "mean_recall_at_3": 0.25,
+        "mean_precision_at_3": 0.06666666666666667,
+        "no_match_support": 2,
+        "correct_no_match": 2
+      },
+      "vector": {
+        "positive_queries": 8,
+        "mean_recall_at_3": 1.0,
+        "mean_precision_at_3": 0.3333333333333333,
+        "no_match_support": 2,
+        "correct_no_match": 2
+      },
+      "fused": {
+        "positive_queries": 8,
+        "mean_recall_at_3": 1.0,
+        "mean_precision_at_3": 0.3333333333333333,
+        "no_match_support": 2,
+        "correct_no_match": 2
+      }
+    }
+  },
+  "ablation": {
+    "denominator": 40,
+    "classifier_statuses": {
+      "ABSTAIN": 34,
+      "OK": 4,
+      "UNSUPPORTED": 2
+    },
+    "lookup_statuses": {
+      "OK": 40
+    },
+    "variants": {
+      "rules": {
+        "attention_rows": 12,
+        "public_evidence_rows": 0,
+        "authenticated_answers": 0,
+        "releases": 0
+      },
+      "rules_classifier": {
+        "attention_rows": 40,
+        "public_evidence_rows": 0,
+        "authenticated_answers": 0,
+        "releases": 0
+      },
+      "full": {
+        "attention_rows": 40,
+        "public_evidence_rows": 40,
+        "authenticated_answers": 0,
+        "releases": 0
+      }
+    }
+  },
+  "scope": "Local verification; synthetic/test-only provider results in Go tests are not actual sandbox or hosted evidence. Safety fixture results are separate from usefulness metrics."
+}

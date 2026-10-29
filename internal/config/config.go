@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/base64"
 	"errors"
+	"net/netip"
 	"net/url"
 	"os"
 	"strconv"
@@ -22,6 +23,8 @@ type Config struct {
 	ElasticCA                                                     string
 	SecureCookies                                                 bool
 	DemoEnabled                                                   bool
+	TrustedProxies                                                []netip.Prefix
+	PrivateHTTPHosts                                              []string
 	PayPalURL, PayPalClientID, PayPalSecret, PayPalWebhookID      string
 }
 
@@ -33,6 +36,23 @@ func From(get func(string) string) (Config, error) {
 		return c, errors.New("APP_ENV is invalid")
 	}
 	c.ElasticCA = get("ELASTICSEARCH_CA_CERT")
+	for _, raw := range strings.Split(get("TRUSTED_PROXY_CIDRS"), ",") {
+		if raw = strings.TrimSpace(raw); raw != "" {
+			p, e := netip.ParsePrefix(raw)
+			if e != nil || p.Bits() == 0 {
+				return c, errors.New("TRUSTED_PROXY_CIDRS requires explicit bounded CIDRs")
+			}
+			c.TrustedProxies = append(c.TrustedProxies, p.Masked())
+		}
+	}
+	for _, h := range strings.Split(get("DEPENDENCY_PRIVATE_HTTP_HOSTS"), ",") {
+		if h = strings.TrimSpace(h); h != "" {
+			if strings.ContainsAny(h, "/:@* ") || strings.Contains(h, ".") {
+				return c, errors.New("private HTTP hosts must be explicit internal service names")
+			}
+			c.PrivateHTTPHosts = append(c.PrivateHTTPHosts, h)
+		}
+	}
 	c.DemoEnabled = get("DEMO_ENABLED") == "1"
 	if c.DemoEnabled && c.Environment == "production" {
 		return c, errors.New("demo launch is disabled in production")
@@ -101,7 +121,16 @@ func From(get func(string) string) (Config, error) {
 	for _, item := range []struct{ name, raw string }{{"ML_SERVICE_URL", c.MLURL}, {"ELASTICSEARCH_URL", c.ElasticURL}} {
 		if item.raw != "" {
 			u, e := url.Parse(item.raw)
-			if e != nil || u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || (u.Scheme != "https" && !(u.Scheme == "http" && loopback(u.Hostname()) && c.Environment != "production")) {
+			if e != nil {
+				return c, errors.New(item.name + " is invalid")
+			}
+			private := false
+			for _, h := range c.PrivateHTTPHosts {
+				if h == u.Hostname() {
+					private = true
+				}
+			}
+			if u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || (u.Scheme != "https" && !(u.Scheme == "http" && (private || loopback(u.Hostname()) && c.Environment != "production"))) {
 				return c, errors.New(item.name + " requires a credential-free HTTPS URL or local development URL")
 			}
 		}

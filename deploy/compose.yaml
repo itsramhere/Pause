@@ -1,0 +1,108 @@
+name: pause
+x-app: &app
+  image: pause-app:${RELEASE_TAG:?Set an immutable candidate tag}
+  build:
+    context: ..
+  env_file: ${APP_ENV_FILE:?Set absolute path to a private app env file}
+  environment:
+    HTTP_ADDR: 0.0.0.0:8080
+    ML_SERVICE_URL: http://inference:8090
+    ELASTICSEARCH_URL: http://elastic:9200
+    DEPENDENCY_PRIVATE_HTTP_HOSTS: inference,elastic
+  networks: [backend]
+  restart: unless-stopped
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  stop_grace_period: 45s
+services:
+  api:
+    <<: *app
+    depends_on:
+      postgres: {condition: service_healthy}
+    networks: [backend, edge, outbound]
+  worker:
+    <<: *app
+    command: [/app/bin/worker]
+    networks: [backend, outbound]
+    depends_on:
+      postgres: {condition: service_healthy}
+  bootstrap:
+    <<: *app
+    profiles: [setup]
+    restart: "no"
+    command: [/app/bin/migrate]
+  inference:
+    image: pause-inference:${RELEASE_TAG:?Set an immutable candidate tag}
+    build:
+      context: ..
+      dockerfile: ml/Dockerfile
+    environment:
+      ML_SERVICE_TOKEN: ${ML_SERVICE_TOKEN:?Set the same private token as app env}
+    networks: [backend]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 2g
+    healthcheck:
+      test: [CMD, python, -c, "import os,urllib.request; urllib.request.urlopen(urllib.request.Request('http://localhost:8090/readyz',headers={'Authorization':'Bearer '+os.environ['ML_SERVICE_TOKEN']}),timeout=3)"]
+      start_period: 90s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+  postgres:
+    image: postgres:18.1
+    environment:
+      POSTGRES_DB: pause
+      POSTGRES_USER: pause
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set private database password}
+    networks: [backend]
+    volumes: [postgres:/var/lib/postgresql]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U pause -d pause"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.5.5
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      xpack.ml.enabled: "false"
+      ingest.geoip.downloader.enabled: "false"
+      ES_JAVA_OPTS: -Xms512m -Xmx512m -XX:ActiveProcessorCount=2
+    networks: [backend]
+    volumes: [elastic:/usr/share/elasticsearch/data]
+    restart: unless-stopped
+    mem_limit: 2g
+    healthcheck:
+      test: [CMD-SHELL, "curl -fsS http://localhost:9200/_cluster/health"]
+      start_period: 90s
+      interval: 30s
+      timeout: 5s
+      retries: 5
+  https:
+    image: caddy:2.10.2
+    environment:
+      PAUSE_HOSTNAME: ${PAUSE_HOSTNAME:?Set public DNS hostname}
+    ports: ["80:80", "443:443", "443:443/udp"]
+    networks: [edge, outbound]
+    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", "caddy:/data", "caddy-config:/config"]
+    restart: unless-stopped
+    depends_on: [api]
+networks:
+  backend: {internal: true}
+  edge:
+    internal: true
+    ipam:
+      config: [{subnet: 172.30.42.0/24}]
+  outbound: {}
+volumes:
+  postgres: {}
+  elastic: {}
+  caddy: {}
+  caddy-config: {}

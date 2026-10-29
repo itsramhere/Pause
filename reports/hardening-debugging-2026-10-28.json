@@ -1,0 +1,498 @@
+{
+  "date": "2026-10-28",
+  "scope": "Independent local P06 reproduction; no hosting exists, per user. No fresh PayPal payment or webhook receipt is claimed.",
+  "git_base": "a7147acda4ee6ae81bc22b5fe9c0967e39049093",
+  "working_tree": "Existing uncommitted implementation and staged historical removals preserved; hashes below identify inspected current files.",
+  "go": {
+    "counts": {
+      "pass": 324,
+      "skip": 2
+    },
+    "gated_tests": [
+      "TestP05BrowserJourneys",
+      "TestP06FrozenPrivateRelevance"
+    ]
+  },
+  "authority_catalog": [
+    {
+      "id": 1,
+      "test": "TestP03IndependentSubjectAuthority/confirm-no-capture",
+      "result": "pass"
+    },
+    {
+      "id": 2,
+      "test": "TestP03IndependentSubjectAuthority/deny-void-without-analysis",
+      "result": "pass"
+    },
+    {
+      "id": 3,
+      "test": "TestP03IndependentSubjectAuthority/wrong-digest",
+      "result": "pass"
+    },
+    {
+      "id": 4,
+      "test": "TestP03IndependentSubjectAuthority/wrong-version",
+      "result": "pass"
+    },
+    {
+      "id": 5,
+      "test": "TestP03IndependentSubjectAuthority/wrong-snapshot",
+      "result": "pass"
+    },
+    {
+      "id": 6,
+      "test": "TestP03IndependentSubjectAuthority/late-answer",
+      "result": "pass"
+    },
+    {
+      "id": 7,
+      "test": "TestP03IndependentSubjectAuthority/foreign-subject",
+      "result": "pass"
+    },
+    {
+      "id": 8,
+      "test": "TestP03IndependentSubjectAuthority/senior-cannot-answer",
+      "result": "pass"
+    },
+    {
+      "id": 9,
+      "test": "TestP03IndependentSubjectAuthority/duplicate-answer",
+      "result": "pass"
+    },
+    {
+      "id": 10,
+      "test": "TestP03IndependentSubjectAuthority/deduplicated-task",
+      "result": "pass"
+    },
+    {
+      "id": 11,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/empty-success",
+      "result": "pass"
+    },
+    {
+      "id": 12,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/unavailable-playbooks",
+      "result": "pass"
+    },
+    {
+      "id": 13,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/wrong-artifact",
+      "result": "pass"
+    },
+    {
+      "id": 14,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/stale-totals",
+      "result": "pass"
+    },
+    {
+      "id": 15,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/consent-change",
+      "result": "pass"
+    },
+    {
+      "id": 16,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/denied-subject",
+      "result": "pass"
+    },
+    {
+      "id": 17,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/stale-history",
+      "result": "pass"
+    },
+    {
+      "id": 18,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/invalidated",
+      "result": "pass"
+    },
+    {
+      "id": 19,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/wrong-envelope",
+      "result": "pass"
+    },
+    {
+      "id": 20,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/expired-confirmation",
+      "result": "pass"
+    },
+    {
+      "id": 21,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/inactive-subject",
+      "result": "pass"
+    },
+    {
+      "id": 22,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/future-evidence",
+      "result": "pass"
+    },
+    {
+      "id": 23,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/old-evidence",
+      "result": "pass"
+    },
+    {
+      "id": 24,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/replayed-other-intent",
+      "result": "pass"
+    },
+    {
+      "id": 25,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/missing-config",
+      "result": "pass"
+    },
+    {
+      "id": 26,
+      "test": "TestP02ReleaseRejectsStaleAndUnavailableEvidence/wrong-encoder",
+      "result": "pass"
+    },
+    {
+      "id": 27,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/hits",
+      "result": "pass"
+    },
+    {
+      "id": 28,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/empty",
+      "result": "pass"
+    },
+    {
+      "id": 29,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/vector-timeout",
+      "result": "pass"
+    },
+    {
+      "id": 30,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/foreign-index",
+      "result": "pass"
+    },
+    {
+      "id": 31,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/wrong-revision",
+      "result": "pass"
+    },
+    {
+      "id": 32,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/wrong-space",
+      "result": "pass"
+    },
+    {
+      "id": 33,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/unapproved-id",
+      "result": "pass"
+    },
+    {
+      "id": 34,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/partial-shard",
+      "result": "pass"
+    },
+    {
+      "id": 35,
+      "test": "TestPublicBranchesScopeFusionAndFailureDistinctions/alias-mismatch",
+      "result": "pass"
+    },
+    {
+      "id": 36,
+      "test": "TestP03TaskBindsExactMerchantPurchase",
+      "result": "pass"
+    },
+    {
+      "id": 37,
+      "test": "TestP03EvidenceHashSurvivesPostgresJSONBAndRejectsTampering",
+      "result": "pass"
+    },
+    {
+      "id": 38,
+      "test": "TestP03RoutesRequireOwnSessionCSRFAndRole",
+      "result": "pass"
+    },
+    {
+      "id": 39,
+      "test": "TestP02CaptureVoidAndDoubleApprovalRace",
+      "result": "pass"
+    },
+    {
+      "id": 40,
+      "test": "TestApprovedEngineRejectsRedirectsAndTamperedInference",
+      "result": "pass"
+    }
+  ],
+  "race": {
+    "counts": {
+      "pass": 323,
+      "skip": 3
+    },
+    "gated_tests": [
+      "TestP05BrowserJourneys",
+      "TestP06FrozenPrivateRelevance",
+      "TestP04LivePrivateRetrievalRevocationReindexAndReview"
+    ]
+  },
+  "separate_checks": {
+    "browser": "PASS: independent fixture sessions; synthetic provider/classifier/search adapters",
+    "private_final_reproduction": "PASS: actual local PG/Elastic and approved encoder; ten queries",
+    "web_rendered_tests": 6,
+    "web_build": "PASS",
+    "go_vet": "PASS",
+    "go_commands_build": "PASS",
+    "historical_spike_test_and_vet": "PASS",
+    "python_tests": 12,
+    "artifact_regression": "Reproduced before fix; passes after fix, including optimized packaging checker and no classifier deserialization",
+    "linux_images_build_and_warmup": "PASS",
+    "supplied_senior_smoke": "PASS: actual local ML/Elastic, draft abandoned; no PayPal order",
+    "native_operations_after_cleanup": {
+      "worker_healthy": true,
+      "pending_private_deletes": 0,
+      "failed_jobs": 0,
+      "alerts": []
+    }
+  },
+  "classifier_reproduction": {
+    "denominator": 80,
+    "availability": {
+      "ABSTAIN": 60,
+      "OK": 20
+    },
+    "benign": {
+      "support": 8,
+      "false_triggers": 4
+    },
+    "per_label": {
+      "urgent_payment_pressure": {
+        "precision": 0.5555555555555556,
+        "recall": 1.0,
+        "f1": 0.7142857142857143,
+        "support": 40,
+        "missed_signals": 0
+      },
+      "secrecy_pressure": {
+        "precision": 0.8163265306122449,
+        "recall": 1.0,
+        "f1": 0.898876404494382,
+        "support": 40,
+        "missed_signals": 0
+      },
+      "impersonation_style_request": {
+        "precision": 0.6666666666666666,
+        "recall": 1.0,
+        "f1": 0.8,
+        "support": 32,
+        "missed_signals": 0
+      },
+      "advance_fee_or_release_fee": {
+        "precision": 0.8571428571428571,
+        "recall": 1.0,
+        "f1": 0.9230769230769231,
+        "support": 24,
+        "missed_signals": 0
+      }
+    },
+    "leakage_audit": {
+      "group_overlap": [],
+      "exact_overlap": [],
+      "token_jaccard_090_cross_split_pairs": 0,
+      "preprocessing": "train only; validation-only thresholds; fixed release loaded"
+    },
+    "rows_unchanged_after_artifact_guard": true,
+    "scope": "Already-open frozen release reproduction only; no tuning or independent new generalization claim."
+  },
+  "public_retrieval_reproduction": {
+    "denominator": 30,
+    "available": 30,
+    "branches": {
+      "lexical": {
+        "positive_queries": 29,
+        "mean_recall_at_3": 0.6724137931034483,
+        "no_match_support": 1,
+        "correct_no_match": 0
+      },
+      "vector": {
+        "positive_queries": 29,
+        "mean_recall_at_3": 0.8103448275862069,
+        "no_match_support": 1,
+        "correct_no_match": 0
+      },
+      "fused": {
+        "positive_queries": 29,
+        "mean_recall_at_3": 0.7586206896551724,
+        "no_match_support": 1,
+        "correct_no_match": 0
+      }
+    }
+  },
+  "private_retrieval_reproduction": {
+    "denominator": 10,
+    "available": 10,
+    "branches": {
+      "lexical": {
+        "positive_queries": 8,
+        "mean_recall_at_3": 0.25,
+        "no_match_support": 2,
+        "correct_no_match": 2
+      },
+      "vector": {
+        "positive_queries": 8,
+        "mean_recall_at_3": 1.0,
+        "no_match_support": 2,
+        "correct_no_match": 2
+      },
+      "fused": {
+        "positive_queries": 8,
+        "mean_recall_at_3": 1.0,
+        "no_match_support": 2,
+        "correct_no_match": 2
+      }
+    }
+  },
+  "workflow_reproduction": {
+    "denominator": 40,
+    "classifier_statuses": {
+      "ABSTAIN": 34,
+      "OK": 4,
+      "UNSUPPORTED": 2
+    },
+    "lookup_statuses": {
+      "OK": 40
+    },
+    "variants": {
+      "rules": {
+        "attention_rows": 12,
+        "public_evidence_rows": 0
+      },
+      "rules_classifier": {
+        "attention_rows": 40,
+        "public_evidence_rows": 0
+      },
+      "full": {
+        "attention_rows": 40,
+        "public_evidence_rows": 40
+      }
+    }
+  },
+  "private_recovery": {
+    "classifier_artifact_hash": "6a7d7707bc24329519a548aa0ba2f53998c9fbd1f38d9fdc214b32aafd497b07",
+    "cleanup_failure_pending_then_retried": true,
+    "cleanup_ms": 9599,
+    "elastic_version": "9.5.5",
+    "encoder_artifact_hash": "e8cbc0408bd6993d8bc25a07a7ab162394573a11c2333510501561ff8caa7f18",
+    "fresh_pattern_rationale_resolved": true,
+    "fresh_reindex_and_rollback_passed": true,
+    "in_flight_reindex_revocation_race_passed": true,
+    "in_flight_upsert_revocation_race_passed": true,
+    "physical_text_and_vector_absent": true,
+    "retention_text_and_vector_cleanup_passed": true,
+    "revocation_replay_rejected": true,
+    "scope": "Actual local Elastic and approved inference; PostgreSQL disposable schema; payment adapter is test-only, not new PayPal evidence",
+    "stale_review_rejected": true,
+    "worker_outbox_dispatch_passed": true,
+    "wrong_dimension_rejected": true,
+    "wrong_encoder_alias_switch_rejected": true
+  },
+  "disclosure": {
+    "scope": "Candidate tracked/untracked nonignored text files and built frontend; exact configured server secrets plus private-key header. Raw ignored logs and local evidence are not publishable inputs.",
+    "local_p06_logs_included": true,
+    "files": 263,
+    "configured_secret_count": 5,
+    "findings": []
+  },
+  "isolated_drill": {
+    "result": "PASS",
+    "receipt": "hardening-debugging-drill-2026-10-28.json",
+    "images": {
+      "pause-app:p06-local": "sha256:97e3b5e408b480e4956f000eded2ba464e1223a0b0f63dc3ca2c282d2157a01e",
+      "pause-inference:p06-local": "sha256:f6580aeeddcf21c9181e333cf7ccea4bbda0d37db31b10485344f39bfa45243f"
+    }
+  },
+  "dependency_scan": {
+    "go_called_vulnerabilities": 0,
+    "go_module_only_advisories": [
+      "GO-2026-5932"
+    ],
+    "npm_vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "python": [
+      {
+        "name": "filelock",
+        "version": "3.32.3",
+        "advisories": [
+          "CVE-2026-112940",
+          "CVE-2026-112913",
+          "CVE-2026-112907"
+        ]
+      },
+      {
+        "name": "pip",
+        "version": "25.0.1",
+        "advisories": [
+          "PYSEC-2026-1795",
+          "PYSEC-2026-1796",
+          "PYSEC-2026-2875",
+          "PYSEC-2026-2876",
+          "PYSEC-2026-196",
+          "PYSEC-2026-1795",
+          "PYSEC-2026-1796",
+          "PYSEC-2026-196",
+          "PYSEC-2026-2875",
+          "PYSEC-2026-2876",
+          "PYSEC-2026-3721",
+          "PYSEC-2026-3721"
+        ]
+      },
+      {
+        "name": "setuptools",
+        "version": "78.1.0",
+        "advisories": [
+          "PYSEC-2025-49",
+          "PYSEC-2025-49",
+          "PYSEC-2026-3447",
+          "PYSEC-2026-3447",
+          "GHSA-xmj3-9gf7-h52w"
+        ]
+      },
+      {
+        "name": "transformers",
+        "version": "4.57.1",
+        "advisories": [
+          "PYSEC-2025-217",
+          "PYSEC-2026-2288",
+          "PYSEC-2025-218",
+          "PYSEC-2026-2289",
+          "PYSEC-2026-2290",
+          "PYSEC-2026-2288",
+          "PYSEC-2026-2289",
+          "PYSEC-2026-2290",
+          "PYSEC-2026-3929",
+          "PYSEC-2026-4174"
+        ]
+      }
+    ]
+  },
+  "source_sha256": {
+    "ml/src/pause_ml/runtime.py": "c4e3fe61da364b87f2d722edfd9cb186915dc352ce46096ca6fdaccc2c35f681",
+    "ml/tests/test_runtime.py": "02fc6d9b22be8379449618d3b3b6f831709eb4afeffba0b79dd9cc1611df4d75",
+    "scripts/verify-artifacts.py": "c516613960f0f5c9e85b060e244b0e3bff861fb67526f0d8021f6bf30cdc3904",
+    "ml/README.md": "23f1b2159c6fce5822761aa7e6c3893528a6fdf3adec2451ba4ad2abcd893c9a",
+    "internal/app/operations.go": "82d904ba0db2007ab71cdf6e21913dab700c35ff2dcf01fd7ac1d73a3130e9fd",
+    "internal/app/payments.go": "242b25e1182c50b541a14bf54e3229e102fe14c41deb61e5dff632bbae47b2eb",
+    "internal/app/history_projection.go": "e9ca537474eca2256755fa34905a6f35c82fcda14aa03aee6507001ddcc6c7bb",
+    "internal/app/history_live_test.go": "3a871936c758536575b873cc6d847825f0bbe32197af57143ec98afdee01a013",
+    "internal/httpapi/server.go": "8908912203496aebc41b5957b903ae58ae4f82376ad1e74225e3b154c24df002",
+    "internal/httpapi/browser_test.go": "2a7d0f17837864a7efeeb7e8e4ea9a65438222760a9bd42e92ac535671612e19",
+    "internal/httpapi/hardening_test.go": "17529c6cb7cc03235e6fd5c235dd0075ef4fb2ae8f3c8bcfae601553f1533ba8",
+    "internal/config/config.go": "04cb18fa86264096c408d918252606864277c3d6f4859858ca602a596e37852e",
+    "Dockerfile": "4855cb1c815a7003f398b6689e8cd106dc1a9016123c1ddc9702fe031752a210",
+    "ml/Dockerfile": "c4df6288348b347374333d42edcd499f30c9086aa59d96bc4bc0d1691ff6e0ed",
+    "deploy/compose.yaml": "498247dae57029249279dc0a42648b2c2b9e89b750f9a233f54e27925e039bd1",
+    "models/classifier.manifest.json": "399f520f31b855f29870b840734cb22ce2e35cbe0c776c972272439d8f670dfe",
+    "models/encoder.manifest.json": "07ed4f9a7b8ce6c81095ed169b2c9d998f333d5472c433054097e2ac2ce4ee33",
+    "models/encoder.files.json": "e9766bace3629ee2d58e62acce319af1b84059e0934ef5f04c5d06dfacc56e67",
+    "ml/requirements.lock.txt": "e37154abff531c05d58f77b85774a641af4625ddec9050ca4ff3b15216a34a3c",
+    "ml/requirements.linux.lock.txt": "6b044e5d4a237623bd134a98185b13bc5b34cb01abf7b38d94e0882e6e234050",
+    "go.mod": "3e29f8d9969d517af33a1033f4382c0250c392c86ed23c65378bf3308341d38d",
+    "web/package-lock.json": "a50b056838b7da5d1b3106e2eb07561c4a49df8261556aaadd09687271d87555"
+  }
+}

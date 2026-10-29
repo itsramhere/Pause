@@ -1,8 +1,19 @@
 # Private approved inference
 
-Use Python 3.12 and requirements.lock.txt, including pinned CPU PyTorch. Install
-with pip and the official PyTorch CPU extra index as described in the
-[complete runbook](../docs/investigation.md). See the
+Use Python 3.12 and requirements.lock.txt, including pinned CPU PyTorch. From
+the repository root, create an isolated environment, activate it, and install
+the exact lock without resolving different dependencies:
+
+```powershell
+python -m venv ml/.venv
+./ml/.venv/Scripts/Activate.ps1
+python -m pip install --no-deps -r ml/requirements.lock.txt --extra-index-url https://download.pytorch.org/whl/cpu
+python -m pip check
+```
+
+On Linux use `ml/requirements.linux.lock.txt` and the environment's `bin/activate`.
+The [deployment runbook](../deploy/README.md) covers approved artifact installation,
+private service authentication and index bootstrap. See the
 [model card](../models/classifier-card.md) for limitations.
 
 ```powershell
@@ -18,6 +29,10 @@ The service checks local approved artifact hashes/dependency versions, warms up,
 and binds loopback 8090 by default. /readyz, /classify and /embed require Bearer
 service authentication. HTTP cannot train or choose model paths. Missing/tampered
 artifacts prevent startup. Two CPU slots and bounded body/text sizes limit work.
+The encoder directory must contain exactly the approved manifest files; extra
+tokenizer/adapter sidecars and paths outside the snapshot are rejected before
+deserialization. `python scripts/verify-artifacts.py` enforces the same boundary
+before packaging, including when Python optimization is enabled.
 
 requirements.lock.txt is the measured canonical environment; pyproject.toml
 declares direct dependencies and optional uv index configuration. No obsolete

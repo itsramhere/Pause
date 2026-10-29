@@ -1,0 +1,3 @@
+# Linux-only resolver completion; core approved inference lock stays unchanged.
+-r requirements.lock.txt
+hf-xet==1.7.0; sys_platform == "linux"
