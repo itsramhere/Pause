@@ -47,8 +47,13 @@ func (s *Service) Read(ctx context.Context, a domain.Actor, id string) (domain.I
 		return i, e
 	}
 	var seedScenario, seedStatus *string
-	if e = s.DB.Pool.QueryRow(ctx, `SELECT i.provider_order_id,i.authorization_id,i.capture_id,h.history_revision,CASE WHEN (t.status='PENDING' OR (t.status='CONFIRMED' AND i.payment_status NOT IN ('CAPTURED','VOIDED','CLOSED_UNCAPTURED','ABANDONED'))) AND t.expires_at<=$2 THEN 'EXPIRED' ELSE COALESCE(t.status,i.verification_status) END,seed.scenario,seed.status FROM payment_intents i JOIN households h ON h.id=i.household_id LEFT JOIN verifications t ON t.intent_id=i.id AND t.intent_version=i.current_version LEFT JOIN synthetic_history seed ON seed.intent_id=i.id WHERE i.id=$1`, id, s.Clock.Now()).Scan(&i.Checkout.ProviderOrderID, &i.Checkout.AuthorizationID, &i.Checkout.CaptureID, &i.HistoryRevision, &i.Verification, &seedScenario, &seedStatus); e != nil {
+	var notificationStatus *string
+	var sentAt *time.Time
+	if e = s.DB.Pool.QueryRow(ctx, `SELECT i.provider_order_id,i.authorization_id,i.capture_id,h.history_revision,CASE WHEN (t.status='PENDING' OR (t.status='CONFIRMED' AND i.payment_status NOT IN ('CAPTURED','VOIDED','CLOSED_UNCAPTURED','ABANDONED'))) AND t.expires_at<=$2 THEN 'EXPIRED' ELSE COALESCE(t.status,i.verification_status) END,seed.scenario,seed.status,n.status,n.sent_at FROM payment_intents i JOIN households h ON h.id=i.household_id LEFT JOIN verifications t ON t.intent_id=i.id AND t.intent_version=i.current_version LEFT JOIN synthetic_history seed ON seed.intent_id=i.id LEFT JOIN contact_notifications n ON n.verification_id=t.id WHERE i.id=$1`, id, s.Clock.Now()).Scan(&i.Checkout.ProviderOrderID, &i.Checkout.AuthorizationID, &i.Checkout.CaptureID, &i.HistoryRevision, &i.Verification, &seedScenario, &seedStatus, &notificationStatus, &sentAt); e != nil {
 		return i, e
+	}
+	if notificationStatus != nil {
+		i.ContactNotification = &domain.ContactNotification{Status: *notificationStatus, SentAt: sentAt}
 	}
 	if seedScenario != nil && seedStatus != nil {
 		i.SyntheticHistory = &domain.SyntheticHistory{Scenario: *seedScenario, Status: *seedStatus}

@@ -38,4 +38,6 @@ requirements.lock.txt is the measured canonical environment; pyproject.toml
 declares direct dependencies and optional uv index configuration. No obsolete
 scaffold uv lock is retained. History permission never allows model training.
 Runtime tests use synthetic development probes, never final test/relevance data.
-No generative key or fallback exists.
+This service has no generative model, key or fallback. The product's separate
+advisory Gemini reading runs in the Go API, never here. It never replaces or
+overrides this classifier.

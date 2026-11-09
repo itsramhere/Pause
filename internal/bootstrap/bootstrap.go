@@ -13,6 +13,7 @@ import (
 	"github.com/ramst/pause/internal/domain"
 	"github.com/ramst/pause/internal/investigation"
 	"github.com/ramst/pause/internal/llm"
+	"github.com/ramst/pause/internal/notify"
 	"github.com/ramst/pause/internal/paypal"
 	"github.com/ramst/pause/internal/secure"
 	"github.com/ramst/pause/internal/store"
@@ -66,7 +67,7 @@ func Load(ctx context.Context) (*app.Service, error) {
 		db.Pool.Close()
 		return nil, e
 	}
-	a := &app.Service{DB: db, Config: c, Clock: domain.RealClock{}, Box: box}
+	a := &app.Service{DB: db, Config: c, Clock: domain.RealClock{}, Box: box, Mailer: notify.New(c)}
 	if c.MLURL != "" && c.ElasticURL != "" {
 		a.Investigation, e = investigation.New(c)
 		if e != nil {

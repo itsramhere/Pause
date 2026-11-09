@@ -77,13 +77,14 @@ func (s *Server) Handler() http.Handler {
 		})
 		r.Post("/demo/runs", func(w http.ResponseWriter, r *http.Request) {
 			var in struct {
-				Scenario string `json:"scenario"`
+				Scenario    string `json:"scenario"`
+				NotifyEmail string `json:"notify_email"`
 			}
 			if !s.decode(w, r, &in) {
 				return
 			}
 			peer := s.peer(r)
-			out, e := s.App.LaunchDemo(r.Context(), in.Scenario, peer)
+			out, e := s.App.LaunchDemo(r.Context(), in.Scenario, peer, in.NotifyEmail)
 			s.respond(w, r, out, e, 201)
 		})
 		r.Post("/demo/runs/{id}/reset", func(w http.ResponseWriter, r *http.Request) {

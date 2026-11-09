@@ -13,7 +13,9 @@ and inference uses `ml/requirements.lock.txt` plus the platform-specific
 `ml/requirements.linux.lock.txt` completion (`--no-deps`, then `pip check`). Classifier, encoder and every
 encoder file have reviewed SHA256 manifests. Runtime starts offline, verifies
 bytes before loading, requires safetensors and warms classification/embedding
-before serving authenticated readiness. There is no generative key or fallback.
+before serving authenticated readiness. The inference service has no generative
+model, key or fallback. The optional advisory Gemini reading runs in the Go API
+instead (see the optional settings below).
 
 Obtain approved weights from the operator's protected artifact store, verify the
 archive against a separately recorded SHA256, unpack only expected `models/`
@@ -66,6 +68,13 @@ and logs. Set up DNS to this host; only 80/443 are published. Size the host for
 API, worker, PG, ML (~0.4 GB observed local RSS, provision 2 GB) and Elastic
 (512 MB heap, provision 2 GB). Start with at least 8 GB RAM and measure Linux
 startup/peak load before accepting the configuration.
+
+Optional host configuration:
+
+| Setting | Value / meaning |
+|---|---|
+| `GEMINI_API_KEY` | Empty by default, which disables the advisory Gemini signal reading and the "What Pause sees" summary. When set, `GEMINI_MODEL` defaults to `gemini-3.5-flash-lite` and `GEMINI_THINKING_LEVEL` to `minimal`. Neither feature ever gates release. Check the API tier's data-use terms before real messages are sent |
+| `MAIL_MODE` | `off` by default. `log` records only the recipient domain. `smtp` sends contact notices and needs `SMTP_HOST`, `SMTP_PORT` (587 STARTTLS or 465 TLS), `SMTP_USERNAME`, `SMTP_PASSWORD` and `MAIL_FROM`. `MAIL_REDIRECT_TO` is refused in production. Some hosts block outbound SMTP ports, so check before relying on email |
 
 ```sh
 python scripts/verify-artifacts.py
@@ -178,9 +187,13 @@ This is an objective, not a hosted measurement yet.
 
 Do not assume a trial/free tier covers judging. Record actual currency, monthly
 and daily rates, renewal/expiry date, owner, storage and backup limits privately;
-publish a sanitized budget. No recurring generative-model API is required.
+publish a sanitized budget. No generative-model API is required. If
+`GEMINI_API_KEY` is set, budget for Gemini usage or accept free-tier rate
+limits, which show as "AI reading unavailable". If `MAIL_MODE=smtp`, include the
+SMTP provider.
 
 P07 remains blocked on hosted evidence, reliable reset and measured availability.
 Accepted scope: USD, integrated sandbox merchant checkout, pre-enrolled subjects,
 English text, synthetic/small-data thresholds; no guardian conflict protection,
-institution verification, arbitrary wallet transfers or generative model.
+institution verification, arbitrary wallet transfers, or generative output that
+can affect release (Gemini is advisory only).

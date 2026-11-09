@@ -16,11 +16,13 @@ import (
 	"github.com/ramst/pause/internal/domain"
 	"github.com/ramst/pause/internal/investigation"
 	"github.com/ramst/pause/internal/llm"
+	"github.com/ramst/pause/internal/notify"
 	"github.com/ramst/pause/internal/secure"
 	"github.com/ramst/pause/internal/store"
 )
 
 type Service struct {
+	Mailer        notify.Mailer
 	DB            *store.Store
 	Config        config.Config
 	Clock         domain.Clock

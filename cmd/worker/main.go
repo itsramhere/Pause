@@ -55,6 +55,19 @@ func main() {
 		if e = jobs.ReapExhausted(ctx); e != nil {
 			log.Error("job_cleanup_failed")
 		}
+		for n := 0; n < 20; n++ {
+			worked, err := a.WorkNotificationOnce(ctx)
+			if err != nil {
+				log.Error("notification_job_failed", "reason_code", "NOTIFICATION_WORKER_ERROR")
+				break
+			}
+			if !worked {
+				break
+			}
+		}
+		if e = a.PurgeNotificationEmails(ctx); e != nil {
+			log.Error("notification_cleanup_failed")
+		}
 		healthCtx, cancelHealth := context.WithTimeout(ctx, 3*time.Second)
 		if e = a.Heartbeat(healthCtx, workerID); e != nil {
 			log.Error("worker_heartbeat_failed", "reason_code", "DATABASE_UNAVAILABLE")

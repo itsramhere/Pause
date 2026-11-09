@@ -25,6 +25,7 @@ async function switchRole(label, title) {
 }
 try {
  await page.goto(base)
+ await page.getByLabel('Email the “person asking” notice to (optional)').fill('judge@pause-mail.dev')
  await page.getByRole('button', { name: 'Launch stopped-request scenario', exact: true }).click()
  await expect(bar).toBeVisible()
  await expect(bar.getByRole('button', { name: 'Senior', exact: true })).toHaveAttribute('aria-pressed', 'true')
@@ -56,6 +57,8 @@ try {
  await page.getByLabel('Yes, allow history use').check()
  await page.getByRole('button', { name: 'Save and review summary' }).click()
  await expect(page.getByRole('heading', { name: purpose, exact: true })).toBeVisible()
+ await expect(page.getByText(/Email to the person asking is on its way|Emailed the person asking/)).toBeVisible({ timeout: 10000 })
+ await expect(page.getByText(/Emailed the person asking/)).toBeVisible({ timeout: 20000 })
  const story = page.getByRole('region', { name: 'Related-request story', exact: true })
  await expect(story).toBeVisible()
  await expect(story).toContainText('$1,120.00')

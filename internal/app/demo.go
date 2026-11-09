@@ -4,6 +4,8 @@ import (
 	"context"
 	"crypto/subtle"
 	"fmt"
+	"net/mail"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,13 +30,27 @@ type DemoRun struct {
 
 // LaunchDemo is opt-in, sandbox-only, and uses the normal membership/intake paths.
 // Secrets are returned once; only hashes are retained. No sessions are issued.
-func (s *Service) LaunchDemo(ctx context.Context, scenario, peer string) (DemoRun, error) {
+func (s *Service) LaunchDemo(ctx context.Context, scenario, peer string, notifyEmail ...string) (DemoRun, error) {
 	out := DemoRun{ID: uuid.NewString(), Scenario: scenario, Mode: "PAYPAL_SANDBOX", ExpiresAt: s.Clock.Now().Add(2 * time.Hour)}
 	if !s.Config.DemoEnabled || s.Config.Environment == "production" {
 		return out, domain.Fail("DEMO_DISABLED", 404)
 	}
 	if scenario != "stopped" && scenario != "positive" {
 		return out, domain.Fail("DEMO_SCENARIO_INVALID", 422)
+	}
+	var encryptedEmail []byte
+	if len(notifyEmail) > 0 {
+		email := strings.TrimSpace(notifyEmail[0])
+		if email != "" {
+			address, err := mail.ParseAddress(email)
+			if len(email) > 254 || strings.ContainsAny(email, "\r\n") || err != nil || address.Name != "" || address.Address != email {
+				return out, domain.Fail("DEMO_EMAIL_INVALID", 422)
+			}
+			encryptedEmail, err = s.Box.Encrypt(email, "demo-notify:"+out.ID)
+			if err != nil {
+				return out, err
+			}
+		}
 	}
 	// Commit admissions separately, including failed launches, before password work.
 	limited := false
@@ -91,7 +107,7 @@ func (s *Service) LaunchDemo(ctx context.Context, scenario, peer string) (DemoRu
 		if _, e := tx.Exec(ctx, `INSERT INTO contacts(id,household_id,user_id,relationship,enrolled_at,provenance) VALUES($1,$2,$3,'Synthetic relative',$4,'EXPLICIT_DEMO_RUN')`, contact, household, subject, s.Clock.Now()); e != nil {
 			return e
 		}
-		_, e := tx.Exec(ctx, `INSERT INTO demo_runs(id,household_id,scenario,reset_hash,created_at,expires_at) VALUES($1,$2,$3,$4,$5,$6)`, out.ID, household, scenario, domain.Hash([]byte(out.ResetToken)), s.Clock.Now(), out.ExpiresAt)
+		_, e := tx.Exec(ctx, `INSERT INTO demo_runs(id,household_id,scenario,reset_hash,created_at,expires_at,notify_email) VALUES($1,$2,$3,$4,$5,$6,$7)`, out.ID, household, scenario, domain.Hash([]byte(out.ResetToken)), s.Clock.Now(), out.ExpiresAt, encryptedEmail)
 		return e
 	})
 	if err != nil {
@@ -258,10 +274,12 @@ func (s *Service) ResetDemo(ctx context.Context, id, token string) (string, erro
 			return e
 		}
 		if !pending {
-			_, e := tx.Exec(ctx, `UPDATE demo_runs SET closed_at=COALESCE(closed_at,$2) WHERE id=$1`, id, s.Clock.Now())
-			return e
+			if _, e := tx.Exec(ctx, `UPDATE demo_runs SET closed_at=COALESCE(closed_at,$2) WHERE id=$1`, id, s.Clock.Now()); e != nil {
+				return e
+			}
 		}
-		return nil
+		_, e := tx.Exec(ctx, `UPDATE demo_runs SET notify_email=NULL WHERE notify_email IS NOT NULL AND (expires_at<=$1 OR closed_at IS NOT NULL)`, s.Clock.Now())
+		return e
 	})
 	if e != nil {
 		return "", e

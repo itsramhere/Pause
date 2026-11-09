@@ -139,6 +139,8 @@ restrictions; see [the explicit findings](../deploy/SECURITY.md) and
 
 Accepted scope remains USD, supported merchant checkout, pre-enrolled contacts,
 English text and prototype thresholds. No guardian conflict protection,
-institution verification, arbitrary wallet interception or generative fallback.
+institution verification, arbitrary wallet interception or generative fallback
+for the classifier. The later advisory Gemini reading (November 2026) is
+optional and never gates release.
 Hosting access/costs through judging, final webhook and real sandbox capture/void
 must be completed before closing P06 or moving the release gate to P07.

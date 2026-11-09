@@ -1,12 +1,15 @@
 # P06 measured evidence
 
 These separate reports use the previously selected classifier and encoder,
-unchanged thresholds, real local inference and real Elasticsearch. No generative
-key/call is required. Counts include unsupported/unavailable/abstained attempts;
+unchanged thresholds, real local inference and real Elasticsearch. None of these
+P06 reports needs a generative key or call. Counts include
+unsupported/unavailable/abstained attempts;
 retrieval relevance is not classification accuracy or permission assurance.
 
 | Report | Scope |
 |---|---|
+| `llm-validation-2026-11-09.json` | Advisory Gemini signal reader on the 80-row validation split: per-label and micro precision/recall/F1 next to keyword rules and rules-or-Gemini, availability (6 rate-limited rows counted as misses), latency, model and prompt hash. The test split has not been run |
+| `llm-smoke-2026-11-09.json` | Five-row live Gemini smoke check of the same report format |
 | `hardening-continuation-2026-10-28.md` | Latest continuation: actual local sandbox outcomes, lost-callback recovery, fresh HTTPS, Linux normal/race checks and expanded disclosure scanning |
 | `continuation-candidate-2026-10-28.json` | Current source inventory hashes, final local image IDs, validation counts and remaining release gate |
 | `sandbox-continuation-2026-10-28.json` | New actual $1 sandbox capture after reserved-command worker restart and denied $1 void during actual Elastic outage; sanitized provider/actor/evidence truth |

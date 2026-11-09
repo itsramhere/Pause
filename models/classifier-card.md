@@ -24,7 +24,10 @@ rule comparator, timing, memory and source hashes. The classifier has not shown
 an advantage over the fixed-rule comparator. No effectiveness claim is made.
 
 SetFit is deferred. Runtime uses only the chosen baseline and a separate pinned
-MiniLM search encoder. No generative model or external LLM API is used.
+MiniLM search encoder. This classifier uses no generative model or external LLM
+API. Separately, the product runs an advisory Gemini signal reader, measured in
+reports/llm-validation-2026-11-09.json. It never replaces this classifier's
+output or abstentions and never gates release.
 Unsupported declared languages and obvious non-Latin scripts return UNSUPPORTED
 without scores. English declarations of other Latin languages cannot be detected
 reliably; this is a known limitation. Short text, unknown word vocabulary or

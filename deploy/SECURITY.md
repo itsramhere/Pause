@@ -26,6 +26,16 @@ artifact-path, payment-state override or role-switch endpoint.
   safetensors loading. It has no training, tool, arbitrary path or remote model
   endpoint. The supplied container has a read-only filesystem, non-root UID,
   no capabilities, and an internal network without public egress.
+- The optional Gemini reading runs in the Go API. It sends the message text to
+  Google's Gemini API only after URLs, email addresses and phone numbers are
+  removed; the summary sends only derived, redacted facts. Responses are
+  schema-checked in Go, flagged quotes must appear verbatim in the message, and
+  errors are reduced to codes with no body, key or URL. Release eligibility
+  never consults either feature. Check the API tier's data-use terms before
+  real messages are sent.
+- Contact notices contain no message text and no tokens. SMTP requires TLS
+  except to localhost. A judge-supplied address is encrypted at rest and
+  deleted when the run ends, and `@example.test` addresses are never mailed.
 - Elastic credentials stay in Go. No browser DSL/index submission exists.
   Source links are displayed as sourced links and are never automatically fetched.
   Internal plaintext dependencies are allowed only by explicit service name;

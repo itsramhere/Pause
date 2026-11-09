@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/base64"
 	"errors"
+	"net/mail"
 	"net/netip"
 	"net/url"
 	"os"
@@ -12,21 +13,23 @@ import (
 )
 
 type Config struct {
-	Environment, Listen, Origin, DatabaseURL, WebDir              string
-	MessageKey                                                    []byte
-	MerchantID, MerchantLabel                                     string
-	MaxAmount                                                     int64
-	PatternRequested, PatternMinimum, PatternMultiplier           int64
-	MessageRetention, OperationRetention, SessionTTL, DecisionTTL time.Duration
-	MLURL, MLToken, ClassifierManifest, EncoderManifest           string
-	ElasticURL, ElasticKey, PlaybookAlias, HistoryAlias           string
-	ElasticCA                                                     string
-	GeminiAPIKey, GeminiModel, GeminiBaseURL, GeminiThinkingLevel string
-	SecureCookies                                                 bool
-	DemoEnabled                                                   bool
-	TrustedProxies                                                []netip.Prefix
-	PrivateHTTPHosts                                              []string
-	PayPalURL, PayPalClientID, PayPalSecret, PayPalWebhookID      string
+	MailMode, SMTPHost, SMTPUsername, SMTPPassword, MailFrom, MailRedirectTo string
+	SMTPPort                                                                 int
+	Environment, Listen, Origin, DatabaseURL, WebDir                         string
+	MessageKey                                                               []byte
+	MerchantID, MerchantLabel                                                string
+	MaxAmount                                                                int64
+	PatternRequested, PatternMinimum, PatternMultiplier                      int64
+	MessageRetention, OperationRetention, SessionTTL, DecisionTTL            time.Duration
+	MLURL, MLToken, ClassifierManifest, EncoderManifest                      string
+	ElasticURL, ElasticKey, PlaybookAlias, HistoryAlias                      string
+	ElasticCA                                                                string
+	GeminiAPIKey, GeminiModel, GeminiBaseURL, GeminiThinkingLevel            string
+	SecureCookies                                                            bool
+	DemoEnabled                                                              bool
+	TrustedProxies                                                           []netip.Prefix
+	PrivateHTTPHosts                                                         []string
+	PayPalURL, PayPalClientID, PayPalSecret, PayPalWebhookID                 string
 }
 
 // Load never includes values or credentials in a configuration error.
@@ -49,6 +52,9 @@ func From(get func(string) string) (Config, error) {
 		}
 	}
 	var err error
+	if err = mailSettings(&c, get); err != nil {
+		return c, err
+	}
 	c.PrivateHTTPHosts, err = privateHTTPHosts(get("DEPENDENCY_PRIVATE_HTTP_HOSTS"))
 	if err != nil {
 		return c, err
@@ -133,6 +139,34 @@ func From(get func(string) string) (Config, error) {
 		return c, errors.New("search aliases must match the approved logical indexes")
 	}
 	return c, nil
+}
+
+func mailSettings(c *Config, get func(string) string) error {
+	c.MailMode = value(get, "MAIL_MODE", "off")
+	c.SMTPHost, c.SMTPUsername, c.SMTPPassword = get("SMTP_HOST"), get("SMTP_USERNAME"), get("SMTP_PASSWORD")
+	c.MailFrom, c.MailRedirectTo = get("MAIL_FROM"), get("MAIL_REDIRECT_TO")
+	port, err := strconv.Atoi(value(get, "SMTP_PORT", "587"))
+	if err != nil || port < 1 || port > 65535 {
+		return errors.New("SMTP_PORT is invalid")
+	}
+	c.SMTPPort = port
+	if c.MailMode != "off" && c.MailMode != "log" && c.MailMode != "smtp" {
+		return errors.New("MAIL_MODE is invalid")
+	}
+	if c.MailMode == "smtp" && (strings.TrimSpace(c.SMTPHost) == "" || c.MailFrom == "") {
+		return errors.New("SMTP_HOST and MAIL_FROM are required for smtp")
+	}
+	for _, field := range []struct{ name, value string }{{"MAIL_FROM", c.MailFrom}, {"MAIL_REDIRECT_TO", c.MailRedirectTo}} {
+		if field.value != "" {
+			if _, err := mail.ParseAddress(field.value); err != nil || strings.ContainsAny(field.value, "\r\n") {
+				return errors.New(field.name + " is invalid")
+			}
+		}
+	}
+	if c.Environment == "production" && c.MailRedirectTo != "" {
+		return errors.New("MAIL_REDIRECT_TO is disabled in production")
+	}
+	return nil
 }
 func value(get func(string) string, k, d string) string {
 	if s := get(k); s != "" {

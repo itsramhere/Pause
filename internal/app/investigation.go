@@ -93,11 +93,20 @@ func (s *Service) RequestVerification(ctx context.Context, a domain.Actor, id st
 		if p.deadline.Before(expires) {
 			expires = p.deadline
 		}
-		tag, e := tx.Exec(ctx, `INSERT INTO verifications(id,intent_id,intent_version,content_digest,subject_user_id,status,expires_at,request_snapshot) VALUES($1,$2,$3,$4,$5,'PENDING',$6,$7) ON CONFLICT(intent_id,intent_version) DO NOTHING`, uuid.NewString(), id, version, p.cmd.Digest, subject, expires, mustJSON(snapshot))
+		verificationID := uuid.NewString()
+		tag, e := tx.Exec(ctx, `INSERT INTO verifications(id,intent_id,intent_version,content_digest,subject_user_id,status,expires_at,request_snapshot) VALUES($1,$2,$3,$4,$5,'PENDING',$6,$7) ON CONFLICT(intent_id,intent_version) DO NOTHING`, verificationID, id, version, p.cmd.Digest, subject, expires, mustJSON(snapshot))
 		if e != nil {
 			return e
 		}
 		if tag.RowsAffected() == 1 {
+			if s.Config.MailMode != "" && s.Config.MailMode != "off" {
+				if _, e = tx.Exec(ctx, `INSERT INTO contact_notifications(verification_id,intent_id,status,updated_at) VALUES($1,$2,'QUEUED',$3)`, verificationID, id, s.Clock.Now()); e != nil {
+					return e
+				}
+				if e = s.queue(ctx, tx, "CONTACT_NOTIFY", verificationID, "notify:"+verificationID); e != nil {
+					return e
+				}
+			}
 			if _, e = tx.Exec(ctx, `UPDATE payment_intents SET verification_status='PENDING',review_status='PENDING' WHERE id=$1`, id); e != nil {
 				return e
 			}

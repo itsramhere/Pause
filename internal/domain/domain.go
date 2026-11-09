@@ -184,24 +184,30 @@ type EvidenceDTO struct {
 	ReasonCode       string  `json:"reason_code"`
 }
 type Intent struct {
-	PaymentNotice    string             `json:"payment_notice,omitempty"`
-	SubjectName      string             `json:"subject_name"`
-	CleanupRequested bool               `json:"cleanup_requested"`
-	SyntheticHistory *SyntheticHistory  `json:"synthetic_history,omitempty"`
-	HistoryRevision  int64              `json:"history_revision"`
-	ID               string             `json:"id"`
-	Version          int                `json:"version"`
-	Binding          Binding            `json:"binding"`
-	Digest           string             `json:"content_digest"`
-	Payment          PaymentStatus      `json:"payment_status"`
-	Verification     VerificationStatus `json:"verification_status"`
-	Review           ReviewStatus       `json:"review_status"`
-	Consent          Consent            `json:"consent"`
-	CreatedAt        time.Time          `json:"created_at"`
-	DecisionDeadline time.Time          `json:"decision_deadline"`
-	MessageExpiresAt time.Time          `json:"message_expires_at"`
-	Checkout         CheckoutDTO        `json:"checkout"`
-	Evidence         EvidenceDTO        `json:"evidence"`
+	ContactNotification *ContactNotification `json:"contact_notification"`
+	PaymentNotice       string               `json:"payment_notice,omitempty"`
+	SubjectName         string               `json:"subject_name"`
+	CleanupRequested    bool                 `json:"cleanup_requested"`
+	SyntheticHistory    *SyntheticHistory    `json:"synthetic_history,omitempty"`
+	HistoryRevision     int64                `json:"history_revision"`
+	ID                  string               `json:"id"`
+	Version             int                  `json:"version"`
+	Binding             Binding              `json:"binding"`
+	Digest              string               `json:"content_digest"`
+	Payment             PaymentStatus        `json:"payment_status"`
+	Verification        VerificationStatus   `json:"verification_status"`
+	Review              ReviewStatus         `json:"review_status"`
+	Consent             Consent              `json:"consent"`
+	CreatedAt           time.Time            `json:"created_at"`
+	DecisionDeadline    time.Time            `json:"decision_deadline"`
+	MessageExpiresAt    time.Time            `json:"message_expires_at"`
+	Checkout            CheckoutDTO          `json:"checkout"`
+	Evidence            EvidenceDTO          `json:"evidence"`
+}
+
+type ContactNotification struct {
+	Status string     `json:"status"`
+	SentAt *time.Time `json:"sent_at"`
 }
 
 // Synthetic outcomes are display provenance, never provider payment states.

@@ -6,6 +6,7 @@ import (
 	"github.com/ramst/pause/internal/domain"
 	"github.com/ramst/pause/internal/investigation"
 	"github.com/ramst/pause/internal/llm"
+	"github.com/ramst/pause/internal/notify"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -17,6 +18,18 @@ import (
 )
 
 func browserJSON(v any) []byte { b, _ := json.Marshal(v); return b }
+
+type recordingMailer struct {
+	mu       sync.Mutex
+	messages []notify.Message
+}
+
+func (m *recordingMailer) Send(_ context.Context, msg notify.Message) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.messages = append(m.messages, msg)
+	return nil
+}
 
 // Compiled only by `go test`: no product config/HTTP path installs these adapters.
 type browserProvider struct {
@@ -94,6 +107,8 @@ func runBrowserFixture(t *testing.T, script string, requireCapture bool) {
 	f.svc.Config.MerchantLabel = "Synthetic Sandbox Store"
 	f.svc.Config.PayPalClientID = "TEST_ONLY"
 	f.svc.Config.DemoEnabled = true
+	f.svc.Config.MailMode = "log"
+	f.svc.Mailer = &recordingMailer{}
 	f.svc.Provider = &browserProvider{results: map[string]domain.ProviderResult{}}
 	browserEngine(t, f)
 	server := httptest.NewServer(f.handler)
@@ -110,6 +125,14 @@ func runBrowserFixture(t *testing.T, script string, requireCapture bool) {
 				return
 			case <-time.After(30 * time.Millisecond):
 				_, _ = f.svc.WorkPaymentOnce(ctx)
+				if f.svc.Mailer != nil {
+					for n := 0; n < 20; n++ {
+						worked, err := f.svc.WorkNotificationOnce(ctx)
+						if err != nil || !worked {
+							break
+						}
+					}
+				}
 			}
 		}
 	}()
