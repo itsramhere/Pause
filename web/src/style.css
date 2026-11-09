@@ -213,6 +213,9 @@ dd{margin:0;text-align:right;max-width:65%;font-family:var(--font-mono);font-siz
 .source-card>a{font-weight:750}
 .source-card p:last-child{margin:0}
 blockquote{margin:16px 0;border:1.5px solid var(--ink);border-left:8px solid var(--amber);padding:14px 18px;background:#fff;white-space:pre-wrap;font-size:.92rem}
+mark{background:var(--amber);padding:0 2px}
+.llm-flags{padding-left:22px;margin:10px 0}
+.llm-flags blockquote{margin:6px 0}
 .decision{border-top:2px solid var(--ink);margin-top:26px;padding-top:20px}
 .diagnostics{overflow-wrap:anywhere;margin-top:26px;font-family:var(--font-mono);font-size:.72rem;color:var(--ink-70);border-top:1px solid var(--line);padding-top:14px}
 summary{cursor:pointer;min-height:44px;padding:10px 0;font-weight:750}

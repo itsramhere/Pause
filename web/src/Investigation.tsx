@@ -1,9 +1,29 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { HistoryEvidence, type PrivateHistory } from './HistoryEvidence'
 import { api, APIError, errorText, type Intent, type Actor, type Task, money } from './api'
-import { answerText, classifierText, terminal } from './status'
-export type Evidence = { private_history: PrivateHistory; history_summary: string; id: string; evidence_hash: string; original_message: string; classifier_status: string; playbook_status: string; signals: string[]; sources: { playbook_id: string; title: string; source_url: string; source_publisher: string; original_summary: string; source_date: string | null; reviewed_at: string }[]; missing_checks: string[]; notes: string[]; attention_required: boolean; verification: { status: string; responded_at: string | null; expires_at: string }; provider: { status: string }; template_version: string }
+import { answerText, classifierText, llmText, terminal } from './status'
+export type LLMReading = { status: string; model?: string; prompt_version?: string; labels: { label: string; excerpt: string }[] }
+export type Evidence = { private_history: PrivateHistory; history_summary: string; id: string; evidence_hash: string; original_message: string; classifier_status: string; playbook_status: string; signals: string[]; sources: { playbook_id: string; title: string; source_url: string; source_publisher: string; original_summary: string; source_date: string | null; reviewed_at: string }[]; missing_checks: string[]; notes: string[]; attention_required: boolean; verification: { status: string; responded_at: string | null; expires_at: string }; provider: { status: string }; template_version: string; llm: LLMReading }
 const reviewedDate = (s: string) => s && Number.isFinite(Date.parse(s)) ? new Date(s).toLocaleDateString() : 'review date not supplied'
+// Best-effort highlighting of grounded excerpts in the displayed original. The
+// server guarantees each excerpt is verbatim in the redacted text that was sent;
+// an excerpt that quotes a redacted span may not appear here and simply renders
+// without a highlight.
+function highlightMessage(message: string, excerpts: string[]): ReactNode[] {
+	const found = excerpts.filter(x => x && message.includes(x))
+	if (found.length === 0) return [message]
+	const alternation = [...found].sort((a, b) => b.length - a.length).map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')
+	const re = new RegExp(alternation, 'g')
+	const out: ReactNode[] = []
+	let last = 0, key = 0, m: RegExpExecArray | null
+	while ((m = re.exec(message)) !== null) {
+		if (m.index > last) out.push(message.slice(last, m.index))
+		out.push(<mark key={key++}>{m[0]}</mark>)
+		last = m.index + m[0].length
+	}
+	if (last < message.length) out.push(message.slice(last))
+	return out
+}
 export function SubjectAnswer({ task, refresh }: { task: Task; refresh: () => Promise<void> }) {
  const [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('')
  const lock = useRef(false)
@@ -12,8 +32,10 @@ export function SubjectAnswer({ task, refresh }: { task: Task; refresh: () => Pr
  return <><p className="amount">{money(task.binding.amount_minor)} {task.binding.currency}</p><div className="merchant"><span>Actual receiving sandbox merchant</span><strong>{task.merchant_label}</strong><p>A capture pays this merchant. You do not receive these funds.</p></div><p>Requested {new Date(task.request_created_at).toLocaleString()}. Answer by {new Date(task.expires_at).toLocaleString()}.</p><p><strong>Did you request this exact purchase for “{task.binding.purpose}”?</strong></p><p>Your answer records what this enrolled account reports. It does not establish that an emergency happened. Confirming does not release payment.</p><p role="status">{notice || answerText(task.status)}</p>{error && <p role="alert" className="error">{error}</p>}{(pending || task.can_deny) && <div className="actions">{pending && <button className="primary" disabled={busy} onClick={() => void answer('CONFIRMED')}>Yes, I requested this purchase</button>}<button disabled={busy} onClick={() => void answer('DENIED')}>No, I did not request it</button></div>}{!pending && task.status === 'EXPIRED' && <p>The answer window has closed. This purchase cannot be released with an expired confirmation.{task.can_deny && " You can still deny this exact purchase to request cancellation."}</p>}</>
 }
 export function EvidenceContent({ evidence: e }: { evidence: Evidence }) {
- return <><section className="evidence-section"><h4>Original received message</h4><blockquote>{e.original_message}</blockquote><p className="helper">Entered transaction facts remain authoritative. This message does not select a trusted identity.</p></section>
+	const llmExcerpts = e.llm?.status === 'OK' ? (e.llm.labels ?? []).map(f => f.excerpt) : []
+ return <><section className="evidence-section"><h4>Original received message</h4><blockquote>{highlightMessage(e.original_message, llmExcerpts)}</blockquote><p className="helper">Entered transaction facts remain authoritative. This message does not select a trusted identity.</p></section>
   <section className="evidence-section"><h4>Classifier message signals</h4><p>{classifierText(e.classifier_status)}</p>{e.signals.map(s => <p key={s}>{s}</p>)}{e.classifier_status === 'OK' && e.signals.length === 0 && <p>No configured message signals were triggered. This is not a safety finding.</p>}{e.classifier_status === 'UNSUPPORTED' && <p>Leave this purchase or create a supported English request. No translation or model fallback changes the original purchase.</p>}<p className="helper">Signals describe wording, not the likelihood of fraud or proof of an emergency.</p></section>
+  <section className="evidence-section"><h4>AI reading (Mistral)</h4><p>{llmText(e.llm?.status ?? '')}</p>{e.llm?.status === 'OK' && (e.llm.labels ?? []).length > 0 && <ul className="llm-flags">{e.llm.labels.map(f => <li key={f.label}><strong>AI flagged: {f.label.replaceAll('_', ' ')}</strong><blockquote>“{f.excerpt}”</blockquote></li>)}</ul>}{e.llm?.status === 'OK' && (e.llm.labels ?? []).length === 0 && <p>No pressure signals were flagged by the AI reading. This is not a safety finding.</p>}<p className="helper">An automated reading of the message wording, quoted from the text above. It can be wrong and never changes the required checks, the independent answer, or release. The message is never used to train models.</p></section>
   <section className="evidence-section"><h4>Similar documented patterns</h4><p>{e.playbook_status === 'OK' ? 'Public Elastic lookup completed.' : 'Public lookup unavailable. Retry checks; release is blocked.'}</p>{e.playbook_status === 'OK' && e.sources.length === 0 && <p>The lookup completed with no matched examples. This does not establish safety.</p>}{e.sources.map(s => <article className="source-card" key={s.playbook_id}><a href={s.source_url} target="_blank" rel="noreferrer">{s.title}</a><p>{s.original_summary}</p><p className="helper">{s.source_publisher} · {s.source_date ?? 'Exact publication date not stated'} · reviewed {reviewedDate(s.reviewed_at)} · Source {s.playbook_id}</p></article>)}<p className="helper">Similarity is context, not evidence about the author’s identity.</p></section>
   <section className="evidence-section"><h4>Authenticated contact answer</h4><p>{answerText(e.verification.status)}</p>{e.verification.responded_at && <p>Recorded {new Date(e.verification.responded_at).toLocaleString()} for this exact purchase version.</p>}{e.verification.status === 'DENIED' && e.verification.responded_at && Date.parse(e.verification.responded_at) >= Date.parse(e.verification.expires_at) && <p>This denial was recorded after the confirmation window ended and requests cancellation. It cannot authorize payment.</p>}<p className="helper">This records the enrolled account’s statement. It does not prove that an event happened.</p></section>
   <HistoryEvidence history={e.private_history} summary={e.history_summary} />

@@ -8,6 +8,7 @@ import (
 	"github.com/ramst/pause/internal/app"
 	"github.com/ramst/pause/internal/domain"
 	"github.com/ramst/pause/internal/investigation"
+	"github.com/ramst/pause/internal/llm"
 	"os"
 	"time"
 )
@@ -41,6 +42,7 @@ func workflow(ctx context.Context, s *app.Service, output string) error {
 	}
 	histories := map[string][]domain.TimelineRow{}
 	rows := []any{}
+	promptVersion := ""
 	for _, c := range cases {
 		prior := histories[c.Sequence]
 		if c.Step != len(prior)+1 {
@@ -73,7 +75,16 @@ func workflow(ctx context.Context, s *app.Service, output string) error {
 		// Every variant retains the same independent-answer/human payment gate.
 		// This evaluator performs no payment operations or invented answers.
 		variants := map[string]any{}
-		for _, v := range []string{"rules", "rules_classifier", "full"} {
+		names := []string{"rules", "rules_classifier", "full"}
+		var extracted llm.Signals
+		if s.LLM != nil {
+			callCtx, cancel := context.WithTimeout(ctx, 15*time.Second)
+			extracted, _ = s.LLM.ExtractSignals(callCtx, c.Text)
+			cancel()
+			promptVersion = extracted.PromptVersion
+			names = append(names, "rules_classifier_llm")
+		}
+		for _, v := range names {
 			count := len(reasons)
 			labels := []string{}
 			refs := []string{}
@@ -87,13 +98,28 @@ func workflow(ctx context.Context, s *app.Service, output string) error {
 			if v == "full" {
 				refs = sources
 			}
+			if v == "rules_classifier_llm" {
+				var added int
+				labels, added = workflowLLMLabels(labels, extracted)
+				count += added
+			}
 			variants[v] = map[string]any{"rule_reasons": reasons, "signal_labels": labels, "attention_reason_count": count, "source_ids": refs, "human_approval_required": true, "authenticated_answer_present": false, "payment_release_performed": false, "evidence_components_present": map[string]bool{"causal_authoritative_inputs": true, "classifier": v != "rules" && ce == nil, "public_retrieval": v == "full" && se == nil, "authenticated_answer": false}}
 		}
-		rows = append(rows, map[string]any{"id": c.ID, "step": c.Step, "prior_rows": len(prior), "totals": totals, "variants": variants, "classifier_status": status, "lookup_status": lookup, "retrieval_ms": receipt.DurationMS})
+		row := map[string]any{"id": c.ID, "step": c.Step, "prior_rows": len(prior), "totals": totals, "variants": variants, "classifier_status": status, "lookup_status": lookup, "retrieval_ms": receipt.DurationMS}
+		if s.LLM != nil {
+			row["llm_status"] = extracted.Status
+		}
+		rows = append(rows, row)
 		timeline[len(timeline)-1].Current = false
 		histories[c.Sequence] = timeline
 	}
 	report := map[string]any{"schema_version": "pause-workflow-ablation-v1", "denominator": 40, "fixture_sha256": meta.Hash, "classifier": s.Investigation.Classifier, "encoder": s.Investigation.Encoder, "policy": domain.PatternPolicy, "fusion": investigation.FusionVersion, "template": domain.HistoryTemplate, "rows": rows, "recorded_at": time.Now().UTC(), "scope": "Causal authored synthetic evidence/reason ablation; no real payment or authenticated answer is fabricated; PG/payment authority is evaluated by separate executable 40-case catalog. No scam prediction accuracy claim."}
+	if s.LLM == nil {
+		report["llm_variant"] = "not configured"
+	}
+	if promptVersion != "" {
+		report["prompt_version"] = promptVersion
+	}
 	f, err := os.OpenFile(output, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
 	if err != nil {
 		return err
@@ -102,4 +128,26 @@ func workflow(ctx context.Context, s *app.Service, output string) error {
 	e := json.NewEncoder(f)
 	e.SetIndent("", "  ")
 	return e.Encode(report)
+}
+
+func workflowLLMLabels(labels []string, signals llm.Signals) ([]string, int) {
+	out := append([]string{}, labels...)
+	if signals.Status != llm.StatusOK {
+		return out, 0
+	}
+	seen := map[string]bool{}
+	for _, label := range labels {
+		seen[label] = true
+	}
+	added := 0
+	for _, label := range domain.Labels {
+		for _, flag := range signals.Labels {
+			if flag.Label == label && !seen[label] {
+				out = append(out, label)
+				seen[label] = true
+				added++
+			}
+		}
+	}
+	return out, added
 }

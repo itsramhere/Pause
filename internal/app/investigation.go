@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/ramst/pause/internal/domain"
 	"github.com/ramst/pause/internal/investigation"
+	"github.com/ramst/pause/internal/llm"
 )
 
 type taskSnapshot struct {
@@ -54,6 +55,9 @@ type EvidencePacket struct {
 	Receipt          investigation.Receipt    `json:"retrieval_receipt"`
 	History          HistoryPacket            `json:"private_history"`
 	HistorySummary   string                   `json:"history_summary"`
+	// LLM is the advisory AI reading. It is display data with its own status;
+	// it never enters Missing and never gates release.
+	LLM llm.Signals `json:"llm"`
 }
 
 func (s *Service) RequestVerification(ctx context.Context, a domain.Actor, id string, version int, correlation string) error {
@@ -198,6 +202,11 @@ func (s *Service) Analyze(ctx context.Context, a domain.Actor, id string, versio
 	ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
 	defer cancel()
 	engine := s.Investigation
+	// The advisory LLM reading runs concurrently with classification inside the
+	// same bounded budget. Any outcome is recorded and displayed; none of them
+	// can fail the analysis or change release eligibility.
+	signals := make(chan llm.Signals, 1)
+	go func() { signals <- s.extractSignals(ctx, message) }()
 	in := domain.InferenceInput{IntentID: i.ID, IntentVersion: i.Version, ContentDigest: i.Digest, Text: message, Language: "en", ModelVersion: engine.Classifier.ModelVersion}
 	c, ce := engine.Classify(ctx, in)
 	if ce != nil {
@@ -224,6 +233,9 @@ func (s *Service) Analyze(ctx context.Context, a domain.Actor, id string, versio
 	if ce != nil || re != nil || he != nil {
 		status = "UNAVAILABLE"
 	}
+	// The LLM outcome never contributes to the run's UNAVAILABLE status: it is
+	// advisory, and its own failures carry their own per-block status.
+	llmSignals := <-signals
 	e = s.DB.WithTx(ctx, func(tx pgx.Tx) error {
 		p, e := s.paymentLock(ctx, tx, id)
 		if e != nil {
@@ -239,7 +251,7 @@ func (s *Service) Analyze(ctx context.Context, a domain.Actor, id string, versio
 			return domain.Fail("HISTORY_REVIEW_REQUIRED", 409)
 		}
 		// Only bounded model/search metadata is retained; never private text/vectors.
-		_, e = tx.Exec(ctx, `INSERT INTO investigation_runs(id,intent_id,intent_version,content_digest,message_digest,status,classifier,lookup,receipt,created_at,private_lookup,private_receipt,private_revision) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) ON CONFLICT(intent_id,intent_version,message_digest) DO UPDATE SET status=EXCLUDED.status,classifier=EXCLUDED.classifier,lookup=EXCLUDED.lookup,receipt=EXCLUDED.receipt,created_at=EXCLUDED.created_at,private_lookup=EXCLUDED.private_lookup,private_receipt=EXCLUDED.private_receipt,private_revision=EXCLUDED.private_revision`, uuid.NewString(), id, version, i.Digest, domain.Hash([]byte(message)), status, mustJSON(c), mustJSON(r), mustJSON(receipt), s.Clock.Now(), mustJSON(private), mustJSON(privateReceipt), prior.revision)
+		_, e = tx.Exec(ctx, `INSERT INTO investigation_runs(id,intent_id,intent_version,content_digest,message_digest,status,classifier,lookup,receipt,created_at,private_lookup,private_receipt,private_revision,llm) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) ON CONFLICT(intent_id,intent_version,message_digest) DO UPDATE SET status=EXCLUDED.status,classifier=EXCLUDED.classifier,lookup=EXCLUDED.lookup,receipt=EXCLUDED.receipt,created_at=EXCLUDED.created_at,private_lookup=EXCLUDED.private_lookup,private_receipt=EXCLUDED.private_receipt,private_revision=EXCLUDED.private_revision,llm=EXCLUDED.llm`, uuid.NewString(), id, version, i.Digest, domain.Hash([]byte(message)), status, mustJSON(c), mustJSON(r), mustJSON(receipt), s.Clock.Now(), mustJSON(private), mustJSON(privateReceipt), prior.revision, mustJSON(llmSignals))
 		return e
 	})
 	if e != nil {
@@ -288,9 +300,9 @@ func (s *Service) Evidence(ctx context.Context, a domain.Actor, id string) (Evid
 		if p.cmd.Version != i.Version || p.consent != i.Consent.Version {
 			return domain.Fail("VERSION_CONFLICT", 409)
 		}
-		var cRaw, rRaw, receiptRaw, privateRaw, privateReceiptRaw []byte
+		var cRaw, rRaw, receiptRaw, privateRaw, privateReceiptRaw, llmRaw []byte
 		var privateRevision *int64
-		e = tx.QueryRow(ctx, `SELECT classifier,lookup,receipt,private_lookup,private_receipt,private_revision FROM investigation_runs WHERE intent_id=$1 AND intent_version=$2 AND content_digest=$3 AND message_digest=$4`, id, i.Version, i.Digest, domain.Hash([]byte(message))).Scan(&cRaw, &rRaw, &receiptRaw, &privateRaw, &privateReceiptRaw, &privateRevision)
+		e = tx.QueryRow(ctx, `SELECT classifier,lookup,receipt,private_lookup,private_receipt,private_revision,llm FROM investigation_runs WHERE intent_id=$1 AND intent_version=$2 AND content_digest=$3 AND message_digest=$4`, id, i.Version, i.Digest, domain.Hash([]byte(message))).Scan(&cRaw, &rRaw, &receiptRaw, &privateRaw, &privateReceiptRaw, &privateRevision, &llmRaw)
 		checks := releaseEvidence{Classifier: engine.Classifier, Encoder: engine.Encoder, PolicyVersion: PaymentPolicy, History: domain.SearchResult{SchemaVersion: domain.ContractVersion, Scope: domain.History, Status: domain.LookupNotApplicable, EncoderVersion: engine.Encoder.EncoderVersion, Hits: []domain.SearchHit{}}}
 		if p.history {
 			checks.History.Status = domain.LookupUnavailable
@@ -301,6 +313,19 @@ func (s *Service) Evidence(ctx context.Context, a domain.Actor, id string) (Evid
 		if e == nil {
 			if json.Unmarshal(cRaw, &checks.Classification) != nil || json.Unmarshal(rRaw, &checks.Playbooks) != nil || json.Unmarshal(receiptRaw, &packet.Receipt) != nil {
 				return domain.Fail("INVALID_EVIDENCE", 409)
+			}
+			if len(llmRaw) > 0 {
+				// The stored LLM block is advisory display data. A decode problem
+				// degrades its own status; it can never invalidate the packet.
+				var stored llm.Signals
+				if json.Unmarshal(llmRaw, &stored) == nil {
+					if stored.Labels == nil {
+						stored.Labels = []llm.LabelFlag{}
+					}
+					packet.LLM = stored
+				} else {
+					packet.LLM = llm.Signals{Status: llm.StatusInvalidOutput, Labels: []llm.LabelFlag{}}
+				}
 			}
 			if p.history && privateRevision != nil && *privateRevision == p.revision && privateIndexErr == nil {
 				var result domain.SearchResult
@@ -370,7 +395,24 @@ func (s *Service) Evidence(ctx context.Context, a domain.Actor, id string) (Evid
 		}
 		packet.ClassifierStatus = checks.Classification.Status
 		packet.LookupStatus = checks.Playbooks.Status
-		packet.Attention = checks.Classification.Status == domain.Abstain || patternAttention(packet.History)
+		// Attention is raised by abstention, matched history patterns, or a
+		// grounded LLM flag the classifier did not trigger. LLM unavailability
+		// never raises attention and never adds to Missing.
+		triggered := map[string]bool{}
+		if usableClassification {
+			for _, l := range checks.Classification.TriggeredLabels {
+				triggered[l] = true
+			}
+		}
+		llmAttention := false
+		if packet.LLM.Status == llm.StatusOK {
+			for _, flag := range packet.LLM.Labels {
+				if !triggered[flag.Label] {
+					llmAttention = true
+				}
+			}
+		}
+		packet.Attention = checks.Classification.Status == domain.Abstain || patternAttention(packet.History) || llmAttention
 		if !usableClassification {
 			packet.Missing = append(packet.Missing, "Usable approved classification")
 		}

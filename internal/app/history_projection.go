@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"regexp"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -13,10 +12,8 @@ import (
 	"github.com/ramst/pause/internal/store"
 )
 
-var privateAddresses = regexp.MustCompile(`(?i)https?://\S+|[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}|\+?\d[\d ()-]{6,}\d`)
-
 func redactHistory(text string) string {
-	r := []rune(privateAddresses.ReplaceAllString(text, "[redacted]"))
+	r := []rune(domain.RedactPrivateAddresses(text))
 	if len(r) > 600 {
 		r = r[:600]
 	}

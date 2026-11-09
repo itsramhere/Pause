@@ -22,10 +22,24 @@ type query struct {
 
 func main() {
 	output := flag.String("output", "reports/retrieval-final.json", "new sanitized report path")
-	mode := flag.String("mode", "public", "public or workflow")
+	mode := flag.String("mode", "public", "public, workflow or llm")
+	opts := llmOptions{}
+	flag.StringVar(&opts.Split, "split", "validation", "validation or test")
+	flag.IntVar(&opts.Limit, "limit", 0, "validation row limit; 0 means all")
+	flag.BoolVar(&opts.ConfirmTest, "confirm-test", false, "confirm final-prompt test evaluation")
+	flag.Float64Var(&opts.RPS, "rps", 1, "sequential Mistral requests per second")
 	flag.Parse()
 	ctx, stop := bootstrap.Context()
 	defer stop()
+	if *mode == "llm" {
+		if err := runLLM(ctx, opts, *output); err != nil {
+			if err == errLLMNotConfigured {
+				fail("LLM_NOT_CONFIGURED")
+			}
+			fail()
+		}
+		return
+	}
 	s, err := bootstrap.Load(ctx)
 	if err != nil {
 		fail()
@@ -128,7 +142,11 @@ func main() {
 	}
 	bootstrap.Logger().Info("evaluation_complete", "denominator", len(queries), "available", available)
 }
-func fail() {
-	bootstrap.Logger().Error("evaluation_failed", "reason_code", "CONFIGURATION_OR_FROZEN_INPUT_ERROR")
+func fail(reason ...string) {
+	code := "CONFIGURATION_OR_FROZEN_INPUT_ERROR"
+	if len(reason) > 0 {
+		code = reason[0]
+	}
+	bootstrap.Logger().Error("evaluation_failed", "reason_code", code)
 	os.Exit(1)
 }

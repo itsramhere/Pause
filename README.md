@@ -182,7 +182,7 @@ DATABASE_URL='postgres://postgres:postgres@127.0.0.1:54321/pause?sslmode=disable
 # → http://127.0.0.1:8080  (set APP_BASE_URL to the origin you browse from)
 ```
 
-Normal startup never seeds people or history. Migrations run through **version 9**.
+Normal startup never seeds people or history. Migrations run through **version 10**.
 
 ```bash
 # Verify

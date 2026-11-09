@@ -12,6 +12,7 @@ import (
 	"github.com/ramst/pause/internal/config"
 	"github.com/ramst/pause/internal/domain"
 	"github.com/ramst/pause/internal/investigation"
+	"github.com/ramst/pause/internal/llm"
 	"github.com/ramst/pause/internal/paypal"
 	"github.com/ramst/pause/internal/secure"
 	"github.com/ramst/pause/internal/store"
@@ -21,7 +22,10 @@ func Logger() *slog.Logger { return slog.New(slog.NewJSONHandler(os.Stdout, nil)
 func Context() (context.Context, context.CancelFunc) {
 	return signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 }
-func Load(ctx context.Context) (*app.Service, error) {
+
+// LoadConfig loads the optional env file and validates configuration without
+// opening any dependencies. Explicit environment values retain precedence.
+func LoadConfig() (config.Config, error) {
 	// Explicit env wins over the optional local file. The populated .env is never
 	// rewritten. Legacy AI_* variables are ignored by the product.
 	path := os.Getenv("ENV_FILE")
@@ -29,9 +33,12 @@ func Load(ctx context.Context) (*app.Service, error) {
 		path = ".env"
 	}
 	if e := godotenv.Load(path); e != nil && !os.IsNotExist(e) {
-		return nil, domain.Fail("ENV_FILE_INVALID", 500)
+		return config.Config{}, domain.Fail("ENV_FILE_INVALID", 500)
 	}
-	c, e := config.Load()
+	return config.Load()
+}
+func Load(ctx context.Context) (*app.Service, error) {
+	c, e := LoadConfig()
 	if e != nil {
 		return nil, e
 	}
@@ -51,6 +58,11 @@ func Load(ctx context.Context) (*app.Service, error) {
 			db.Pool.Close()
 			return nil, e
 		}
+	}
+	// Advisory AI signals only. An absent key disables the extractor; no
+	// release or money path consults it.
+	if c.MistralAPIKey != "" {
+		a.LLM = llm.New(c.MistralAPIKey, c.MistralModel, c.MistralBaseURL)
 	}
 	if c.PayPalClientID != "" {
 		a.Provider = paypal.New(c.PayPalClientID, c.PayPalSecret, c.PayPalWebhookID)

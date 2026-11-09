@@ -21,7 +21,7 @@ import (
 	"github.com/ramst/pause/internal/domain"
 )
 
-const TemplateVersion = "public-evidence-template-v1"
+const TemplateVersion = "public-evidence-template-v2"
 const IndexVersion = "pause-playbooks-v1-minilm1110"
 const FusionVersion = "go-rrf60-v1"
 

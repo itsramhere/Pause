@@ -15,6 +15,7 @@ import (
 	"github.com/ramst/pause/internal/config"
 	"github.com/ramst/pause/internal/domain"
 	"github.com/ramst/pause/internal/investigation"
+	"github.com/ramst/pause/internal/llm"
 	"github.com/ramst/pause/internal/secure"
 	"github.com/ramst/pause/internal/store"
 )
@@ -26,6 +27,10 @@ type Service struct {
 	Box           *secure.Box
 	Provider      domain.PaymentProvider
 	Investigation *investigation.Engine
+	// LLM is the advisory Mistral signal extractor. Nil when no API key is
+	// configured. Its output never gates release, never adds to Missing and
+	// never changes any money path; see internal/app/llm.go.
+	LLM *llm.Client
 	// Internal dependency injection for policy fixtures. No bootstrap, config or
 	// HTTP path can install this; absent production investigation fails closed.
 	sourceValidator func(context.Context, string, string) (sourceValidation, error)

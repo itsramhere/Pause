@@ -21,6 +21,7 @@ type Config struct {
 	MLURL, MLToken, ClassifierManifest, EncoderManifest           string
 	ElasticURL, ElasticKey, PlaybookAlias, HistoryAlias           string
 	ElasticCA                                                     string
+	MistralAPIKey, MistralModel, MistralBaseURL                   string
 	SecureCookies                                                 bool
 	DemoEnabled                                                   bool
 	TrustedProxies                                                []netip.Prefix
@@ -31,7 +32,8 @@ type Config struct {
 // Load never includes values or credentials in a configuration error.
 func Load() (Config, error) { return From(os.Getenv) }
 func From(get func(string) string) (Config, error) {
-	c := Config{Environment: value(get, "APP_ENV", "development"), Listen: value(get, "HTTP_ADDR", "127.0.0.1:8080"), Origin: value(get, "APP_BASE_URL", "http://127.0.0.1:5173"), DatabaseURL: get("DATABASE_URL"), WebDir: value(get, "WEB_DIST_DIR", "web/dist"), MerchantID: get("PAYPAL_MERCHANT_ID"), MerchantLabel: value(get, "PAYPAL_MERCHANT_LABEL", "Pause Sandbox Store"), MaxAmount: 500000, MessageRetention: 7 * 24 * time.Hour, OperationRetention: 24 * time.Hour, SessionTTL: 8 * time.Hour, DecisionTTL: 30 * time.Minute, MLURL: get("ML_SERVICE_URL"), MLToken: get("ML_SERVICE_TOKEN"), ClassifierManifest: value(get, "CLASSIFIER_MANIFEST_PATH", "models/classifier.manifest.json"), EncoderManifest: value(get, "ENCODER_MANIFEST_PATH", "models/encoder.manifest.json"), ElasticURL: get("ELASTICSEARCH_URL"), ElasticKey: get("ELASTICSEARCH_API_KEY"), PlaybookAlias: value(get, "ELASTICSEARCH_PLAYBOOK_ALIAS", "pause-playbooks"), HistoryAlias: value(get, "ELASTICSEARCH_HISTORY_ALIAS", "pause-request-history")}
+	c := Config{Environment: value(get, "APP_ENV", "development"), Listen: value(get, "HTTP_ADDR", "127.0.0.1:8080"), Origin: value(get, "APP_BASE_URL", "http://127.0.0.1:5173"), DatabaseURL: get("DATABASE_URL"), WebDir: value(get, "WEB_DIST_DIR", "web/dist"), MerchantID: get("PAYPAL_MERCHANT_ID"), MerchantLabel: value(get, "PAYPAL_MERCHANT_LABEL", "Pause Sandbox Store"), MaxAmount: 500000, MessageRetention: 7 * 24 * time.Hour, OperationRetention: 24 * time.Hour, SessionTTL: 8 * time.Hour, DecisionTTL: 30 * time.Minute, MLURL: get("ML_SERVICE_URL"), MLToken: get("ML_SERVICE_TOKEN"), ClassifierManifest: value(get, "CLASSIFIER_MANIFEST_PATH", "models/classifier.manifest.json"), EncoderManifest: value(get, "ENCODER_MANIFEST_PATH", "models/encoder.manifest.json"), ElasticURL: get("ELASTICSEARCH_URL"), ElasticKey: get("ELASTICSEARCH_API_KEY"), PlaybookAlias: value(get, "ELASTICSEARCH_PLAYBOOK_ALIAS", "pause-playbooks"), HistoryAlias: value(get, "ELASTICSEARCH_HISTORY_ALIAS", "pause-request-history"), MistralModel: value(get, "MISTRAL_MODEL", "mistral-small-latest"), MistralBaseURL: value(get, "MISTRAL_BASE_URL", "https://api.mistral.ai")}
+	c.MistralAPIKey = get("MISTRAL_API_KEY")
 	if c.Environment != "development" && c.Environment != "test" && c.Environment != "demo" && c.Environment != "production" {
 		return c, errors.New("APP_ENV is invalid")
 	}
@@ -118,7 +120,7 @@ func From(get func(string) string) (Config, error) {
 			*item.target = time.Duration(n) * time.Hour
 		}
 	}
-	for _, item := range []struct{ name, raw string }{{"ML_SERVICE_URL", c.MLURL}, {"ELASTICSEARCH_URL", c.ElasticURL}} {
+	for _, item := range []struct{ name, raw string }{{"ML_SERVICE_URL", c.MLURL}, {"ELASTICSEARCH_URL", c.ElasticURL}, {"MISTRAL_BASE_URL", c.MistralBaseURL}} {
 		if item.raw != "" {
 			u, e := url.Parse(item.raw)
 			if e != nil {

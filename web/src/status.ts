@@ -24,3 +24,6 @@ export function nextStep(i: Intent) {
 }
 export const answerText = (s: string) => ({ PENDING: 'Waiting for an independent answer', CONFIRMED: 'Enrolled account confirmed this request', DENIED: 'Enrolled account denied this request', EXPIRED: 'Answer deadline elapsed', NOT_REQUESTED: 'Confirmation not yet requested', UNAVAILABLE: 'Confirmation unavailable' }[s] ?? 'Answer being checked')
 export const classifierText = (s: string) => ({ OK: 'Message signal checks completed', ABSTAIN: 'Classifier abstained · reviewer attention required', UNSUPPORTED: 'Unsupported language · English is required', UNAVAILABLE: 'Classifier unavailable · retry checks before release' }[s] ?? 'Message signal checks have not completed')
+// The AI reading is advisory. Every non-OK status renders the same fixed line:
+// its availability never changes the required checks.
+export const llmText = (s: string) => ({ OK: 'AI reading completed', UNAVAILABLE: 'AI reading unavailable. This does not change the required checks.', INVALID_OUTPUT: 'AI reading unavailable. This does not change the required checks.', DISABLED: 'AI reading unavailable. This does not change the required checks.' }[s] ?? 'AI reading unavailable. This does not change the required checks.')
