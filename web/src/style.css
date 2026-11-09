@@ -245,6 +245,16 @@ details[open]{border-color:var(--ink)}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ---- Responsive ---- */
+.judge-bar{border:1.5px solid var(--ink);border-left:8px solid var(--amber);padding:20px;margin:20px 0;min-width:0;background:var(--panel)}
+.judge-bar h2{margin-bottom:8px}
+.judge-bar p{margin-bottom:8px}
+.judge-bar .actions{margin-top:16px}
+.judge-bar button{min-height:44px;max-width:100%;overflow-wrap:anywhere}
+.judge-bar button[aria-pressed="true"]{background:var(--amber);color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.judge-bar .countdown{max-width:100%;letter-spacing:.02em;font-size:.68rem}
+.judge-steps ol{padding-left:24px;margin:8px 0}
+.judge-steps li{padding:8px;border-left:3px solid transparent;margin:8px 0}
+.judge-steps li[aria-current="step"]{border-left-color:var(--amber);background:var(--warn-bg)}
 @media(max-width:900px){
  .shell{padding:0 24px}
  .login-layout{gap:44px;padding:52px 0 24px}

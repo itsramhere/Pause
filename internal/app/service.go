@@ -27,7 +27,7 @@ type Service struct {
 	Box           *secure.Box
 	Provider      domain.PaymentProvider
 	Investigation *investigation.Engine
-	// LLM is the advisory Mistral signal extractor. Nil when no API key is
+	// LLM is the advisory Gemini signal extractor. Nil when no API key is
 	// configured. Its output never gates release, never adds to Missing and
 	// never changes any money path; see internal/app/llm.go.
 	LLM *llm.Client

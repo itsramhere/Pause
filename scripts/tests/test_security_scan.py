@@ -48,7 +48,7 @@ class DisclosureScanTests(unittest.TestCase):
         self.assertEqual([],report['findings'])
 
     def test_session_and_legacy_server_keys_are_detected(self):
-        for key in ['SESSION_KEY','AI_API_KEY','OPENAI_API_KEY']:
+        for key in ['SESSION_KEY','AI_API_KEY','OPENAI_API_KEY','GEMINI_API_KEY','GOOGLE_API_KEY']:
             with self.subTest(key=key):
                 value = 'synthetic-private-key-00000000000'
                 status, report, stdout = self.scan(key+'='+value+'\n', value)

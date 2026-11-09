@@ -96,6 +96,32 @@ func (s *Server) Handler() http.Handler {
 			out, e := s.App.ResetDemo(r.Context(), chi.URLParam(r, "id"), in.Token)
 			s.respond(w, r, map[string]string{"status": out}, e, 200)
 		})
+		r.Post("/demo/runs/{id}/session", func(w http.ResponseWriter, r *http.Request) {
+			var in struct {
+				Token string `json:"reset_token"`
+				Role  string `json:"role"`
+			}
+			if !s.decode(w, r, &in) {
+				return
+			}
+			member, actor, e := s.App.DemoSwitch(r.Context(), chi.URLParam(r, "id"), in.Token, in.Role, s.peer(r))
+			if e != nil {
+				s.failure(w, r, e)
+				return
+			}
+			old := ""
+			if c, e := r.Cookie(SessionCookie); e == nil {
+				old = c.Value
+			}
+			out, e := s.Auth.Issue(r.Context(), member, actor, old, correlation(r), "DEMO_ROLE_SWITCH", "DEMO_RUN_TOKEN")
+			if e != nil {
+				s.failure(w, r, e)
+				return
+			}
+			s.cookie(w, SessionCookie, out.Token, true, int(s.App.Config.SessionTTL.Seconds()))
+			s.cookie(w, CSRFCookie, out.CSRFToken, false, int(s.App.Config.SessionTTL.Seconds()))
+			write(w, 200, out)
+		})
 		r.Post("/auth/login", s.login)
 		r.Group(func(r chi.Router) {
 			r.Use(s.authenticate)

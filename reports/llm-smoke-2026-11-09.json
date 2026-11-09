@@ -1,0 +1,279 @@
+{
+  "schema_version": "pause-llm-signals-v1",
+  "split": "validation",
+  "denominator": 5,
+  "partial": true,
+  "dataset_sha256": "2a56ebf38c32176a0d11b65870144b35874c2eb5ee7c83caa96b2d2442bbd596",
+  "split_manifest_sha256": "89d21bd220408ae4315ab26c560fcf5edf93705e2bb6894d0ba5a0b16ef3dc3a",
+  "model": "gemini-3.5-flash-lite",
+  "prompt_version": "pause-llm-prompt-v1",
+  "prompt_hash": "b52e4b329dd82e8796c56f51b39805058d5eec972528546961817843a8323749",
+  "git_revision": "0430f863d300b84047c2b9849a1fbed0f6088716",
+  "recorded_at": "2026-11-09T03:57:42.9665892Z",
+  "variants": {
+    "llm": {
+      "per_label": {
+        "advance_fee_or_release_fee": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0,
+          "support": 0
+        },
+        "impersonation_style_request": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0,
+          "support": 0
+        },
+        "secrecy_pressure": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0,
+          "support": 0
+        },
+        "urgent_payment_pressure": {
+          "tp": 5,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1,
+          "support": 5
+        }
+      },
+      "micro": {
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "support": 5
+      },
+      "benign_false_triggers": 0
+    },
+    "rules": {
+      "per_label": {
+        "advance_fee_or_release_fee": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0,
+          "support": 0
+        },
+        "impersonation_style_request": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0,
+          "support": 0
+        },
+        "secrecy_pressure": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0,
+          "support": 0
+        },
+        "urgent_payment_pressure": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 5,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0,
+          "support": 5
+        }
+      },
+      "micro": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0,
+        "support": 5
+      },
+      "benign_false_triggers": 0
+    },
+    "rules_or_llm": {
+      "per_label": {
+        "advance_fee_or_release_fee": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0,
+          "support": 0
+        },
+        "impersonation_style_request": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0,
+          "support": 0
+        },
+        "secrecy_pressure": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0,
+          "support": 0
+        },
+        "urgent_payment_pressure": {
+          "tp": 5,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1,
+          "support": 5
+        }
+      },
+      "micro": {
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "support": 5
+      },
+      "benign_false_triggers": 0
+    }
+  },
+  "llm_availability": {
+    "INVALID_OUTPUT": 0,
+    "OK": 5,
+    "UNAVAILABLE": 0
+  },
+  "llm_latency_ms": {
+    "p50": 1217,
+    "p95": 1426
+  },
+  "llm_retries": 0,
+  "rows": [
+    {
+      "message_id": "signal-0-04-0",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-0-04-1",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-0-04-2",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-0-04-3",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-0-09-0",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    }
+  ],
+  "scope": "Prompt developed against the validation split only. The test split is run once with the final prompt (pause-llm-prompt-v1) and reported as-is, whether or not it beats the baselines. Synthetic single-author data; not a fraud or real-world accuracy estimate. LLM output is advisory and never gates release.",
+  "baselines_note": "Validation micro precision/recall/F1 for rules and linear are frozen in models/validation-report.json (rules and linear). Validation TF-IDF row predictions are unavailable; the linear variant is omitted on validation. Test TF-IDF uses frozen reports/classifier-final.json rows, including ABSTAIN triggered labels."
+}

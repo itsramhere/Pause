@@ -1,4 +1,4 @@
-// Package llm owns the bounded Mistral signal extractor. Its output is
+// Package llm owns the bounded Gemini signal extractor. Its output is
 // advisory only: callers may surface it or raise reviewer attention, but no
 // release, eligibility or money path may consult it, and its unavailability
 // must never block anything. Every model response is untrusted data that is
@@ -19,11 +19,11 @@ import (
 )
 
 const (
-	requestTimeout      = 10 * time.Second
-	maxResponseBytes    = 1 << 20
-	maxOutputTokens     = 1024
-	randomSeed          = 7
-	chatCompletionsPath = "/v1/chat/completions"
+	requestTimeout   = 10 * time.Second
+	maxResponseBytes = 1 << 20
+	maxOutputTokens  = 1024
+	randomSeed       = 7
+	interactionsPath = "/v1/interactions"
 )
 
 // Error carries only a bounded code. Error() never includes a response body,
@@ -36,60 +36,51 @@ type Error struct {
 
 func (e *Error) Error() string { return e.Code }
 
-// Client is a hardened Mistral chat-completions client. No retries: a failed
+// Client is a hardened Gemini Interactions client. No retries: a failed
 // call is recorded as UNAVAILABLE and the pipeline continues without it.
 type Client struct {
-	base, key, model string
-	http             *http.Client
+	base, key, model, thinkingLevel string
+	http                            *http.Client
 }
 
-func New(apiKey, model, baseURL string) *Client {
+func New(apiKey, model, baseURL, thinkingLevel string) *Client {
 	if baseURL == "" {
-		baseURL = "https://api.mistral.ai"
+		baseURL = "https://generativelanguage.googleapis.com"
 	}
-	return &Client{base: strings.TrimSuffix(baseURL, "/"), key: apiKey, model: model, http: &http.Client{Timeout: requestTimeout, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}
+	if thinkingLevel == "" {
+		thinkingLevel = "minimal"
+	}
+	return &Client{thinkingLevel: thinkingLevel, base: strings.TrimSuffix(baseURL, "/"), key: apiKey, model: model, http: &http.Client{Timeout: requestTimeout, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}
 }
 
-type chatRequest struct {
-	Model          string        `json:"model"`
-	Messages       []chatMessage `json:"messages"`
-	Temperature    float64       `json:"temperature"`
-	RandomSeed     int           `json:"random_seed"`
-	MaxTokens      int           `json:"max_tokens"`
-	ResponseFormat responseSpec  `json:"response_format"`
+type interactionRequest struct {
+	Model             string                  `json:"model"`
+	SystemInstruction string                  `json:"system_instruction"`
+	Input             string                  `json:"input"`
+	ResponseFormat    interactionResponseSpec `json:"response_format"`
+	GenerationConfig  generationConfig        `json:"generation_config"`
+	Store             bool                    `json:"store"`
 }
-type chatMessage struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
+type interactionResponseSpec struct {
+	Type     string         `json:"type"`
+	MIMEType string         `json:"mime_type"`
+	Schema   map[string]any `json:"schema"`
 }
-type responseSpec struct {
-	Type       string      `json:"type"`
-	JSONSchema *schemaSpec `json:"json_schema,omitempty"`
+type generationConfig struct {
+	Seed            int    `json:"seed"`
+	MaxOutputTokens int    `json:"max_output_tokens"`
+	ThinkingLevel   string `json:"thinking_level"`
 }
-type schemaSpec struct {
-	Name   string         `json:"name"`
-	Strict bool           `json:"strict"`
-	Schema map[string]any `json:"schema"`
+type interactionResponse struct {
+	Status string `json:"status"`
+	Steps  []struct {
+		Type    string          `json:"type"`
+		Content json.RawMessage `json:"content"`
+	} `json:"steps"`
 }
-type chatResponse struct {
-	Choices []struct {
-		Message struct {
-			Content string `json:"content"`
-		} `json:"message"`
-	} `json:"choices"`
-}
-
-// structuredOutput reports whether the configured model family accepts
-// response_format json_schema. Older open-weights names fall back to
-// json_object. Go-side validation is the authority either way, so a stale
-// list only loses schema enforcement, never correctness.
-func structuredOutput(model string) bool {
-	for _, legacy := range []string{"open-mistral-", "open-mixtral-", "mistral-7b", "mistral-tiny", "mixtral-"} {
-		if strings.HasPrefix(model, legacy) {
-			return false
-		}
-	}
-	return true
+type interactionContent struct {
+	Type string `json:"type"`
+	Text string `json:"text"`
 }
 
 func responseSchema() map[string]any {
@@ -110,15 +101,16 @@ func (c *Client) ExtractSignals(ctx context.Context, text string) (signals Signa
 	prompt := systemPrompt()
 	signals = Signals{Status: StatusUnavailable, Model: c.model, PromptVersion: PromptVersion, PromptHash: domain.Hash([]byte(prompt)), Labels: []LabelFlag{}}
 	defer func() { signals.DurationMS = time.Since(started).Milliseconds() }()
-	spec := responseSpec{Type: "json_object"}
-	if structuredOutput(c.model) {
-		spec = responseSpec{Type: "json_schema", JSONSchema: &schemaSpec{Name: "pause_signals", Strict: true, Schema: responseSchema()}}
-	}
-	req, e := http.NewRequestWithContext(ctx, "POST", c.base+chatCompletionsPath, mustJSON(chatRequest{Model: c.model, Messages: []chatMessage{{Role: "system", Content: prompt}, {Role: "user", Content: messageBlock(sent)}}, Temperature: 0, RandomSeed: randomSeed, MaxTokens: maxOutputTokens, ResponseFormat: spec}))
+	req, e := http.NewRequestWithContext(ctx, "POST", c.base+interactionsPath, mustJSON(interactionRequest{
+		Model: c.model, SystemInstruction: prompt, Input: messageBlock(sent),
+		ResponseFormat:   interactionResponseSpec{Type: "text", MIMEType: "application/json", Schema: responseSchema()},
+		GenerationConfig: generationConfig{Seed: randomSeed, MaxOutputTokens: maxOutputTokens, ThinkingLevel: c.thinkingLevel},
+		Store:            false,
+	}))
 	if e != nil {
 		return signals, &Error{Code: "LLM_TRANSPORT", Temporary: true}
 	}
-	req.Header.Set("Authorization", "Bearer "+c.key)
+	req.Header.Set("x-goog-api-key", c.key)
 	req.Header.Set("Content-Type", "application/json")
 	resp, e := c.http.Do(req)
 	if e != nil {
@@ -132,11 +124,41 @@ func (c *Client) ExtractSignals(ctx context.Context, text string) (signals Signa
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return signals, &Error{Code: "LLM_HTTP_ERROR", HTTP: resp.StatusCode, Temporary: resp.StatusCode == 429 || resp.StatusCode >= 500}
 	}
-	var envelope chatResponse
-	if json.Unmarshal(body, &envelope) != nil || len(envelope.Choices) != 1 {
+	var envelope interactionResponse
+	if json.Unmarshal(body, &envelope) != nil {
+		signals.Status = StatusInvalidOutput
 		return signals, &Error{Code: "LLM_INVALID_OUTPUT"}
 	}
-	return Validate([]byte(envelope.Choices[0].Message.Content), sent, signals)
+	if envelope.Status == "incomplete" {
+		signals.Status = StatusInvalidOutput
+		return signals, &Error{Code: "LLM_INVALID_OUTPUT"}
+	}
+	if envelope.Status != "completed" {
+		return signals, &Error{Code: "LLM_UNAVAILABLE"}
+	}
+	var answer string
+	textParts := 0
+	for _, step := range envelope.Steps {
+		if step.Type != "model_output" {
+			continue
+		}
+		var content []interactionContent
+		if json.Unmarshal(step.Content, &content) != nil {
+			signals.Status = StatusInvalidOutput
+			return signals, &Error{Code: "LLM_INVALID_OUTPUT"}
+		}
+		for _, part := range content {
+			if part.Type == "text" {
+				textParts++
+				answer = part.Text
+			}
+		}
+	}
+	if textParts != 1 {
+		signals.Status = StatusInvalidOutput
+		return signals, &Error{Code: "LLM_INVALID_OUTPUT"}
+	}
+	return Validate([]byte(answer), sent, signals)
 }
 
 func mustJSON(v any) io.Reader {

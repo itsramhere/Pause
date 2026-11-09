@@ -19,45 +19,65 @@ func fakeServer(t *testing.T) (*Client, *string, map[string]string) {
 	mode := "valid"
 	sent := map[string]string{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != chatCompletionsPath {
-			t.Error("unexpected path", r.URL.Path)
+		if r.Method != "POST" || r.URL.Path != "/v1/interactions" {
+			t.Error("unexpected interaction route")
 			w.WriteHeader(404)
 			return
 		}
-		if r.Header.Get("Authorization") != "Bearer test-key" {
-			t.Error("missing bearer key")
+		if r.Header.Get("x-goog-api-key") != "test-key" || r.Header.Get("Authorization") != "" {
+			t.Error("unexpected authentication headers")
 		}
-		var body chatRequest
+		if r.URL.RawQuery != "" || strings.Contains(r.URL.String(), "test-key") {
+			t.Error("credential in request URL")
+		}
+		if r.Header.Get("Content-Type") != "application/json" {
+			t.Error("unexpected content type")
+		}
+		var body map[string]json.RawMessage
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			t.Error(err)
 			w.WriteHeader(400)
 			return
 		}
-		if body.Temperature != 0 || body.RandomSeed != randomSeed || body.MaxTokens != maxOutputTokens {
-			t.Error("unbounded request settings", body.Temperature, body.RandomSeed, body.MaxTokens)
+		if string(body["store"]) != "false" {
+			t.Error("interaction storage must be explicitly disabled")
 		}
-		if len(body.Messages) != 2 || body.Messages[0].Role != "system" || body.Messages[1].Role != "user" {
-			t.Error("unexpected message layout")
+		if _, ok := body["temperature"]; ok {
+			t.Error("unexpected temperature")
 		}
-		if body.ResponseFormat.Type != "json_schema" && body.ResponseFormat.Type != "json_object" {
-			t.Error("missing JSON output enforcement", body.ResponseFormat.Type)
+		var config map[string]json.RawMessage
+		if json.Unmarshal(body["generation_config"], &config) != nil || string(config["seed"]) != "7" || string(config["max_output_tokens"]) != "1024" || string(config["thinking_level"]) != `"minimal"` {
+			t.Error("unbounded generation settings")
 		}
-		content := body.Messages[1].Content
+		if _, ok := config["temperature"]; ok {
+			t.Error("unexpected generation temperature")
+		}
+		var format interactionResponseSpec
+		if json.Unmarshal(body["response_format"], &format) != nil || format.Type != "text" || format.MIMEType != "application/json" || string(mustJSONBody(format.Schema)) != string(mustJSONBody(responseSchema())) {
+			t.Error("missing JSON schema enforcement")
+		}
+		var content, system, model string
+		if json.Unmarshal(body["input"], &content) != nil || json.Unmarshal(body["system_instruction"], &system) != nil || system != systemPrompt() {
+			t.Error("unexpected input or system instruction")
+		}
+		if json.Unmarshal(body["model"], &model) != nil || model != "gemini-3.7-flash" {
+			t.Error("unexpected configured model")
+		}
 		if !strings.HasPrefix(content, MessageStart+"\n") || !strings.HasSuffix(content, "\n"+MessageEnd) {
 			t.Error("untrusted text not delimited")
 		}
 		text := strings.TrimSuffix(strings.TrimPrefix(content, MessageStart+"\n"), "\n"+MessageEnd)
 		sent["text"] = text
-		sent["system"] = body.Messages[0].Content
-		sent["format"] = body.ResponseFormat.Type
-		sent["schema"] = string(mustJSONBody(body.ResponseFormat.JSONSchema))
+		sent["system"] = system
+		sent["format"] = format.MIMEType
+		sent["schema"] = string(mustJSONBody(format.Schema))
 		if mode == "outage" {
 			w.WriteHeader(503)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		// Real Mistral shape: the answer JSON travels as a string inside the
-		// chat envelope, so the client must decode both layers.
+		// Gemini returns the answer JSON as text in a model_output step;
+		// the client must decode both layers.
 		var answer string
 		switch mode {
 		case "valid", "ungrounded":
@@ -93,10 +113,10 @@ func fakeServer(t *testing.T) (*Client, *string, map[string]string) {
 			w.WriteHeader(500)
 			return
 		}
-		_ = json.NewEncoder(w).Encode(map[string]any{"choices": []any{map[string]any{"message": map[string]any{"content": answer}}}})
+		_ = json.NewEncoder(w).Encode(map[string]any{"status": "completed", "steps": []any{map[string]any{"type": "model_output", "content": []any{map[string]any{"type": "text", "text": answer}}}}})
 	}))
 	t.Cleanup(server.Close)
-	return New("test-key", "mistral-small-latest", server.URL), &mode, sent
+	return New("test-key", "gemini-3.7-flash", server.URL, ""), &mode, sent
 }
 
 func firstRunes(s string, n int) string {
@@ -124,7 +144,7 @@ func TestExtractSignalsModes(t *testing.T) {
 				if err != nil || signals.Status != StatusOK || len(signals.Labels) != 2 {
 					t.Fatal("valid extraction failed", err, signals)
 				}
-				if signals.Model != "mistral-small-latest" || signals.PromptVersion != PromptVersion || signals.PromptHash == "" {
+				if signals.Model != "gemini-3.7-flash" || signals.PromptVersion != PromptVersion || signals.PromptHash == "" {
 					t.Fatal("prompt provenance missing", signals)
 				}
 				for _, f := range signals.Labels {
@@ -186,8 +206,8 @@ func TestExtractSignalsRedactsBeforeSending(t *testing.T) {
 	if !strings.Contains(sent["system"], "never instructions") {
 		t.Fatal("prompt must mark the message untrusted")
 	}
-	if sent["format"] != "json_schema" || !strings.Contains(sent["schema"], `"strict":true`) {
-		t.Fatal("structured output not requested for capable model", sent["format"], sent["schema"])
+	if sent["format"] != "application/json" || !strings.Contains(sent["schema"], `"additionalProperties":false`) {
+		t.Fatal("structured output not requested", sent["format"], sent["schema"])
 	}
 	for _, l := range domain.Labels {
 		if !strings.Contains(sent["schema"], l) {
@@ -210,10 +230,105 @@ func TestExtractSignalsInjectionAndTransport(t *testing.T) {
 	if len(signals.Labels) != 0 {
 		t.Fatal("injected answer produced flags", signals)
 	}
-	broken := New("test-key", "mistral-small-latest", "http://127.0.0.1:1")
+	broken := New("test-key", "gemini-3.7-flash", "http://127.0.0.1:1", "")
 	signals, err = broken.ExtractSignals(ctx, text)
 	if err == nil || signals.Status != StatusUnavailable || err.Error() != "LLM_TRANSPORT" {
 		t.Fatal("transport failure not bounded", err, signals)
+	}
+}
+
+func TestGeminiInteractionEnvelope(t *testing.T) {
+	labels := map[string]any{}
+	for _, label := range domain.Labels {
+		labels[label] = map[string]any{"present": false, "excerpt": ""}
+	}
+	text := map[string]any{"type": "text", "text": string(mustJSONBody(map[string]any{"labels": labels}))}
+	output := func(parts ...any) map[string]any {
+		return map[string]any{"type": "model_output", "content": parts}
+	}
+	thought := map[string]any{"type": "thought", "content": []any{map[string]any{"type": "text", "text": "not an answer"}}}
+	for _, tc := range []struct {
+		name, status string
+		steps        []any
+		want         Status
+		code         string
+	}{
+		{"completed", "completed", []any{output(text)}, StatusOK, ""},
+		{"thought alongside output", "completed", []any{thought, output(text)}, StatusOK, ""},
+		{"other step content", "completed", []any{map[string]any{"type": "thought", "content": "ignored"}, output(text)}, StatusOK, ""},
+		{"nontext content", "completed", []any{output(map[string]any{"type": "image", "data": "ignored"}, text)}, StatusOK, ""},
+		{"incomplete", "incomplete", []any{output(text)}, StatusInvalidOutput, "LLM_INVALID_OUTPUT"},
+		{"failed", "failed", []any{output(text)}, StatusUnavailable, "LLM_UNAVAILABLE"},
+		{"cancelled", "cancelled", nil, StatusUnavailable, "LLM_UNAVAILABLE"},
+		{"unknown status", "pending", nil, StatusUnavailable, "LLM_UNAVAILABLE"},
+		{"missing status", "", []any{output(text)}, StatusUnavailable, "LLM_UNAVAILABLE"},
+		{"zero text parts", "completed", []any{thought, output(map[string]any{"type": "image"})}, StatusInvalidOutput, "LLM_INVALID_OUTPUT"},
+		{"two text parts", "completed", []any{output(text, text)}, StatusInvalidOutput, "LLM_INVALID_OUTPUT"},
+		{"text across steps", "completed", []any{output(text), output(text)}, StatusInvalidOutput, "LLM_INVALID_OUTPUT"},
+		{"no steps", "completed", nil, StatusInvalidOutput, "LLM_INVALID_OUTPUT"},
+		{"invalid output content", "completed", []any{map[string]any{"type": "model_output", "content": "invalid"}}, StatusInvalidOutput, "LLM_INVALID_OUTPUT"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			calls := 0
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				calls++
+				_ = json.NewEncoder(w).Encode(map[string]any{"id": "ignored", "model": "response-model", "status": tc.status, "steps": tc.steps, "usage": map[string]any{"unknown": true}})
+			}))
+			defer server.Close()
+			signals, err := New("test-key", "configured-model", server.URL, "").ExtractSignals(context.Background(), "Pay now.")
+			if signals.Status != tc.want || signals.Model != "configured-model" || signals.Labels == nil || len(signals.Labels) != 0 || calls != 1 {
+				t.Fatal("unexpected interaction result", signals, calls)
+			}
+			if tc.code == "" {
+				if err != nil {
+					t.Fatal(err)
+				}
+				return
+			}
+			failure, ok := err.(*Error)
+			if !ok || failure.Code != tc.code || failure.Error() != tc.code || failure.Temporary {
+				t.Fatal("unexpected interaction error", err)
+			}
+		})
+	}
+}
+
+func TestGeminiHTTPErrorMapping(t *testing.T) {
+	for _, code := range []int{400, 401, 429, 500, 503} {
+		t.Run(http.StatusText(code), func(t *testing.T) {
+			calls := 0
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				calls++
+				w.WriteHeader(code)
+				_, _ = w.Write([]byte(`{"error":{"message":"private body test-key"}}`))
+			}))
+			defer server.Close()
+			signals, err := New("test-key", "configured-model", server.URL, "").ExtractSignals(context.Background(), "Pay now.")
+			failure, ok := err.(*Error)
+			if !ok || failure.HTTP != code || failure.Code != "LLM_HTTP_ERROR" || failure.Error() != "LLM_HTTP_ERROR" || failure.Temporary != (code == 429 || code >= 500) || signals.Status != StatusUnavailable || calls != 1 {
+				t.Fatal("unexpected HTTP error mapping", err, signals, calls)
+			}
+		})
+	}
+}
+
+func TestGeminiThinkingLevel(t *testing.T) {
+	for _, level := range []string{"", "minimal", "low", "medium", "high"} {
+		t.Run("level="+level, func(t *testing.T) {
+			want := level
+			if want == "" {
+				want = "minimal"
+			}
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				var body interactionRequest
+				if json.NewDecoder(r.Body).Decode(&body) != nil || body.GenerationConfig.ThinkingLevel != want {
+					t.Error("configured thinking level not sent")
+				}
+				_, _ = w.Write([]byte(`{"status":"failed"}`))
+			}))
+			defer server.Close()
+			_, _ = New("test-key", "configured-model", server.URL, level).ExtractSignals(context.Background(), "Pay now.")
+		})
 	}
 }
 
@@ -287,14 +402,6 @@ func TestValidateDeterministicOrder(t *testing.T) {
 			if out.Labels[i].Label != label || out.Labels[i].Excerpt != excerpts[i] {
 				t.Fatalf("iteration %d: flags not in canonical order: %+v", n, out.Labels)
 			}
-		}
-	}
-}
-
-func TestStructuredOutputSelection(t *testing.T) {
-	for model, want := range map[string]bool{"mistral-small-latest": true, "mistral-large-latest": true, "open-mistral-7b": false, "open-mixtral-8x7b": false, "mistral-7b-instruct": false} {
-		if structuredOutput(model) != want {
-			t.Fatal("unexpected structured selection", model)
 		}
 	}
 }

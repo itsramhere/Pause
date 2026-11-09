@@ -26,6 +26,21 @@ func Context() (context.Context, context.CancelFunc) {
 // LoadConfig loads the optional env file and validates configuration without
 // opening any dependencies. Explicit environment values retain precedence.
 func LoadConfig() (config.Config, error) {
+	if err := loadEnvFile(); err != nil {
+		return config.Config{}, err
+	}
+	return config.Load()
+}
+
+// LoadLLMConfig loads the same optional env file without application settings.
+func LoadLLMConfig() (config.LLMConfig, error) {
+	if err := loadEnvFile(); err != nil {
+		return config.LLMConfig{}, err
+	}
+	return config.LoadLLM()
+}
+
+func loadEnvFile() error {
 	// Explicit env wins over the optional local file. The populated .env is never
 	// rewritten. Legacy AI_* variables are ignored by the product.
 	path := os.Getenv("ENV_FILE")
@@ -33,9 +48,9 @@ func LoadConfig() (config.Config, error) {
 		path = ".env"
 	}
 	if e := godotenv.Load(path); e != nil && !os.IsNotExist(e) {
-		return config.Config{}, domain.Fail("ENV_FILE_INVALID", 500)
+		return domain.Fail("ENV_FILE_INVALID", 500)
 	}
-	return config.Load()
+	return nil
 }
 func Load(ctx context.Context) (*app.Service, error) {
 	c, e := LoadConfig()
@@ -61,8 +76,8 @@ func Load(ctx context.Context) (*app.Service, error) {
 	}
 	// Advisory AI signals only. An absent key disables the extractor; no
 	// release or money path consults it.
-	if c.MistralAPIKey != "" {
-		a.LLM = llm.New(c.MistralAPIKey, c.MistralModel, c.MistralBaseURL)
+	if c.GeminiAPIKey != "" {
+		a.LLM = llm.New(c.GeminiAPIKey, c.GeminiModel, c.GeminiBaseURL, c.GeminiThinkingLevel)
 	}
 	if c.PayPalClientID != "" {
 		a.Provider = paypal.New(c.PayPalClientID, c.PayPalSecret, c.PayPalWebhookID)

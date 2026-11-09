@@ -21,7 +21,7 @@ type Config struct {
 	MLURL, MLToken, ClassifierManifest, EncoderManifest           string
 	ElasticURL, ElasticKey, PlaybookAlias, HistoryAlias           string
 	ElasticCA                                                     string
-	MistralAPIKey, MistralModel, MistralBaseURL                   string
+	GeminiAPIKey, GeminiModel, GeminiBaseURL, GeminiThinkingLevel string
 	SecureCookies                                                 bool
 	DemoEnabled                                                   bool
 	TrustedProxies                                                []netip.Prefix
@@ -32,8 +32,9 @@ type Config struct {
 // Load never includes values or credentials in a configuration error.
 func Load() (Config, error) { return From(os.Getenv) }
 func From(get func(string) string) (Config, error) {
-	c := Config{Environment: value(get, "APP_ENV", "development"), Listen: value(get, "HTTP_ADDR", "127.0.0.1:8080"), Origin: value(get, "APP_BASE_URL", "http://127.0.0.1:5173"), DatabaseURL: get("DATABASE_URL"), WebDir: value(get, "WEB_DIST_DIR", "web/dist"), MerchantID: get("PAYPAL_MERCHANT_ID"), MerchantLabel: value(get, "PAYPAL_MERCHANT_LABEL", "Pause Sandbox Store"), MaxAmount: 500000, MessageRetention: 7 * 24 * time.Hour, OperationRetention: 24 * time.Hour, SessionTTL: 8 * time.Hour, DecisionTTL: 30 * time.Minute, MLURL: get("ML_SERVICE_URL"), MLToken: get("ML_SERVICE_TOKEN"), ClassifierManifest: value(get, "CLASSIFIER_MANIFEST_PATH", "models/classifier.manifest.json"), EncoderManifest: value(get, "ENCODER_MANIFEST_PATH", "models/encoder.manifest.json"), ElasticURL: get("ELASTICSEARCH_URL"), ElasticKey: get("ELASTICSEARCH_API_KEY"), PlaybookAlias: value(get, "ELASTICSEARCH_PLAYBOOK_ALIAS", "pause-playbooks"), HistoryAlias: value(get, "ELASTICSEARCH_HISTORY_ALIAS", "pause-request-history"), MistralModel: value(get, "MISTRAL_MODEL", "mistral-small-latest"), MistralBaseURL: value(get, "MISTRAL_BASE_URL", "https://api.mistral.ai")}
-	c.MistralAPIKey = get("MISTRAL_API_KEY")
+	c := Config{Environment: value(get, "APP_ENV", "development"), Listen: value(get, "HTTP_ADDR", "127.0.0.1:8080"), Origin: value(get, "APP_BASE_URL", "http://127.0.0.1:5173"), DatabaseURL: get("DATABASE_URL"), WebDir: value(get, "WEB_DIST_DIR", "web/dist"), MerchantID: get("PAYPAL_MERCHANT_ID"), MerchantLabel: value(get, "PAYPAL_MERCHANT_LABEL", "Pause Sandbox Store"), MaxAmount: 500000, MessageRetention: 7 * 24 * time.Hour, OperationRetention: 24 * time.Hour, SessionTTL: 8 * time.Hour, DecisionTTL: 30 * time.Minute, MLURL: get("ML_SERVICE_URL"), MLToken: get("ML_SERVICE_TOKEN"), ClassifierManifest: value(get, "CLASSIFIER_MANIFEST_PATH", "models/classifier.manifest.json"), EncoderManifest: value(get, "ENCODER_MANIFEST_PATH", "models/encoder.manifest.json"), ElasticURL: get("ELASTICSEARCH_URL"), ElasticKey: get("ELASTICSEARCH_API_KEY"), PlaybookAlias: value(get, "ELASTICSEARCH_PLAYBOOK_ALIAS", "pause-playbooks"), HistoryAlias: value(get, "ELASTICSEARCH_HISTORY_ALIAS", "pause-request-history")}
+	gemini := llmSettings(get)
+	c.GeminiAPIKey, c.GeminiModel, c.GeminiBaseURL, c.GeminiThinkingLevel = gemini.APIKey, gemini.Model, gemini.BaseURL, gemini.ThinkingLevel
 	if c.Environment != "development" && c.Environment != "test" && c.Environment != "demo" && c.Environment != "production" {
 		return c, errors.New("APP_ENV is invalid")
 	}
@@ -47,13 +48,10 @@ func From(get func(string) string) (Config, error) {
 			c.TrustedProxies = append(c.TrustedProxies, p.Masked())
 		}
 	}
-	for _, h := range strings.Split(get("DEPENDENCY_PRIVATE_HTTP_HOSTS"), ",") {
-		if h = strings.TrimSpace(h); h != "" {
-			if strings.ContainsAny(h, "/:@* ") || strings.Contains(h, ".") {
-				return c, errors.New("private HTTP hosts must be explicit internal service names")
-			}
-			c.PrivateHTTPHosts = append(c.PrivateHTTPHosts, h)
-		}
+	var err error
+	c.PrivateHTTPHosts, err = privateHTTPHosts(get("DEPENDENCY_PRIVATE_HTTP_HOSTS"))
+	if err != nil {
+		return c, err
 	}
 	c.DemoEnabled = get("DEMO_ENABLED") == "1"
 	if c.DemoEnabled && c.Environment == "production" {
@@ -120,22 +118,13 @@ func From(get func(string) string) (Config, error) {
 			*item.target = time.Duration(n) * time.Hour
 		}
 	}
-	for _, item := range []struct{ name, raw string }{{"ML_SERVICE_URL", c.MLURL}, {"ELASTICSEARCH_URL", c.ElasticURL}, {"MISTRAL_BASE_URL", c.MistralBaseURL}} {
-		if item.raw != "" {
-			u, e := url.Parse(item.raw)
-			if e != nil {
-				return c, errors.New(item.name + " is invalid")
-			}
-			private := false
-			for _, h := range c.PrivateHTTPHosts {
-				if h == u.Hostname() {
-					private = true
-				}
-			}
-			if u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || (u.Scheme != "https" && !(u.Scheme == "http" && (private || loopback(u.Hostname()) && c.Environment != "production"))) {
-				return c, errors.New(item.name + " requires a credential-free HTTPS URL or local development URL")
-			}
+	for _, item := range []struct{ name, raw string }{{"ML_SERVICE_URL", c.MLURL}, {"ELASTICSEARCH_URL", c.ElasticURL}, {"GEMINI_BASE_URL", c.GeminiBaseURL}} {
+		if err := dependencyURL(item.name, item.raw, c.Environment, c.PrivateHTTPHosts); err != nil {
+			return c, err
 		}
+	}
+	if err := validateThinkingLevel(c.GeminiThinkingLevel); err != nil {
+		return c, err
 	}
 	if c.MLURL != "" && len(c.MLToken) < 32 {
 		return c, errors.New("ML_SERVICE_TOKEN must contain at least 32 characters")
@@ -152,3 +141,78 @@ func value(get func(string) string, k, d string) string {
 	return d
 }
 func loopback(h string) bool { return h == "127.0.0.1" || h == "localhost" || h == "::1" }
+
+// LLMConfig contains only the settings needed for advisory signal extraction.
+type LLMConfig struct {
+	APIKey, Model, BaseURL, ThinkingLevel string
+}
+
+func LoadLLM() (LLMConfig, error) { return LLMFrom(os.Getenv) }
+
+func llmSettings(get func(string) string) LLMConfig {
+	return LLMConfig{
+		APIKey:        get("GEMINI_API_KEY"),
+		Model:         value(get, "GEMINI_MODEL", "gemini-3.5-flash-lite"),
+		BaseURL:       value(get, "GEMINI_BASE_URL", "https://generativelanguage.googleapis.com"),
+		ThinkingLevel: value(get, "GEMINI_THINKING_LEVEL", "minimal"),
+	}
+}
+
+// LLMFrom validates Gemini settings without requiring application dependencies.
+func LLMFrom(get func(string) string) (LLMConfig, error) {
+	c := llmSettings(get)
+	environment := value(get, "APP_ENV", "development")
+	if environment != "development" && environment != "test" && environment != "demo" && environment != "production" {
+		return c, errors.New("APP_ENV is invalid")
+	}
+	hosts, err := privateHTTPHosts(get("DEPENDENCY_PRIVATE_HTTP_HOSTS"))
+	if err != nil {
+		return c, err
+	}
+	if err := dependencyURL("GEMINI_BASE_URL", c.BaseURL, environment, hosts); err != nil {
+		return c, err
+	}
+	return c, validateThinkingLevel(c.ThinkingLevel)
+}
+
+func validateThinkingLevel(level string) error {
+	switch level {
+	case "minimal", "low", "medium", "high":
+		return nil
+	default:
+		return errors.New("GEMINI_THINKING_LEVEL is invalid")
+	}
+}
+
+func privateHTTPHosts(raw string) ([]string, error) {
+	var hosts []string
+	for _, h := range strings.Split(raw, ",") {
+		if h = strings.TrimSpace(h); h != "" {
+			if strings.ContainsAny(h, "/:@* ") || strings.Contains(h, ".") {
+				return nil, errors.New("private HTTP hosts must be explicit internal service names")
+			}
+			hosts = append(hosts, h)
+		}
+	}
+	return hosts, nil
+}
+
+func dependencyURL(name, raw, environment string, privateHosts []string) error {
+	if raw == "" {
+		return nil
+	}
+	u, err := url.Parse(raw)
+	if err != nil {
+		return errors.New(name + " is invalid")
+	}
+	private := false
+	for _, h := range privateHosts {
+		if h == u.Hostname() {
+			private = true
+		}
+	}
+	if u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || (u.Scheme != "https" && !(u.Scheme == "http" && (private || loopback(u.Hostname()) && environment != "production"))) {
+		return errors.New(name + " requires a credential-free HTTPS URL or local development URL")
+	}
+	return nil
+}

@@ -3,12 +3,15 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"github.com/ramst/pause/internal/bootstrap"
 	"github.com/ramst/pause/internal/domain"
 	"github.com/ramst/pause/internal/investigation"
 	"os"
+	"regexp"
 	"sort"
 	"time"
 )
@@ -27,16 +30,13 @@ func main() {
 	flag.StringVar(&opts.Split, "split", "validation", "validation or test")
 	flag.IntVar(&opts.Limit, "limit", 0, "validation row limit; 0 means all")
 	flag.BoolVar(&opts.ConfirmTest, "confirm-test", false, "confirm final-prompt test evaluation")
-	flag.Float64Var(&opts.RPS, "rps", 1, "sequential Mistral requests per second")
+	flag.Float64Var(&opts.RPS, "rps", 1, "Gemini requests per second")
 	flag.Parse()
 	ctx, stop := bootstrap.Context()
 	defer stop()
 	if *mode == "llm" {
 		if err := runLLM(ctx, opts, *output); err != nil {
-			if err == errLLMNotConfigured {
-				fail("LLM_NOT_CONFIGURED")
-			}
-			fail()
+			fail(failureReason(err))
 		}
 		return
 	}
@@ -142,6 +142,19 @@ func main() {
 	}
 	bootstrap.Logger().Info("evaluation_complete", "denominator", len(queries), "available", available)
 }
+
+var reasonCodePattern = regexp.MustCompile(`^[A-Z_]{1,64}$`)
+
+func failureReason(err error) string {
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		return "INTERRUPTED"
+	}
+	if err != nil && reasonCodePattern.MatchString(err.Error()) {
+		return err.Error()
+	}
+	return "CONFIGURATION_OR_FROZEN_INPUT_ERROR"
+}
+
 func fail(reason ...string) {
 	code := "CONFIGURATION_OR_FROZEN_INPUT_ERROR"
 	if len(reason) > 0 {

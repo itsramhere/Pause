@@ -12,26 +12,23 @@ import (
 	"github.com/ramst/pause/internal/llm"
 )
 
-// llmFake is the Mistral fake in the p03Engine style: one server, one mode
+// llmFake is the Gemini fake in the p03Engine style: one server, one mode
 // variable, no retries. It quotes excerpts from the exact redacted user text
 // it receives, so grounded flags stay verbatim through client validation.
 func llmFake(t *testing.T) (*string, *llm.Client) {
 	t.Helper()
 	mode := "flags"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/v1/chat/completions" {
+		if r.URL.Path != "/v1/interactions" {
 			t.Error("unexpected llm route", r.URL.Path)
 			w.WriteHeader(404)
 			return
 		}
 		var body struct {
-			Messages []struct {
-				Role    string `json:"role"`
-				Content string `json:"content"`
-			} `json:"messages"`
+			Input string `json:"input"`
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
-		sent := strings.TrimSpace(body.Messages[1].Content)
+		sent := strings.TrimSpace(body.Input)
 		sent = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(sent, llm.MessageStart), llm.MessageEnd))
 		if mode == "outage" {
 			w.WriteHeader(503)
@@ -53,10 +50,10 @@ func llmFake(t *testing.T) (*string, *llm.Client) {
 			return
 		}
 		raw, _ := json.Marshal(map[string]any{"labels": answer})
-		_ = json.NewEncoder(w).Encode(map[string]any{"choices": []any{map[string]any{"message": map[string]any{"content": string(raw)}}}})
+		_ = json.NewEncoder(w).Encode(map[string]any{"status": "completed", "steps": []any{map[string]any{"type": "model_output", "content": []any{map[string]any{"type": "text", "text": string(raw)}}}}})
 	}))
 	t.Cleanup(server.Close)
-	return &mode, llm.New("test-only-key", "mistral-small-latest", server.URL)
+	return &mode, llm.New("test-only-key", "gemini-3.7-flash", server.URL, "")
 }
 
 func firstRunes(s string, n int) string {
@@ -234,7 +231,7 @@ func TestLLMStoredRunNeverAddsMissingOrRunStatus(t *testing.T) {
 	f.s.LLM = fake
 	packet := answeredEvidence(t, f, i)
 	for _, m := range packet.Missing {
-		if strings.Contains(strings.ToLower(m), "llm") || strings.Contains(strings.ToLower(m), "ai reading") || strings.Contains(strings.ToLower(m), "mistral") {
+		if strings.Contains(strings.ToLower(m), "llm") || strings.Contains(strings.ToLower(m), "ai reading") || strings.Contains(strings.ToLower(m), "gemini") {
 			t.Fatal("LLM state leaked into required checks", packet.Missing)
 		}
 	}

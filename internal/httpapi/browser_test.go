@@ -78,6 +78,13 @@ func TestP06CheckoutApprovalRecovery(t *testing.T) {
 	runBrowserFixture(t, "checkout-recovery.mjs", false)
 }
 
+func TestP07JudgeModeJourney(t *testing.T) {
+	if os.Getenv("P05_BROWSER") != "1" {
+		t.Skip("P05_BROWSER=1 runs isolated Chromium judge mode")
+	}
+	runBrowserFixture(t, "judge-mode.mjs", false)
+}
+
 func runBrowserFixture(t *testing.T, script string, requireCapture bool) {
 	t.Helper()
 	f := newFixture(t)
@@ -191,17 +198,14 @@ func browserEngine(t *testing.T, f *fixture) *string {
 				hits = append(hits, map[string]any{"_index": investigation.IndexVersion, "_id": "approved", "_source": map[string]any{"playbook_id": "approved", "revision": 1, "encoder_version": e.Encoder.EncoderVersion}})
 			}
 			out = map[string]any{"hits": map[string]any{"hits": hits}}
-		case r.URL.Path == "/v1/chat/completions":
-			// Deterministic Mistral fake: quote the redacted text back so the
+		case r.URL.Path == "/v1/interactions":
+			// Deterministic Gemini fake: quote the redacted text back so the
 			// client-side grounding check keeps the flag.
 			var body struct {
-				Messages []struct {
-					Role    string `json:"role"`
-					Content string `json:"content"`
-				} `json:"messages"`
+				Input string `json:"input"`
 			}
 			_ = json.NewDecoder(r.Body).Decode(&body)
-			sent := strings.TrimSpace(body.Messages[1].Content)
+			sent := strings.TrimSpace(body.Input)
 			sent = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(sent, llm.MessageStart), llm.MessageEnd))
 			answer := map[string]any{}
 			for _, label := range domain.Labels {
@@ -215,7 +219,7 @@ func browserEngine(t *testing.T, f *fixture) *string {
 				answer["urgent_payment_pressure"] = map[string]any{"present": true, "excerpt": excerpt}
 			}
 			raw, _ := json.Marshal(map[string]any{"labels": answer})
-			out = map[string]any{"choices": []any{map[string]any{"message": map[string]any{"content": string(raw)}}}}
+			out = map[string]any{"status": "completed", "steps": []any{map[string]any{"type": "model_output", "content": []any{map[string]any{"type": "text", "text": string(raw)}}}}}
 		default:
 			t.Error("unexpected dependency route", r.URL.Path)
 			w.WriteHeader(404)
@@ -230,7 +234,7 @@ func browserEngine(t *testing.T, f *fixture) *string {
 	f.svc.Investigation = e
 	// The journeys exercise the advisory AI reading through the same
 	// deterministic server as the classifier and search fixtures.
-	f.svc.LLM = llm.New("test-only-key", "mistral-small-latest", server.URL)
+	f.svc.LLM = llm.New("test-only-key", "gemini-3.7-flash", server.URL, "")
 	if err := f.svc.ApproveReleases(context.Background()); err != nil {
 		t.Fatal(err)
 	}

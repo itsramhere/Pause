@@ -1,0 +1,2118 @@
+{
+  "schema_version": "pause-llm-signals-v1",
+  "split": "validation",
+  "denominator": 80,
+  "partial": false,
+  "dataset_sha256": "2a56ebf38c32176a0d11b65870144b35874c2eb5ee7c83caa96b2d2442bbd596",
+  "split_manifest_sha256": "89d21bd220408ae4315ab26c560fcf5edf93705e2bb6894d0ba5a0b16ef3dc3a",
+  "model": "gemini-3.5-flash-lite",
+  "prompt_version": "pause-llm-prompt-v1",
+  "prompt_hash": "b52e4b329dd82e8796c56f51b39805058d5eec972528546961817843a8323749",
+  "git_revision": "0430f863d300b84047c2b9849a1fbed0f6088716",
+  "recorded_at": "2026-11-09T04:32:07.1931023Z",
+  "variants": {
+    "llm": {
+      "per_label": {
+        "advance_fee_or_release_fee": {
+          "tp": 24,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1,
+          "support": 24
+        },
+        "impersonation_style_request": {
+          "tp": 28,
+          "fp": 0,
+          "fn": 4,
+          "precision": 1,
+          "recall": 0.875,
+          "f1": 0.9333333333333333,
+          "support": 32
+        },
+        "secrecy_pressure": {
+          "tp": 38,
+          "fp": 1,
+          "fn": 2,
+          "precision": 0.9743589743589743,
+          "recall": 0.95,
+          "f1": 0.9620253164556962,
+          "support": 40
+        },
+        "urgent_payment_pressure": {
+          "tp": 38,
+          "fp": 0,
+          "fn": 2,
+          "precision": 1,
+          "recall": 0.95,
+          "f1": 0.9743589743589743,
+          "support": 40
+        }
+      },
+      "micro": {
+        "tp": 128,
+        "fp": 1,
+        "fn": 8,
+        "precision": 0.9922480620155039,
+        "recall": 0.9411764705882353,
+        "f1": 0.9660377358490566,
+        "support": 136
+      },
+      "benign_false_triggers": 1
+    },
+    "rules": {
+      "per_label": {
+        "advance_fee_or_release_fee": {
+          "tp": 24,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1,
+          "support": 24
+        },
+        "impersonation_style_request": {
+          "tp": 32,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1,
+          "support": 32
+        },
+        "secrecy_pressure": {
+          "tp": 20,
+          "fp": 0,
+          "fn": 20,
+          "precision": 1,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "support": 40
+        },
+        "urgent_payment_pressure": {
+          "tp": 12,
+          "fp": 4,
+          "fn": 28,
+          "precision": 0.75,
+          "recall": 0.3,
+          "f1": 0.42857142857142855,
+          "support": 40
+        }
+      },
+      "micro": {
+        "tp": 88,
+        "fp": 4,
+        "fn": 48,
+        "precision": 0.9565217391304348,
+        "recall": 0.6470588235294118,
+        "f1": 0.7719298245614035,
+        "support": 136
+      },
+      "benign_false_triggers": 0
+    },
+    "rules_or_llm": {
+      "per_label": {
+        "advance_fee_or_release_fee": {
+          "tp": 24,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1,
+          "support": 24
+        },
+        "impersonation_style_request": {
+          "tp": 32,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1,
+          "support": 32
+        },
+        "secrecy_pressure": {
+          "tp": 39,
+          "fp": 1,
+          "fn": 1,
+          "precision": 0.975,
+          "recall": 0.975,
+          "f1": 0.975,
+          "support": 40
+        },
+        "urgent_payment_pressure": {
+          "tp": 39,
+          "fp": 4,
+          "fn": 1,
+          "precision": 0.9069767441860465,
+          "recall": 0.975,
+          "f1": 0.9397590361445783,
+          "support": 40
+        }
+      },
+      "micro": {
+        "tp": 134,
+        "fp": 5,
+        "fn": 2,
+        "precision": 0.9640287769784173,
+        "recall": 0.9852941176470589,
+        "f1": 0.9745454545454545,
+        "support": 136
+      },
+      "benign_false_triggers": 1
+    }
+  },
+  "llm_availability": {
+    "INVALID_OUTPUT": 0,
+    "OK": 74,
+    "UNAVAILABLE": 6
+  },
+  "llm_error_codes": {
+    "LLM_HTTP_ERROR": 6
+  },
+  "llm_latency_ms": {
+    "p50": 1132,
+    "p95": 1873
+  },
+  "llm_retries": 33,
+  "rows": [
+    {
+      "message_id": "signal-0-04-0",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-0-04-1",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-0-04-2",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-0-04-3",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-0-09-0",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-0-09-1",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-0-09-2",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-0-09-3",
+      "truth": [
+        "urgent_payment_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-1-04-0",
+      "truth": [
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure"
+        ],
+        "rules": [
+          "secrecy_pressure"
+        ],
+        "rules_or_llm": [
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Tell nobody and do not call anyone to check."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-1-04-1",
+      "truth": [
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure"
+        ],
+        "rules": [
+          "secrecy_pressure"
+        ],
+        "rules_or_llm": [
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Tell nobody and do not call anyone to check."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-1-04-2",
+      "truth": [
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure"
+        ],
+        "rules": [
+          "secrecy_pressure"
+        ],
+        "rules_or_llm": [
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Tell nobody and do not call anyone to check."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-1-04-3",
+      "truth": [
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure"
+        ],
+        "rules": [
+          "secrecy_pressure"
+        ],
+        "rules_or_llm": [
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Tell nobody and do not call anyone to check."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-1-09-0",
+      "truth": [
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Do not involve anyone else in this purchase."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-1-09-1",
+      "truth": [
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Do not involve anyone else in this purchase."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-1-09-2",
+      "truth": [
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Do not involve anyone else in this purchase."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-1-09-3",
+      "truth": [
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Do not involve anyone else in this purchase."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-2-04-0",
+      "truth": [
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-2-04-1",
+      "truth": [
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [],
+        "rules": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "UNAVAILABLE",
+      "llm_excerpts": {},
+      "attempts": 4,
+      "llm_error_code": "LLM_HTTP_ERROR",
+      "llm_http": 429
+    },
+    {
+      "message_id": "signal-2-04-2",
+      "truth": [
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [],
+        "rules": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "UNAVAILABLE",
+      "llm_excerpts": {},
+      "attempts": 4,
+      "llm_error_code": "LLM_HTTP_ERROR",
+      "llm_http": 429
+    },
+    {
+      "message_id": "signal-2-04-3",
+      "truth": [
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money."
+      },
+      "attempts": 4
+    },
+    {
+      "message_id": "signal-2-09-0",
+      "truth": [
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your cousin here with a changed number; pay this merchant."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-2-09-1",
+      "truth": [
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your cousin here with a changed number; pay this merchant."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-2-09-2",
+      "truth": [
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your cousin here with a changed number; pay this merchant."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-2-09-3",
+      "truth": [
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your cousin here with a changed number"
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-3-04-0",
+      "truth": [
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "Pay insurance up front to guarantee your loan."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-3-04-1",
+      "truth": [
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "Pay insurance up front to guarantee your loan."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-3-04-2",
+      "truth": [
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "Pay insurance up front to guarantee your loan."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-3-04-3",
+      "truth": [
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "Pay insurance up front to guarantee your loan."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-3-09-0",
+      "truth": [
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "An advance payment will release the promised credit."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-3-09-1",
+      "truth": [
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "An advance payment will release the promised credit."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-3-09-2",
+      "truth": [
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "An advance payment will release the promised credit."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-3-09-3",
+      "truth": [
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "An advance payment will release the promised credit."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-4-04-0",
+      "truth": [],
+      "predictions": {
+        "llm": [],
+        "rules": [],
+        "rules_or_llm": []
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {},
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-4-04-1",
+      "truth": [],
+      "predictions": {
+        "llm": [],
+        "rules": [],
+        "rules_or_llm": []
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {},
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-4-04-2",
+      "truth": [],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Please keep the receipt private in your records"
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-4-04-3",
+      "truth": [],
+      "predictions": {
+        "llm": [],
+        "rules": [],
+        "rules_or_llm": []
+      },
+      "llm_status": "UNAVAILABLE",
+      "llm_excerpts": {},
+      "attempts": 4,
+      "llm_error_code": "LLM_HTTP_ERROR",
+      "llm_http": 429
+    },
+    {
+      "message_id": "signal-4-09-0",
+      "truth": [],
+      "predictions": {
+        "llm": [],
+        "rules": [],
+        "rules_or_llm": []
+      },
+      "llm_status": "UNAVAILABLE",
+      "llm_excerpts": {},
+      "attempts": 4,
+      "llm_error_code": "LLM_HTTP_ERROR",
+      "llm_http": 429
+    },
+    {
+      "message_id": "signal-4-09-1",
+      "truth": [],
+      "predictions": {
+        "llm": [],
+        "rules": [],
+        "rules_or_llm": []
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {},
+      "attempts": 3
+    },
+    {
+      "message_id": "signal-4-09-2",
+      "truth": [],
+      "predictions": {
+        "llm": [],
+        "rules": [],
+        "rules_or_llm": []
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {},
+      "attempts": 1
+    },
+    {
+      "message_id": "signal-4-09-3",
+      "truth": [],
+      "predictions": {
+        "llm": [],
+        "rules": [],
+        "rules_or_llm": []
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {},
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-01-0",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ],
+        "rules": [
+          "secrecy_pressure"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Tell nobody and do not call anyone to check.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-01-1",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ],
+        "rules": [
+          "secrecy_pressure"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Tell nobody and do not call anyone to check.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-01-2",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ],
+        "rules": [
+          "secrecy_pressure"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Tell nobody and do not call anyone to check.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-01-3",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ],
+        "rules": [
+          "secrecy_pressure"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Tell nobody and do not call anyone to check.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-02-0",
+      "truth": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-02-1",
+      "truth": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-02-2",
+      "truth": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-02-3",
+      "truth": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-13-0",
+      "truth": [
+        "secrecy_pressure",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "Pay insurance up front to guarantee your loan.",
+        "secrecy_pressure": "Tell nobody and do not call anyone to check."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-13-1",
+      "truth": [
+        "secrecy_pressure",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "Pay insurance up front to guarantee your loan.",
+        "secrecy_pressure": "Tell nobody and do not call anyone to check."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-13-2",
+      "truth": [
+        "secrecy_pressure",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "Pay insurance up front to guarantee your loan.",
+        "secrecy_pressure": "Tell nobody and do not call anyone to check."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-13-3",
+      "truth": [
+        "secrecy_pressure",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "Pay insurance up front to guarantee your loan.",
+        "secrecy_pressure": "Tell nobody and do not call anyone to check."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-012-0",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money.",
+        "secrecy_pressure": "Tell nobody and do not call anyone to check.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-012-1",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money.",
+        "secrecy_pressure": "Tell nobody and do not call anyone to check.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 3
+    },
+    {
+      "message_id": "combined-04-012-2",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [],
+        "rules": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "UNAVAILABLE",
+      "llm_excerpts": {},
+      "attempts": 4,
+      "llm_error_code": "LLM_HTTP_ERROR",
+      "llm_http": 429
+    },
+    {
+      "message_id": "combined-04-012-3",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money.",
+        "secrecy_pressure": "Tell nobody and do not call anyone to check.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 3
+    },
+    {
+      "message_id": "combined-04-0123-0",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "Pay insurance up front to guarantee your loan.",
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money.",
+        "secrecy_pressure": "Tell nobody and do not call anyone to check.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 2
+    },
+    {
+      "message_id": "combined-04-0123-1",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "Pay insurance up front to guarantee your loan.",
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money.",
+        "secrecy_pressure": "Tell nobody and do not call anyone to check.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 3
+    },
+    {
+      "message_id": "combined-04-0123-2",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "Pay insurance up front to guarantee your loan.",
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money.",
+        "secrecy_pressure": "Tell nobody and do not call anyone to check.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-04-0123-3",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "Pay insurance up front to guarantee your loan.",
+        "impersonation_style_request": "Your niece here from an unknown phone; send the money.",
+        "secrecy_pressure": "Tell nobody and do not call anyone to check.",
+        "urgent_payment_pressure": "Buy the medicine right away; there is no time to wait."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-01-0",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Do not involve anyone else in this purchase.",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-01-1",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Do not involve anyone else in this purchase.",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-01-2",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Do not involve anyone else in this purchase.",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-01-3",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ],
+        "rules": [],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "secrecy_pressure": "Do not involve anyone else in this purchase.",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-02-0",
+      "truth": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your cousin here with a changed number",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-02-1",
+      "truth": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your cousin here with a changed number",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-02-2",
+      "truth": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your cousin here with a changed number",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-02-3",
+      "truth": [
+        "urgent_payment_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your cousin here with a changed number",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-13-0",
+      "truth": [
+        "secrecy_pressure",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "An advance payment will release the promised credit.",
+        "secrecy_pressure": "Do not involve anyone else in this purchase."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-13-1",
+      "truth": [
+        "secrecy_pressure",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "An advance payment will release the promised credit.",
+        "secrecy_pressure": "Do not involve anyone else in this purchase."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-13-2",
+      "truth": [
+        "secrecy_pressure",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "An advance payment will release the promised credit.",
+        "secrecy_pressure": "Do not involve anyone else in this purchase."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-13-3",
+      "truth": [
+        "secrecy_pressure",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "secrecy_pressure",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "An advance payment will release the promised credit.",
+        "secrecy_pressure": "Do not involve anyone else in this purchase."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-012-0",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [],
+        "rules": [
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "UNAVAILABLE",
+      "llm_excerpts": {},
+      "attempts": 4,
+      "llm_error_code": "LLM_HTTP_ERROR",
+      "llm_http": 429
+    },
+    {
+      "message_id": "combined-09-012-1",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your cousin here with a changed number",
+        "secrecy_pressure": "Do not involve anyone else in this purchase.",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 4
+    },
+    {
+      "message_id": "combined-09-012-2",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your cousin here with a changed number",
+        "secrecy_pressure": "Do not involve anyone else in this purchase.",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-012-3",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ],
+        "rules": [
+          "impersonation_style_request"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "impersonation_style_request": "Your cousin here with a changed number",
+        "secrecy_pressure": "Do not involve anyone else in this purchase.",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-0123-0",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "An advance payment will release the promised credit.",
+        "impersonation_style_request": "Your cousin here with a changed number; pay this merchant.",
+        "secrecy_pressure": "Do not involve anyone else in this purchase.",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-0123-1",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "An advance payment will release the promised credit.",
+        "impersonation_style_request": "Your cousin here with a changed number;",
+        "secrecy_pressure": "Do not involve anyone else in this purchase.",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-0123-2",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "An advance payment will release the promised credit.",
+        "impersonation_style_request": "Your cousin here with a changed number",
+        "secrecy_pressure": "Do not involve anyone else in this purchase.",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    },
+    {
+      "message_id": "combined-09-0123-3",
+      "truth": [
+        "urgent_payment_pressure",
+        "secrecy_pressure",
+        "impersonation_style_request",
+        "advance_fee_or_release_fee"
+      ],
+      "predictions": {
+        "llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules": [
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ],
+        "rules_or_llm": [
+          "urgent_payment_pressure",
+          "secrecy_pressure",
+          "impersonation_style_request",
+          "advance_fee_or_release_fee"
+        ]
+      },
+      "llm_status": "OK",
+      "llm_excerpts": {
+        "advance_fee_or_release_fee": "An advance payment will release the promised credit.",
+        "impersonation_style_request": "Your cousin here with a changed number; pay this merchant.",
+        "secrecy_pressure": "Do not involve anyone else in this purchase.",
+        "urgent_payment_pressure": "Do not delay paying for the repair."
+      },
+      "attempts": 1
+    }
+  ],
+  "scope": "Prompt developed against the validation split only. The test split is run once with the final prompt (pause-llm-prompt-v1) and reported as-is, whether or not it beats the baselines. Synthetic single-author data; not a fraud or real-world accuracy estimate. LLM output is advisory and never gates release.",
+  "baselines_note": "Validation micro precision/recall/F1 for rules and linear are frozen in models/validation-report.json (rules and linear). Validation TF-IDF row predictions are unavailable; the linear variant is omitted on validation. Test TF-IDF uses frozen reports/classifier-final.json rows, including ABSTAIN triggered labels."
+}

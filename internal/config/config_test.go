@@ -19,10 +19,10 @@ func TestConfigurationValidation(t *testing.T) {
 	if c.MessageRetention.Hours() != 168 || c.MaxAmount != 500000 || c.SecureCookies {
 		t.Fatal("unexpected defaults")
 	}
-	if c.MistralModel != "mistral-small-latest" || c.MistralBaseURL != "https://api.mistral.ai" || c.MistralAPIKey != "" {
-		t.Fatal("unexpected Mistral defaults")
+	if c.GeminiModel != "gemini-3.5-flash-lite" || c.GeminiBaseURL != "https://generativelanguage.googleapis.com" || c.GeminiAPIKey != "" || c.GeminiThinkingLevel != "minimal" {
+		t.Fatal("unexpected Gemini defaults")
 	}
-	for _, pair := range [][2]string{{"DATABASE_URL", ""}, {"DATABASE_URL", "postgres://secret-credential"}, {"MESSAGE_ENCRYPTION_KEY", "private-message-key"}, {"APP_BASE_URL", "http://public.example"}, {"APP_BASE_URL", "https://example.test/path"}, {"MAX_AMOUNT_MINOR", "900000"}, {"MESSAGE_RETENTION_HOURS", "169"}, {"ML_SERVICE_URL", "http://inference.example"}, {"ELASTICSEARCH_HISTORY_ALIAS", "client-selected"}, {"MISTRAL_BASE_URL", "http://mistral.example"}, {"MISTRAL_BASE_URL", "https://user:pass@mistral.example"}} {
+	for _, pair := range [][2]string{{"DATABASE_URL", ""}, {"DATABASE_URL", "postgres://secret-credential"}, {"MESSAGE_ENCRYPTION_KEY", "private-message-key"}, {"APP_BASE_URL", "http://public.example"}, {"APP_BASE_URL", "https://example.test/path"}, {"MAX_AMOUNT_MINOR", "900000"}, {"MESSAGE_RETENTION_HOURS", "169"}, {"ML_SERVICE_URL", "http://inference.example"}, {"ELASTICSEARCH_HISTORY_ALIAS", "client-selected"}, {"GEMINI_BASE_URL", "http://gemini.example"}, {"GEMINI_BASE_URL", "https://user:pass@gemini.example"}} {
 		env = validEnv()
 		env[pair[0]] = pair[1]
 		_, e = From(get)
@@ -46,29 +46,94 @@ func TestConfigurationValidation(t *testing.T) {
 	}
 }
 
-func TestMistralConfiguration(t *testing.T) {
+func TestGeminiConfiguration(t *testing.T) {
 	env := validEnv()
 	get := func(k string) string { return env[k] }
 	c, e := From(get)
 	if e != nil {
 		t.Fatal(e)
 	}
-	// An empty key is the supported off state; no other Mistral setting may
+	// An empty key is the supported off state; no other Gemini setting may
 	// turn the feature on or fail configuration by itself.
-	if c.MistralAPIKey != "" || c.MistralModel != "mistral-small-latest" {
-		t.Fatal("Mistral must default to disabled with the documented model")
+	if c.GeminiAPIKey != "" || c.GeminiModel != "gemini-3.5-flash-lite" {
+		t.Fatal("Gemini must default to disabled with the documented model")
 	}
-	env["MISTRAL_API_KEY"] = "test-only-key"
-	env["MISTRAL_MODEL"] = "open-mistral-7b"
+	env["GEMINI_API_KEY"] = "test-only-key"
+	env["GEMINI_MODEL"] = "gemini-custom-model"
 	c, e = From(get)
-	if e != nil || c.MistralAPIKey == "" || c.MistralModel != "open-mistral-7b" {
-		t.Fatal("explicit Mistral settings rejected", e)
+	if e != nil || c.GeminiAPIKey == "" || c.GeminiModel != "gemini-custom-model" {
+		t.Fatal("explicit Gemini settings rejected", e)
 	}
 	env["APP_ENV"] = "production"
 	env["APP_BASE_URL"] = "https://pause.example"
-	env["MISTRAL_BASE_URL"] = "http://127.0.0.1:9999"
+	env["GEMINI_BASE_URL"] = "http://127.0.0.1:9999"
 	if _, e = From(get); e == nil {
-		t.Fatal("production accepted plain-HTTP Mistral endpoint")
+		t.Fatal("production accepted plain-HTTP Gemini endpoint")
+	}
+}
+
+func TestLLMOnlyConfiguration(t *testing.T) {
+	env := map[string]string{"GEMINI_API_KEY": "test-only-key"}
+	get := func(k string) string {
+		switch k {
+		case "GEMINI_API_KEY", "GEMINI_MODEL", "GEMINI_BASE_URL", "GEMINI_THINKING_LEVEL", "APP_ENV", "DEPENDENCY_PRIVATE_HTTP_HOSTS":
+		default:
+			t.Fatal("LLM config read an application setting", k)
+		}
+		return env[k]
+	}
+	c, err := LLMFrom(get)
+	if err != nil || c.APIKey != "test-only-key" || c.Model != "gemini-3.5-flash-lite" || c.ThinkingLevel != "minimal" || c.BaseURL != "https://generativelanguage.googleapis.com" {
+		t.Fatal("unexpected LLM-only defaults", err)
+	}
+	for _, level := range []string{"minimal", "low", "medium", "high", "invalid-private-value", "LOW", " minimal"} {
+		env["GEMINI_THINKING_LEVEL"] = level
+		_, llmErr := LLMFrom(get)
+		fullEnv := validEnv()
+		fullEnv["GEMINI_THINKING_LEVEL"] = level
+		full, fullErr := From(func(k string) string { return fullEnv[k] })
+		valid := level == "minimal" || level == "low" || level == "medium" || level == "high"
+		if valid {
+			if llmErr != nil || fullErr != nil || full.GeminiThinkingLevel != level {
+				t.Fatal("valid thinking level rejected", llmErr, fullErr)
+			}
+		} else if llmErr == nil || fullErr == nil || llmErr.Error() != "GEMINI_THINKING_LEVEL is invalid" || fullErr.Error() != llmErr.Error() {
+			t.Fatal("invalid thinking level not bounded", llmErr, fullErr)
+		}
+	}
+}
+
+func TestGeminiURLValidationParity(t *testing.T) {
+	for _, tc := range []struct {
+		url, environment, hosts string
+		valid                   bool
+	}{
+		{"https://gemini.example", "test", "", true},
+		{"http://127.0.0.1:9999", "test", "", true},
+		{"http://127.0.0.1:9999", "production", "", false},
+		{"http://inference:8090", "production", "inference", true},
+		{"http://inference:8090", "production", "", false},
+		{"http://public.example", "test", "", false},
+		{"https://user:private-value@gemini.example", "test", "", false},
+		{"https://gemini.example?key=private-value", "test", "", false},
+		{"https://gemini.example#fragment", "test", "", false},
+		{"https://gemini.example/%zz", "test", "", false},
+		{"https://gemini.example", "test", "public.example", false},
+	} {
+		env := validEnv()
+		env["GEMINI_BASE_URL"], env["APP_ENV"], env["DEPENDENCY_PRIVATE_HTTP_HOSTS"] = tc.url, tc.environment, tc.hosts
+		if tc.environment == "production" {
+			env["APP_BASE_URL"] = "https://pause.example"
+		}
+		get := func(k string) string { return env[k] }
+		_, fullErr := From(get)
+		_, llmErr := LLMFrom(get)
+		if (fullErr == nil) != tc.valid || (llmErr == nil) != tc.valid {
+			t.Fatal("URL validation disagrees", fullErr, llmErr)
+		}
+		if !tc.valid && (fullErr.Error() != llmErr.Error() || strings.Contains(llmErr.Error(), "private-value")) {
+			t.Fatal("URL validation errors differ or expose values", fullErr, llmErr)
+		}
 	}
 }
 

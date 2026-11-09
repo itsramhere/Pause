@@ -125,6 +125,54 @@ func (s *Service) LaunchDemo(ctx context.Context, scenario, peer string) (DemoRu
 	return out, nil
 }
 
+// DemoSwitch resolves only an active account in the capability's synthetic run.
+func (s *Service) DemoSwitch(ctx context.Context, id, token, role, peer string) (string, domain.Actor, error) {
+	var actor domain.Actor
+	if !s.Config.DemoEnabled || s.Config.Environment == "production" {
+		return "", actor, domain.Fail("DEMO_DISABLED", 404)
+	}
+	if role != "senior" && role != "subject" && role != "reviewer" {
+		return "", actor, domain.Fail("DEMO_ROLE_INVALID", 400)
+	}
+	parsed, e := uuid.Parse(id)
+	if e != nil {
+		return "", actor, domain.Fail("NOT_FOUND", 404)
+	}
+	id = parsed.String()
+	var hash string
+	var expires time.Time
+	var ended bool
+	if e = s.DB.Pool.QueryRow(ctx, `SELECT reset_hash,expires_at,closed_at IS NOT NULL OR resetting FROM demo_runs WHERE id=$1`, id).Scan(&hash, &expires, &ended); e != nil {
+		return "", actor, domain.Fail("NOT_FOUND", 404)
+	}
+	got := domain.Hash([]byte(token))
+	if len(token) != 43 || subtle.ConstantTimeCompare([]byte(got), []byte(hash)) != 1 {
+		return "", actor, domain.Fail("NOT_FOUND", 404)
+	}
+	now := s.Clock.Now()
+	if ended || !expires.After(now) {
+		return "", actor, domain.Fail("DEMO_RUN_ENDED", 410)
+	}
+	// Commit admission before membership lookup/session issuance, even on failure.
+	var attempts int
+	e = s.DB.WithTx(ctx, func(tx pgx.Tx) error {
+		return tx.QueryRow(ctx, `INSERT INTO demo_launch_buckets(bucket_hash,attempts,window_start) VALUES($1,1,$2) ON CONFLICT(bucket_hash) DO UPDATE SET attempts=CASE WHEN demo_launch_buckets.window_start<=$3 THEN 1 ELSE LEAST(demo_launch_buckets.attempts+1,100) END,window_start=CASE WHEN demo_launch_buckets.window_start<=$3 THEN $2 ELSE demo_launch_buckets.window_start END RETURNING attempts`, domain.Hash([]byte("switch:"+id)), now, now.Add(-time.Hour)).Scan(&attempts)
+	})
+	if e != nil {
+		return "", actor, e
+	}
+	if attempts > 60 {
+		return "", actor, domain.Fail("DEMO_THROTTLED", 429)
+	}
+	var membership string
+	var count int
+	e = s.DB.Pool.QueryRow(ctx, `SELECT m.id::text,u.id::text,u.display_name,m.household_id::text,m.role,count(*) OVER() FROM demo_runs d JOIN memberships m ON m.household_id=d.household_id AND m.active JOIN users u ON u.id=m.user_id WHERE d.id=$1 AND m.role=$2`, id, role).Scan(&membership, &actor.UserID, &actor.Name, &actor.HouseholdID, &actor.Role, &count)
+	if e != nil || count != 1 {
+		return "", domain.Actor{}, domain.Fail("NOT_FOUND", 404)
+	}
+	return membership, actor, nil
+}
+
 // Reset is a cleanup capability for this run only. It preserves all commands,
 // requests cancellation, and waits for terminal states AND resolved operations.
 func (s *Service) ResetDemo(ctx context.Context, id, token string) (string, error) {

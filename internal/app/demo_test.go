@@ -162,3 +162,27 @@ func TestP05DemoResetHeldAuthorizationAndGlobalCap(t *testing.T) {
 		t.Fatal("global limit", e)
 	}
 }
+
+func TestP07DemoSwitchRequiresOneActiveMembership(t *testing.T) {
+	f := setupPayments(t)
+	f.s.Config.DemoEnabled = true
+	f.s.Config.Environment = "test"
+	ctx := context.Background()
+	r, e := f.s.LaunchDemo(ctx, "stopped", "peer")
+	if e != nil {
+		t.Fatal(e)
+	}
+	a := demoActor(t, f, r, domain.Senior)
+	if _, e = f.s.DB.Pool.Exec(ctx, `UPDATE memberships SET active=false WHERE household_id=$1 AND role='senior'`, a.HouseholdID); e != nil {
+		t.Fatal(e)
+	}
+	if _, _, e = f.s.DemoSwitch(ctx, r.ID, r.ResetToken, "senior", "peer"); e == nil || e.Error() != "NOT_FOUND" {
+		t.Fatal("inactive membership", e)
+	}
+	if _, e = f.s.DB.Pool.Exec(ctx, `UPDATE memberships SET active=true,role='senior' WHERE household_id=$1 AND role IN ('senior','reviewer')`, a.HouseholdID); e != nil {
+		t.Fatal(e)
+	}
+	if _, _, e = f.s.DemoSwitch(ctx, r.ID, r.ResetToken, "senior", "peer"); e == nil || e.Error() != "NOT_FOUND" {
+		t.Fatal("ambiguous membership", e)
+	}
+}

@@ -6,7 +6,7 @@ import (
 	"github.com/ramst/pause/internal/llm"
 )
 
-// extractSignals runs the advisory Mistral reading for one analysis. It is
+// extractSignals runs the advisory Gemini reading for one analysis. It is
 // allowed to fail in every possible way: the result is recorded with a
 // terminal status and never gates release, never touches packet.Missing and
 // never changes a money path. Text is redacted inside the client before any

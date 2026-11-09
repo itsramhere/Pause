@@ -90,7 +90,7 @@ try {
   await expect(r.getByRole('heading', { name: 'Classifier message signals' })).toBeVisible()
   // The advisory AI reading renders for the reviewer; its flags appear only
   // when message checks actually ran (an open purchase), never for a voided one.
-  await expect(r.getByRole('heading', { name: 'AI reading (Mistral)' })).toBeVisible()
+  await expect(r.getByRole('heading', { name: 'AI reading (Gemini)' })).toBeVisible()
  }
  const positive = await intake('P05 planned supplies')
  assert.equal((await api(other.p, `/intents/${positive.id}`)).status, 404)
@@ -105,7 +105,7 @@ try {
  await t.keyboard.press('Enter')
  await expect(t.getByText('Enrolled account confirmed this request', { exact: true })).toBeVisible()
   await openReviewer('P05 planned supplies')
-  // The deterministic Mistral fake grounds one flag in the message; the quoted
+  // The deterministic Gemini fake grounds one flag in the message; the quoted
   // excerpt must render without changing the required checks or signals.
   await expect(r.getByText('AI flagged: urgent payment pressure', { exact: false })).toBeVisible()
   await expect(r.locator('.evidence-section mark').first()).toBeVisible()

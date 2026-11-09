@@ -262,6 +262,8 @@ type signalRow struct {
 	Status      llm.Status          `json:"llm_status"`
 	Excerpts    map[string]string   `json:"llm_excerpts"`
 	Attempts    int                 `json:"attempts"`
+	ErrorCode   string              `json:"llm_error_code,omitempty"`
+	HTTP        int                 `json:"llm_http,omitempty"`
 }
 
 type signalReport struct {
@@ -278,6 +280,7 @@ type signalReport struct {
 	RecordedAt    time.Time                `json:"recorded_at"`
 	Variants      map[string]signalMetrics `json:"variants"`
 	Availability  map[llm.Status]int       `json:"llm_availability"`
+	ErrorCodes    map[string]int           `json:"llm_error_codes"`
 	Latency       map[string]int64         `json:"llm_latency_ms"`
 	Retries       int                      `json:"llm_retries"`
 	Rows          []signalRow              `json:"rows"`
@@ -335,6 +338,7 @@ func evaluateSignals(ctx context.Context, data signalData, frozen map[string]lab
 	}
 	report := signalReport{SchemaVersion: "pause-llm-signals-v1", Split: o.Split, Denominator: len(data.Rows), Partial: data.Partial, DatasetHash: data.DatasetHash, ManifestHash: data.ManifestHash, GitRevision: "unknown", RecordedAt: timing.Now().UTC(), Variants: map[string]signalMetrics{}, Availability: map[llm.Status]int{llm.StatusOK: 0, llm.StatusUnavailable: 0, llm.StatusInvalidOutput: 0}, Rows: []signalRow{}, BaselinesNote: "Validation micro precision/recall/F1 for rules and linear are frozen in models/validation-report.json (rules and linear). Validation TF-IDF row predictions are unavailable; the linear variant is omitted on validation. Test TF-IDF uses frozen reports/classifier-final.json rows, including ABSTAIN triggered labels."}
 	truth := []labelSet{}
+	report.ErrorCodes = map[string]int{}
 	predictions := map[string][]labelSet{}
 	latencies := []int64{}
 	interval := time.Duration(float64(time.Second) / o.RPS)
@@ -342,6 +346,7 @@ func evaluateSignals(ctx context.Context, data signalData, frozen map[string]lab
 	first := true
 	for _, sample := range data.Rows {
 		var signals llm.Signals
+		var finalErr error
 		attempts := 0
 		for {
 			if err := timing.Wait(ctx, next.Sub(timing.Now())); err != nil {
@@ -352,6 +357,7 @@ func evaluateSignals(ctx context.Context, data signalData, frozen map[string]lab
 			result, err := client.ExtractSignals(callCtx, sample.Text)
 			cancel()
 			signals = result
+			finalErr = err
 			attempts++
 			if first {
 				report.Model, report.PromptVersion, report.PromptHash = signals.Model, signals.PromptVersion, signals.PromptHash
@@ -383,6 +389,14 @@ func evaluateSignals(ctx context.Context, data signalData, frozen map[string]lab
 			rowPred["tfidf_or_llm"] = unionSignals(frozen[sample.ID], llmPred)
 		}
 		row := signalRow{ID: sample.ID, Truth: sample.Truth.labels(), Predictions: map[string][]string{}, Status: signals.Status, Excerpts: excerpts, Attempts: attempts}
+		if signals.Status != llm.StatusOK {
+			row.ErrorCode = "LLM_ERROR"
+			var failure *llm.Error
+			if errors.As(finalErr, &failure) {
+				row.ErrorCode, row.HTTP = failure.Code, failure.HTTP
+			}
+			report.ErrorCodes[row.ErrorCode]++
+		}
 		for _, name := range names {
 			predictions[name] = append(predictions[name], rowPred[name])
 			row.Predictions[name] = rowPred[name].labels()
@@ -420,12 +434,12 @@ func runLLM(ctx context.Context, o llmOptions, output string) error {
 	if err := o.validate(); err != nil {
 		return err
 	}
-	c, err := bootstrap.LoadConfig()
-	if c.MistralAPIKey == "" {
-		return errLLMNotConfigured
-	}
+	c, err := bootstrap.LoadLLMConfig()
 	if err != nil {
 		return errors.New("CONFIGURATION_INVALID")
+	}
+	if c.APIKey == "" {
+		return errLLMNotConfigured
 	}
 	if _, err := os.Stat(output); !os.IsNotExist(err) {
 		return errors.New("REPORT_CREATE_FAILED")
@@ -445,7 +459,7 @@ func runLLM(ctx context.Context, o llmOptions, output string) error {
 			return err
 		}
 	}
-	report, err := evaluateSignals(ctx, data, frozen, llm.New(c.MistralAPIKey, c.MistralModel, c.MistralBaseURL), o, evalTiming{})
+	report, err := evaluateSignals(ctx, data, frozen, llm.New(c.APIKey, c.Model, c.BaseURL, c.ThinkingLevel), o, evalTiming{})
 	if err != nil {
 		return err
 	}

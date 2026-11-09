@@ -76,6 +76,15 @@ func (s *Service) Login(ctx context.Context, email, password, ip, oldToken, corr
 	if !valid || missing {
 		return out, domain.Fail("INVALID_CREDENTIALS", 401)
 	}
+	return s.issue(ctx, member, a, oldToken, correlation, "SESSION_LOGIN", "AUTHENTICATED", now)
+}
+
+func (s *Service) Issue(ctx context.Context, membershipID string, actor domain.Actor, oldToken, correlation, action, reason string) (LoginResult, error) {
+	return s.issue(ctx, membershipID, actor, oldToken, correlation, action, reason, s.Clock.Now())
+}
+
+func (s *Service) issue(ctx context.Context, member string, a domain.Actor, oldToken, correlation, action, reason string, now time.Time) (LoginResult, error) {
+	var out LoginResult
 	token, e := secure.Token()
 	if e != nil {
 		return out, e
@@ -93,7 +102,7 @@ func (s *Service) Login(ctx context.Context, email, password, ip, oldToken, corr
 		if _, e := tx.Exec(ctx, `INSERT INTO sessions(token_hash,csrf_hash,membership_id,created_at,expires_at) VALUES($1,$2,$3,$4,$5)`, domain.Hash([]byte(token)), domain.Hash([]byte(csrf)), member, now, now.Add(s.TTL)); e != nil {
 			return e
 		}
-		_, e := tx.Exec(ctx, `INSERT INTO audit_events(id,household_id,actor_id,action,object_id,reason_code,correlation_id,occurred_at) VALUES($1,$2,$3,'SESSION_LOGIN',$3,'AUTHENTICATED',$4,$5)`, uuid.NewString(), a.HouseholdID, a.UserID, correlation, now)
+		_, e := tx.Exec(ctx, `INSERT INTO audit_events(id,household_id,actor_id,action,object_id,reason_code,correlation_id,occurred_at) VALUES($1,$2,$3,$4,$3,$5,$6,$7)`, uuid.NewString(), a.HouseholdID, a.UserID, action, reason, correlation, now)
 		return e
 	})
 	if e != nil {

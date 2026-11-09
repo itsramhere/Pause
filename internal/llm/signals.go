@@ -114,7 +114,7 @@ func Validate(raw []byte, sent string, base Signals) (Signals, error) {
 	return out, nil
 }
 
-// Disabled is the recorded result when no Mistral key is configured. It is
+// Disabled is the recorded result when no Gemini key is configured. It is
 // advisory display only; it never gates release or any money path.
 func Disabled() Signals {
 	return Signals{Status: StatusDisabled, Labels: []LabelFlag{}}

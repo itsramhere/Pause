@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
+	"fmt"
 	"io"
 	"math"
 	"net/http"
@@ -26,6 +28,32 @@ func near(t *testing.T, got, want float64) {
 	t.Helper()
 	if math.IsNaN(got) || math.Abs(got-want) > 1e-9 {
 		t.Fatalf("got %.16g, want %.16g", got, want)
+	}
+}
+
+func TestFailureReason(t *testing.T) {
+	for _, tc := range []struct {
+		err  error
+		want string
+	}{
+		{nil, "CONFIGURATION_OR_FROZEN_INPUT_ERROR"},
+		{context.Canceled, "INTERRUPTED"},
+		{fmt.Errorf("wrapped: %w", context.Canceled), "INTERRUPTED"},
+		{context.DeadlineExceeded, "INTERRUPTED"},
+		{errLLMNotConfigured, "LLM_NOT_CONFIGURED"},
+		{errors.New("CONFIGURATION_INVALID"), "CONFIGURATION_INVALID"},
+		{errors.New("FROZEN_INPUT_INVALID"), "FROZEN_INPUT_INVALID"},
+		{errors.New(strings.Repeat("A", 64)), strings.Repeat("A", 64)},
+		{errors.New(strings.Repeat("A", 65)), "CONFIGURATION_OR_FROZEN_INPUT_ERROR"},
+		{errors.New("GEMINI_THINKING_LEVEL is invalid"), "CONFIGURATION_OR_FROZEN_INPUT_ERROR"},
+		{errors.New("secret https://example.test?key=private"), "CONFIGURATION_OR_FROZEN_INPUT_ERROR"},
+		{errors.New("INVALID_123"), "CONFIGURATION_OR_FROZEN_INPUT_ERROR"},
+		{errors.New("INVALID\n"), "CONFIGURATION_OR_FROZEN_INPUT_ERROR"},
+		{errors.New(""), "CONFIGURATION_OR_FROZEN_INPUT_ERROR"},
+	} {
+		if got := failureReason(tc.err); got != tc.want {
+			t.Fatalf("got %q, want %q", got, tc.want)
+		}
 	}
 }
 
@@ -202,16 +230,19 @@ func TestFrozenTFIDFStatusesAndCoverage(t *testing.T) {
 	}
 }
 
-func fakeEvalMistral(t *testing.T, mode string) (*llm.Client, *int) {
+func fakeEvalGemini(t *testing.T, mode string) (*llm.Client, *int) {
 	t.Helper()
 	calls := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls++
-		if r.Method != "POST" || r.URL.Path != "/v1/chat/completions" || r.Header.Get("Authorization") != "Bearer offline-secret-key" {
-			t.Error("unexpected Mistral request")
+		if r.Method != "POST" || r.URL.Path != "/v1/interactions" || r.Header.Get("x-goog-api-key") != "offline-secret-key" || r.Header.Get("Authorization") != "" {
+			t.Error("unexpected Gemini request")
 		}
-		if mode == "500" || mode == "429-ok" && calls == 1 {
+		if mode == "400" || mode == "500" || mode == "429-ok" && calls == 1 {
 			code := 500
+			if mode == "400" {
+				code = 400
+			}
 			if mode == "429-ok" {
 				code = 429
 			}
@@ -220,9 +251,9 @@ func fakeEvalMistral(t *testing.T, mode string) (*llm.Client, *int) {
 			return
 		}
 		var request struct {
-			Messages []struct{ Content string }
+			Input string `json:"input"`
 		}
-		if json.NewDecoder(r.Body).Decode(&request) != nil || len(request.Messages) != 2 {
+		if json.NewDecoder(r.Body).Decode(&request) != nil || request.Input == "" {
 			t.Error("invalid request")
 			w.WriteHeader(400)
 			return
@@ -231,7 +262,7 @@ func fakeEvalMistral(t *testing.T, mode string) (*llm.Client, *int) {
 		for _, label := range domain.Labels {
 			labels[label] = map[string]any{"present": false, "excerpt": ""}
 		}
-		if strings.Contains(request.Messages[1].Content, "Pay now") {
+		if strings.Contains(request.Input, "Pay now") {
 			excerpt := "Pay now"
 			if mode == "ungrounded" {
 				excerpt = "private raw output offline-secret-key"
@@ -242,10 +273,10 @@ func fakeEvalMistral(t *testing.T, mode string) (*llm.Client, *int) {
 		if mode == "malformed" {
 			answer = []byte(`{"labels":private raw output offline-secret-key`)
 		}
-		_ = json.NewEncoder(w).Encode(map[string]any{"choices": []any{map[string]any{"message": map[string]any{"content": string(answer)}}}})
+		_ = json.NewEncoder(w).Encode(map[string]any{"status": "completed", "steps": []any{map[string]any{"type": "model_output", "content": []any{map[string]any{"type": "text", "text": string(answer)}}}}})
 	}))
 	t.Cleanup(server.Close)
-	return llm.New("offline-secret-key", "offline-model", server.URL), &calls
+	return llm.New("offline-secret-key", "offline-model", server.URL, ""), &calls
 }
 
 func fakeEvalTime() (evalTiming, *[]time.Duration) {
@@ -263,8 +294,8 @@ func fakeEvalTime() (evalTiming, *[]time.Duration) {
 	}}, &waits
 }
 
-func TestEvaluateSignalsMistralFake(t *testing.T) {
-	for _, mode := range []string{"valid", "ungrounded", "malformed", "429-ok", "500"} {
+func TestEvaluateSignalsGeminiFake(t *testing.T) {
+	for _, mode := range []string{"valid", "ungrounded", "malformed", "429-ok", "500", "400"} {
 		t.Run(mode, func(t *testing.T) {
 			root := t.TempDir()
 			fixtureSplit(t, root, "validation", []byte(tinySplit), 2)
@@ -273,13 +304,16 @@ func TestEvaluateSignalsMistralFake(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			client, calls := fakeEvalMistral(t, mode)
+			client, calls := fakeEvalGemini(t, mode)
 			timing, waits := fakeEvalTime()
 			report, err := evaluateSignals(context.Background(), data, nil, client, opts, timing)
 			if err != nil {
 				t.Fatal(err)
 			}
 			wantStatus, attempts, retries, wantCalls := llm.StatusOK, 1, 0, 2
+			if mode == "400" {
+				wantStatus = llm.StatusUnavailable
+			}
 			if mode == "malformed" {
 				wantStatus = llm.StatusInvalidOutput
 			}
@@ -306,6 +340,26 @@ func TestEvaluateSignalsMistralFake(t *testing.T) {
 			}
 			if report.Rows[0].Status != wantStatus || report.Rows[1].Status != wantStatus {
 				t.Fatal("wrong final statuses")
+			}
+			wantError, wantHTTP := "", 0
+			switch mode {
+			case "400", "500":
+				wantError = "LLM_HTTP_ERROR"
+				if mode == "400" {
+					wantHTTP = 400
+				} else {
+					wantHTTP = 500
+				}
+			case "malformed":
+				wantError = "LLM_INVALID_OUTPUT"
+			}
+			for _, row := range report.Rows {
+				if row.ErrorCode != wantError || row.HTTP != wantHTTP {
+					t.Fatalf("wrong final diagnostics: %+v", row)
+				}
+			}
+			if wantError == "" && len(report.ErrorCodes) != 0 || wantError != "" && (len(report.ErrorCodes) != 1 || report.ErrorCodes[wantError] != 2) {
+				t.Fatal("wrong error counts", report.ErrorCodes)
 			}
 			wantFlags := []string{}
 			if mode == "valid" || mode == "429-ok" {
@@ -334,6 +388,9 @@ func TestEvaluateSignalsMistralFake(t *testing.T) {
 				t.Fatal(err)
 			}
 			raw := readEvalFile(t, output)
+			if wantError == "" && (strings.Contains(string(raw), `"llm_error_code"`) || strings.Contains(string(raw), `"llm_http"`)) {
+				t.Fatal("successful rows retained error fields")
+			}
 			for _, private := range []string{"offline-secret-key", "private raw output", "UNTRUSTED_MESSAGE", "A routine purchase.", "Pay now, keep quiet."} {
 				if strings.Contains(string(raw), private) {
 					t.Fatal("private/request data leaked into report")
@@ -353,6 +410,26 @@ func TestEvaluateSignalsMistralFake(t *testing.T) {
 	}
 }
 
+type failingSignalExtractor struct{ err error }
+
+func (f failingSignalExtractor) ExtractSignals(context.Context, string) (llm.Signals, error) {
+	return llm.Signals{Status: llm.StatusUnavailable, Labels: []llm.LabelFlag{}}, f.err
+}
+
+func TestEvaluateSignalsGenericError(t *testing.T) {
+	for _, err := range []error{nil, errors.New("private-key https://private.example response body")} {
+		timing, _ := fakeEvalTime()
+		report, evalErr := evaluateSignals(context.Background(), signalData{Rows: []signalSample{{ID: "one", Text: "Pay now."}}}, nil, failingSignalExtractor{err}, llmOptions{Split: "validation", RPS: 1}, timing)
+		if evalErr != nil || len(report.Rows) != 1 || report.Rows[0].ErrorCode != "LLM_ERROR" || report.Rows[0].HTTP != 0 || report.ErrorCodes["LLM_ERROR"] != 1 {
+			t.Fatal("generic failure diagnostics missing", evalErr, report.Rows)
+		}
+		raw, marshalErr := json.Marshal(report)
+		if marshalErr != nil || strings.Contains(string(raw), "private") || strings.Contains(string(raw), `"llm_http"`) {
+			t.Fatal("generic error details leaked")
+		}
+	}
+}
+
 func TestEvaluateSignalsTestUnion(t *testing.T) {
 	root := t.TempDir()
 	fixtureSplit(t, root, "test", []byte(tinySplit), 2)
@@ -361,7 +438,7 @@ func TestEvaluateSignalsTestUnion(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	client, calls := fakeEvalMistral(t, "valid")
+	client, calls := fakeEvalGemini(t, "valid")
 	timing, waits := fakeEvalTime()
 	if _, err := evaluateSignals(context.Background(), data, nil, client, opts, timing); err == nil || *calls != 0 {
 		t.Fatal("missing frozen predictions did not fail before requests")
@@ -481,14 +558,14 @@ func TestWorkflowLLMReport(t *testing.T) {
 			return
 		}
 		var request struct {
-			Messages []struct{ Content string }
+			Input string `json:"input"`
 		}
-		if json.NewDecoder(r.Body).Decode(&request) != nil || len(request.Messages) != 2 {
-			t.Error("invalid Mistral request")
+		if json.NewDecoder(r.Body).Decode(&request) != nil || request.Input == "" {
+			t.Error("invalid Gemini request")
 			w.WriteHeader(400)
 			return
 		}
-		text := strings.TrimSuffix(strings.TrimPrefix(request.Messages[1].Content, llm.MessageStart+"\n"), "\n"+llm.MessageEnd)
+		text := strings.TrimSuffix(strings.TrimPrefix(request.Input, llm.MessageStart+"\n"), "\n"+llm.MessageEnd)
 		excerpt := string([]rune(text)[:5])
 		labels := map[string]any{}
 		for i, label := range domain.Labels {
@@ -499,10 +576,10 @@ func TestWorkflowLLMReport(t *testing.T) {
 			labels[label] = map[string]any{"present": i < 2, "excerpt": quote}
 		}
 		answer, _ := json.Marshal(map[string]any{"labels": labels})
-		_ = json.NewEncoder(w).Encode(map[string]any{"choices": []any{map[string]any{"message": map[string]any{"content": string(answer)}}}})
+		_ = json.NewEncoder(w).Encode(map[string]any{"status": "completed", "steps": []any{map[string]any{"type": "model_output", "content": []any{map[string]any{"type": "text", "text": string(answer)}}}}})
 	}))
 	defer server.Close()
-	s.LLM = llm.New("offline-secret-key", "offline-model", server.URL)
+	s.LLM = llm.New("offline-secret-key", "offline-model", server.URL, "")
 	for _, status := range []string{"OK", "UNAVAILABLE"} {
 		mode = status
 		report := run(status)
@@ -558,41 +635,46 @@ func TestLLMMainProcess(t *testing.T) {
 			labels[label] = map[string]any{"present": false, "excerpt": ""}
 		}
 		answer, _ := json.Marshal(map[string]any{"labels": labels})
-		_ = json.NewEncoder(w).Encode(map[string]any{"choices": []any{map[string]any{"message": map[string]any{"content": string(answer)}}}})
+		_ = json.NewEncoder(w).Encode(map[string]any{"status": "completed", "steps": []any{map[string]any{"type": "model_output", "content": []any{map[string]any{"type": "text", "text": string(answer)}}}}})
 	}))
 	defer server.Close()
 	envFile := filepath.Join(root, "eval.env")
-	if err := os.WriteFile(envFile, []byte("MISTRAL_MODEL=env-file-model\n"), 0600); err != nil {
+	if err := os.WriteFile(envFile, []byte("GEMINI_MODEL=env-file-model\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	for name, value := range map[string]string{
 		"PAUSE_EVAL_CHILD": "1", "ENV_FILE": envFile, "APP_ENV": "test",
-		"DATABASE_URL": "postgres://offline:offline@127.0.0.1:1/offline", "MESSAGE_ENCRYPTION_KEY": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", "PAYPAL_MERCHANT_ID": "offline",
-		"APP_BASE_URL": "http://127.0.0.1:5173", "MISTRAL_BASE_URL": server.URL, "MISTRAL_MODEL": "",
-		"ML_SERVICE_URL": "", "ELASTICSEARCH_URL": "", "MISTRAL_API_KEY": "offline-secret-key",
+		"DATABASE_URL": "", "MESSAGE_ENCRYPTION_KEY": "", "PAYPAL_MERCHANT_ID": "",
+		"APP_BASE_URL": "http://127.0.0.1:5173", "GEMINI_BASE_URL": server.URL, "GEMINI_MODEL": "", "GEMINI_THINKING_LEVEL": "low",
+		"ML_SERVICE_URL": "invalid-unused-ml-setting", "ELASTICSEARCH_URL": "", "DEPENDENCY_PRIVATE_HTTP_HOSTS": "", "GEMINI_API_KEY": "offline-secret-key",
 		"PAYPAL_BASE_URL": "https://api-m.sandbox.paypal.com", "PAYPAL_CLIENT_ID": "", "PAYPAL_CLIENT_SECRET": "", "PAYPAL_WEBHOOK_ID": "",
 	} {
 		t.Setenv(name, value)
 	}
 	// godotenv preserves explicitly set variables, including empty values.
 	// Leave this one absent so the test exercises loading it from ENV_FILE.
-	if err := os.Unsetenv("MISTRAL_MODEL"); err != nil {
+	if err := os.Unsetenv("GEMINI_MODEL"); err != nil {
 		t.Fatal(err)
 	}
 	for _, test := range []struct {
 		name, args, reason string
 		missingKey         bool
+		invalidConfig      bool
 	}{
-		{"success", "-mode llm -split validation -limit 1 -output new.json", "", false},
-		{"existing output", "-mode llm -split validation -limit 1 -output new.json", "CONFIGURATION_OR_FROZEN_INPUT_ERROR", false},
-		{"missing key", "-mode llm -output missing.json", "LLM_NOT_CONFIGURED", true},
-		{"test unconfirmed", "-mode llm -split test -output guarded.json", "CONFIGURATION_OR_FROZEN_INPUT_ERROR", false},
-		{"test limited", "-mode llm -split test -confirm-test -limit 1 -output guarded.json", "CONFIGURATION_OR_FROZEN_INPUT_ERROR", false},
+		{"invalid config", "-mode llm -split validation -limit 1 -output invalid.json", "CONFIGURATION_INVALID", false, true},
+		{"success", "-mode llm -split validation -limit 1 -output new.json", "", false, false},
+		{"existing output", "-mode llm -split validation -limit 1 -output new.json", "REPORT_CREATE_FAILED", false, false},
+		{"missing key", "-mode llm -output missing.json", "LLM_NOT_CONFIGURED", true, false},
+		{"test unconfirmed", "-mode llm -split test -output guarded.json", "TEST_SPLIT_GUARD", false, false},
+		{"test limited", "-mode llm -split test -confirm-test -limit 1 -output guarded.json", "TEST_SPLIT_GUARD", false, false},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			t.Setenv("PAUSE_EVAL_ARGS", test.args)
+			if test.invalidConfig {
+				t.Setenv("GEMINI_THINKING_LEVEL", "invalid-private-value")
+			}
 			if test.missingKey {
-				t.Setenv("MISTRAL_API_KEY", "")
+				t.Setenv("GEMINI_API_KEY", "")
 			}
 			cmd := exec.Command(os.Args[0], "-test.run=^TestLLMMainProcess$")
 			cmd.Dir = root
@@ -604,7 +686,7 @@ func TestLLMMainProcess(t *testing.T) {
 			} else if err == nil || !strings.Contains(string(out), `"reason_code":"`+test.reason+`"`) {
 				t.Fatalf("wrong failure: %v %s", err, out)
 			}
-			for _, private := range []string{"offline-secret-key", server.URL, "postgres://", "Pay now"} {
+			for _, private := range []string{"offline-secret-key", server.URL, "postgres://", "Pay now", "GEMINI_THINKING_LEVEL", "invalid-private-value"} {
 				if strings.Contains(string(out), private) {
 					t.Fatal("logs contain private data")
 				}
