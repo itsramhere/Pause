@@ -266,6 +266,10 @@ func (s *Server) Handler() http.Handler {
 				out, e := s.App.Analyze(r.Context(), session(r).Actor, chi.URLParam(r, "id"), in.Version)
 				s.respond(w, r, out, e, 200)
 			})
+			r.With(s.requireRole(domain.Senior, domain.Reviewer)).Get("/intents/{id}/history", func(w http.ResponseWriter, r *http.Request) {
+				out, e := s.App.RequestStory(r.Context(), session(r).Actor, chi.URLParam(r, "id"))
+				s.respond(w, r, out, e, 200)
+			})
 			r.With(s.requireRole(domain.Senior, domain.Reviewer)).Get("/intents/{id}/evidence", func(w http.ResponseWriter, r *http.Request) {
 				out, e := s.App.Evidence(r.Context(), session(r).Actor, chi.URLParam(r, "id"))
 				s.respond(w, r, out, e, 200)

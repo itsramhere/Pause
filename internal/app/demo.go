@@ -98,11 +98,17 @@ func (s *Service) LaunchDemo(ctx context.Context, scenario, peer string) (DemoRu
 		return out, err
 	}
 	// Honest historical fixtures, no provider operations or fabricated receipts.
-	for n, amount := range []string{"40.00", "180.00"} {
+	amounts := []string{"40.00", "180.00"}
+	purposes := []string{"Transport purchase", "Medication purchase"}
+	if scenario == "positive" {
+		amounts = []string{"25.00", "30.00"}
+		purposes = []string{"Grocery purchase", "Pharmacy purchase"}
+	}
+	for n, amount := range amounts {
 		copyService := *s
 		copyService.Clock = scenarioClock{s.Clock.Now().Add(-time.Duration(4-n*2) * 24 * time.Hour)}
 		yes := true
-		i, _, e := copyService.Create(ctx, domain.Actor{UserID: senior, HouseholdID: household, Role: domain.Senior}, Intake{Amount: amount, Currency: "USD", MerchantID: s.Config.MerchantID, SubjectContactID: contact, Purpose: []string{"Transport purchase", "Medication purchase"}[n], Message: []string{"Can you help with the ride to the clinic?", "Please help with the pharmacy purchase after the clinic visit."}[n], HistoryConsent: &yes}, fmt.Sprintf("demo-history-%d", n), "explicit-demo-seed")
+		i, _, e := copyService.Create(ctx, domain.Actor{UserID: senior, HouseholdID: household, Role: domain.Senior}, Intake{Amount: amount, Currency: "USD", MerchantID: s.Config.MerchantID, SubjectContactID: contact, Purpose: purposes[n], Message: []string{"Can you help with the ride to the clinic?", "Please help with the pharmacy purchase after the clinic visit."}[n], HistoryConsent: &yes}, fmt.Sprintf("demo-history-%d", n), "explicit-demo-seed")
 		if e != nil {
 			return out, e
 		}

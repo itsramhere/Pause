@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { api, APIError, errorText, money, type Actor, type Configuration, type Contact, type Intake, type Intent, type Task } from './api'
+import { RequestStory } from './RequestStory'
 import { Checkout } from './Checkout'
 import { Investigation, SubjectAnswer } from './Investigation'
 import { answerText, nextStep, paymentText, terminal } from './status'
@@ -89,7 +90,7 @@ function Workspace({ actor, onUnauthenticated }: { actor: Actor; onUnauthenticat
     {active && <article className="card record" key={active.id}><div className="record-top"><h2>{active.binding.purpose}</h2><strong className="amount">{money(active.binding.amount_minor)} USD</strong></div><p className="helper">Entered {new Date(active.created_at).toLocaleString()}</p>
      <div className={`state-card ${stateTone(active)}`} role="status"><h3>{active.synthetic_history ? 'Synthetic seeded history' : paymentText(active.payment_status)}</h3><p>{active.synthetic_history ? 'A simulated earlier purchase for this scenario. No PayPal receipt or live payment exists for this row.' : nextStep(active)}</p></div>
      {active.payment_notice && !terminal(active) && <p className="notice" role="status">{active.payment_notice}</p>}<h3>Entered purchase facts</h3><dl><div><dt>Relative named in the request</dt><dd>{active.subject_name ?? contacts.find(c => c.id === active.binding.subject_contact_id)?.name ?? 'Selected enrolled relative'}</dd></div><div><dt>Actual receiving merchant</dt><dd>{config.merchant_label}</dd></div><div><dt>Purpose</dt><dd>{active.binding.purpose}</dd></div><div><dt>Independent answer</dt><dd>{answerText(active.verification_status)}</dd></div></dl><p className="helper">A capture pays this merchant. The relative does not receive these funds.</p>
-     {!active.synthetic_history && <><Stepper intent={active} /><p className="helper">Decision deadline: {new Date(active.decision_deadline).toLocaleString()}. A deadline does not mean PayPal has confirmed cancellation.</p>
+     {!active.synthetic_history && <><RequestStory intent={active} /><Stepper intent={active} /><p className="helper">Decision deadline: {new Date(active.decision_deadline).toLocaleString()}. A deadline does not mean PayPal has confirmed cancellation.</p>
       {!terminal(active) && <Countdown deadline={active.decision_deadline} />}
       {actor.role === 'senior' && active.checkout.status === 'AVAILABLE' && !active.cleanup_requested && Date.now() < Date.parse(active.decision_deadline) && ['DRAFT', 'AWAITING_PAYER'].includes(active.payment_status) && <Checkout intent={active} config={config} refresh={refresh} />}
       {actor.role === 'senior' && active.checkout.status !== 'AVAILABLE' && !terminal(active) && <p className="error">Sandbox checkout is unavailable. You can save the request, retry later, or abandon this purchase.</p>}
