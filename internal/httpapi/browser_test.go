@@ -202,7 +202,8 @@ func browserEngine(t *testing.T, f *fixture) *string {
 			// Deterministic Gemini fake: quote the redacted text back so the
 			// client-side grounding check keeps the flag.
 			var body struct {
-				Input string `json:"input"`
+				Input  string `json:"input"`
+				System string `json:"system_instruction"`
 			}
 			_ = json.NewDecoder(r.Body).Decode(&body)
 			sent := strings.TrimSpace(body.Input)
@@ -219,6 +220,18 @@ func browserEngine(t *testing.T, f *fixture) *string {
 				answer["urgent_payment_pressure"] = map[string]any{"present": true, "excerpt": excerpt}
 			}
 			raw, _ := json.Marshal(map[string]any{"labels": answer})
+			if strings.HasPrefix(body.System, "You explain to an older adult, in plain everyday English") {
+				var facts []llm.Fact
+				_ = json.Unmarshal([]byte(sent), &facts)
+				sentences := []llm.Sentence{}
+				for _, f := range facts {
+					if f.ID == "F1" || f.ID == "F2" || f.ID == "F3" || f.ID == "F8" {
+						sentences = append(sentences, llm.Sentence{Text: f.Text, FactIDs: []string{f.ID}})
+					}
+				}
+				raw, _ = json.Marshal(map[string]any{"sentences": sentences})
+			}
+
 			out = map[string]any{"status": "completed", "steps": []any{map[string]any{"type": "model_output", "content": []any{map[string]any{"type": "text", "text": string(raw)}}}}}
 		default:
 			t.Error("unexpected dependency route", r.URL.Path)

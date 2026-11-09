@@ -101,40 +101,53 @@ func (c *Client) ExtractSignals(ctx context.Context, text string) (signals Signa
 	prompt := systemPrompt()
 	signals = Signals{Status: StatusUnavailable, Model: c.model, PromptVersion: PromptVersion, PromptHash: domain.Hash([]byte(prompt)), Labels: []LabelFlag{}}
 	defer func() { signals.DurationMS = time.Since(started).Milliseconds() }()
+	answer, e := c.generate(ctx, prompt, messageBlock(sent), responseSchema())
+	if e != nil {
+		if failure, ok := e.(*Error); ok && failure.Code == "LLM_INVALID_OUTPUT" {
+			signals.Status = StatusInvalidOutput
+		}
+		return signals, e
+	}
+	return Validate([]byte(answer), sent, signals)
+}
+
+// Model identifies the configured model for derived-display cache keys.
+func (c *Client) Model() string { return c.model }
+
+// generate shares the bounded Interactions transport without changing signal requests.
+func (c *Client) generate(ctx context.Context, system, input string, schema map[string]any) (string, error) {
 	req, e := http.NewRequestWithContext(ctx, "POST", c.base+interactionsPath, mustJSON(interactionRequest{
-		Model: c.model, SystemInstruction: prompt, Input: messageBlock(sent),
-		ResponseFormat:   interactionResponseSpec{Type: "text", MIMEType: "application/json", Schema: responseSchema()},
+		Model: c.model, SystemInstruction: system, Input: input,
+		ResponseFormat:   interactionResponseSpec{Type: "text", MIMEType: "application/json", Schema: schema},
 		GenerationConfig: generationConfig{Seed: randomSeed, MaxOutputTokens: maxOutputTokens, ThinkingLevel: c.thinkingLevel},
 		Store:            false,
 	}))
 	if e != nil {
-		return signals, &Error{Code: "LLM_TRANSPORT", Temporary: true}
+		return "", &Error{Code: "LLM_TRANSPORT", Temporary: true}
 	}
 	req.Header.Set("x-goog-api-key", c.key)
 	req.Header.Set("Content-Type", "application/json")
 	resp, e := c.http.Do(req)
 	if e != nil {
-		return signals, &Error{Code: "LLM_TRANSPORT", Temporary: true}
+		return "", &Error{Code: "LLM_TRANSPORT", Temporary: true}
 	}
 	defer resp.Body.Close()
 	body, e := io.ReadAll(io.LimitReader(resp.Body, maxResponseBytes+1))
 	if e != nil || len(body) > maxResponseBytes {
-		return signals, &Error{Code: "LLM_UNREADABLE", HTTP: resp.StatusCode, Temporary: true}
+		return "", &Error{Code: "LLM_UNREADABLE", HTTP: resp.StatusCode, Temporary: true}
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return signals, &Error{Code: "LLM_HTTP_ERROR", HTTP: resp.StatusCode, Temporary: resp.StatusCode == 429 || resp.StatusCode >= 500}
+		return "", &Error{Code: "LLM_HTTP_ERROR", HTTP: resp.StatusCode, Temporary: resp.StatusCode == 429 || resp.StatusCode >= 500}
 	}
 	var envelope interactionResponse
 	if json.Unmarshal(body, &envelope) != nil {
-		signals.Status = StatusInvalidOutput
-		return signals, &Error{Code: "LLM_INVALID_OUTPUT"}
+		return "", &Error{Code: "LLM_INVALID_OUTPUT"}
 	}
 	if envelope.Status == "incomplete" {
-		signals.Status = StatusInvalidOutput
-		return signals, &Error{Code: "LLM_INVALID_OUTPUT"}
+		return "", &Error{Code: "LLM_INVALID_OUTPUT"}
 	}
 	if envelope.Status != "completed" {
-		return signals, &Error{Code: "LLM_UNAVAILABLE"}
+		return "", &Error{Code: "LLM_UNAVAILABLE"}
 	}
 	var answer string
 	textParts := 0
@@ -144,8 +157,7 @@ func (c *Client) ExtractSignals(ctx context.Context, text string) (signals Signa
 		}
 		var content []interactionContent
 		if json.Unmarshal(step.Content, &content) != nil {
-			signals.Status = StatusInvalidOutput
-			return signals, &Error{Code: "LLM_INVALID_OUTPUT"}
+			return "", &Error{Code: "LLM_INVALID_OUTPUT"}
 		}
 		for _, part := range content {
 			if part.Type == "text" {
@@ -155,10 +167,9 @@ func (c *Client) ExtractSignals(ctx context.Context, text string) (signals Signa
 		}
 	}
 	if textParts != 1 {
-		signals.Status = StatusInvalidOutput
-		return signals, &Error{Code: "LLM_INVALID_OUTPUT"}
+		return "", &Error{Code: "LLM_INVALID_OUTPUT"}
 	}
-	return Validate([]byte(answer), sent, signals)
+	return answer, nil
 }
 
 func mustJSON(v any) io.Reader {

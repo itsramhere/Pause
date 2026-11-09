@@ -303,3 +303,7 @@ details[open]{border-color:var(--ink)}
 .story-tag{align-self:flex-start;font-weight:400}
 .request-story li:last-child .story-arrow{display:none}
 .request-story p:last-child{margin-bottom:0}
+
+.what-pause-sees { min-width: 0; overflow-wrap: anywhere; }
+.explanation-facts { display: flex; flex-wrap: wrap; gap: .4rem; }
+.explanation-chip { display: inline-block; padding: .15rem .5rem; border: 1px solid currentColor; border-radius: 1rem; max-width: 100%; }

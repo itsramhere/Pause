@@ -25,13 +25,21 @@ func llmFake(t *testing.T) (*string, *llm.Client) {
 			return
 		}
 		var body struct {
-			Input string `json:"input"`
+			Input  string `json:"input"`
+			System string `json:"system_instruction"`
 		}
 		_ = json.NewDecoder(r.Body).Decode(&body)
 		sent := strings.TrimSpace(body.Input)
 		sent = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(sent, llm.MessageStart), llm.MessageEnd))
 		if mode == "outage" {
 			w.WriteHeader(503)
+			return
+		}
+		if strings.HasPrefix(body.System, "You explain to an older adult, in plain everyday English") {
+			var facts []llm.Fact
+			_ = json.Unmarshal([]byte(sent), &facts)
+			raw, _ := json.Marshal(map[string]any{"sentences": templateExplanation(facts)})
+			_ = json.NewEncoder(w).Encode(map[string]any{"status": "completed", "steps": []any{map[string]any{"type": "model_output", "content": []any{map[string]any{"type": "text", "text": string(raw)}}}}})
 			return
 		}
 		answer := map[string]any{}

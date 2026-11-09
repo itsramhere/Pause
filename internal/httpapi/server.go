@@ -274,6 +274,10 @@ func (s *Server) Handler() http.Handler {
 				out, e := s.App.Evidence(r.Context(), session(r).Actor, chi.URLParam(r, "id"))
 				s.respond(w, r, out, e, 200)
 			})
+			r.With(s.requireRole(domain.Senior, domain.Reviewer)).Get("/intents/{id}/explanation", func(w http.ResponseWriter, r *http.Request) {
+				v, e := s.App.Explanation(r.Context(), session(r).Actor, chi.URLParam(r, "id"), r.URL.Query().Get("evidence_id"))
+				s.respond(w, r, v, e, 200)
+			})
 			r.With(s.requireRole(domain.Reviewer)).Post("/intents/{id}/review", func(w http.ResponseWriter, r *http.Request) {
 				var in app.ReviewDecision
 				if !s.decode(w, r, &in) {
