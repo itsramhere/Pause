@@ -64,3 +64,6 @@ Thumbs.db
 # Stray credential captures and scratch test scripts
 cookies.txt
 *.tmp.mjs
+
+# Demo video (large binary)
+video/pause-demo.mp4

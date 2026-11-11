@@ -11,6 +11,10 @@ people skip. Pause builds that check into checkout:
 
 Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/).
 
+**Jump to:** [Try it](#try-it-in-one-browser-window) · [How PayPal is used](#how-paypal-is-used) ·
+[How AI is used](#how-ai-is-used) · [Built with](#built-with) · [Setup and run](#setup-and-run) ·
+[License](#license)
+
 ## How it works
 
 1. **The payment waits.** The senior records the purchase (amount, merchant, purpose and the message they
@@ -115,6 +119,27 @@ There are two lines we refused to cross:
 The PayPal integration is the core of the product, not an add-on. Holding a payment and collecting it only if
 the checks pass is what makes a verification window possible.
 
+## How PayPal is used
+
+PayPal isn't a pay button at the end of the flow; it is the mechanism. Holding a payment and collecting it only
+if the checks pass is what creates the verification window. Pause uses the PayPal Sandbox through the JavaScript
+SDK and the REST APIs:
+
+| Step | PayPal technology | What Pause does with it |
+|---|---|---|
+| Checkout | JavaScript SDK Buttons (`intent=authorize`) | The senior approves the payment in the PayPal window with a sandbox buyer account |
+| Create the order | Orders v2: `POST /v2/checkout/orders` with `intent: AUTHORIZE` | The server creates the order for the exact recorded amount, with the controlled sandbox merchant as payee. The browser can't change the amount or the payee |
+| Hold the money | Orders v2: `POST /v2/checkout/orders/{id}/authorize` | Puts the funds on hold. Nothing is charged; this hold is the verification window |
+| Collect | Payments v2: `POST /v2/payments/authorizations/{id}/capture` | Runs only after the person asking confirmed, the reviewer approved and the server re-checked everything |
+| Cancel | Payments v2: `POST /v2/payments/authorizations/{id}/void` | Runs when the person asking says no, the reviewer declines or the senior cancels |
+| Confirm the outcome | `GET` the order, authorization and capture | The worker reconciles every operation with PayPal and recovers approvals whose browser callback was lost. The UI shows "captured" or "cancelled" only after PayPal confirms |
+| Webhooks (optional) | Webhooks and `POST /v1/notifications/verify-webhook-signature` | Verified authorization, capture and void events trigger a faster re-check. Unverified events are rejected |
+| Safety | OAuth 2.0 client credentials and the `PayPal-Request-Id` header | Every create, authorize, capture and void carries an idempotency key, so a retry never charges twice |
+
+Pause controls money only inside its own integrated checkout. It can't stop PayPal transfers, wires or
+purchases made elsewhere.
+
+
 ## How AI is used
 
 Pause uses AI to help the reviewer and the senior read a situation, never to decide it. No AI output can
@@ -178,6 +203,23 @@ are never part of what the reviewer approves.
 A small TF-IDF linear classifier runs in a private inference service. Its manifests and hashes are verified
 before use. It scores about the same as the keyword rules, and the reports say so. When it isn't confident, it
 abstains instead of guessing, and an abstention blocks release.
+
+## Built with
+
+| Technology | Role in Pause |
+|---|---|
+| **PayPal Developer Platform** (hackathon sponsor) | JavaScript SDK, Orders v2, Payments v2 (authorize, capture, void), Webhooks and the Sandbox. See [How PayPal is used](#how-paypal-is-used) |
+| **Elastic: Elasticsearch 9.5** (sponsor tool) | Hybrid search over the public scam-pattern corpus and the consented request history. It combines BM25 keyword search with 384-dimension vector search, and Go fuses the two rankings (RRF) |
+| **Google Gemini API** (`gemini-3.5-flash-lite`, Interactions API) | Advisory signal reading with grounded quotes, and the "What Pause sees" summary. See [How AI is used](#how-ai-is-used) |
+| **scikit-learn** | The TF-IDF linear message classifier, trained on the synthetic dataset in `datasets/` |
+| **`sentence-transformers/all-MiniLM-L6-v2`**, via Hugging Face Transformers and PyTorch (CPU) | The pinned search encoder that turns text into vectors for Elasticsearch |
+| **Go 1.26** (chi, pgx) | API, worker, migrations, setup and evaluation commands |
+| **PostgreSQL** | The source of truth for purchases, answers, reviews, payment operations and audit events |
+| **React 19 and Vite** | The web app |
+| **Playwright** | Browser journey tests |
+| **Docker, Docker Compose and Caddy** | Local dependencies, the packaged service stack and HTTPS for deployment |
+| **SMTP** (any provider) | Optional email to the person asking |
+
 
 ## Why the checks are credible
 
@@ -266,40 +308,121 @@ Behind these sit Go race-detector runs, adversarial fixtures, fake Gemini and ma
 executable safety catalog. CI runs the PostgreSQL suite, the race checks, the web tests and the Python runtime
 contract tests.
 
-## Run it locally
+## Setup and run
+
+Pause runs on your machine against the PayPal Sandbox. There are two levels:
+
+- **Core:** PostgreSQL, the API, the worker and the web app. This is enough for the stopped-request story: the
+  money is held, the person asking says no, and PayPal cancels the hold.
+- **Full:** the core plus the private inference service and Elasticsearch. A reviewer can approve a release only
+  when these checks are available, so the confirmed-purchase story (the money is collected) needs this level.
+
+### Prerequisites
+
+- Go 1.26, Node.js 22 with npm, and Docker. For the full level, also Python 3.12.
+- A free [PayPal Developer](https://developer.paypal.com/) account.
+- Optional: a Gemini API key from [Google AI Studio](https://aistudio.google.com/), and an SMTP account (for
+  example, a Gmail app password) for the notification emails.
+
+### 1. Create PayPal Sandbox credentials
+
+1. In the PayPal Developer Dashboard, open the sandbox test accounts. You need one **business** account (the
+   merchant) and one **personal** account (the buyer). New developer accounts come with both.
+2. Under **Apps & Credentials**, with **Sandbox** selected, create a REST app linked to the sandbox business
+   account. Copy its **Client ID** and **Secret**.
+3. Open the business account's details and copy its **Account ID**. This is the merchant ID, not the client ID.
+4. Note the personal account's email address and password. You'll sign in with them in the PayPal window to
+   approve the hold.
+
+### 2. Configure
 
 ```bash
-# 1. PostgreSQL
-docker run -d --name pause-pg -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=pause -p 54321:5432 postgres:16-alpine
-
-# 2. Configure: copy the example, then fill in PAYPAL_*, MESSAGE_ENCRYPTION_KEY and the other required keys
 cp .env.example .env
-
-# 3. Migrate, seed the fixed demo accounts, build the UI
-export DATABASE_URL='postgres://postgres:postgres@127.0.0.1:54321/pause?sslmode=disable'
-go run ./cmd/migrate
-SEED_PASSWORD='Synthetic-Pause-password!' go run ./cmd/seed
-npm --prefix web install && npm --prefix web run build
-
-# 4. Start the API and, in a second terminal, the worker
-go run ./cmd/api      # → http://127.0.0.1:8080 (set APP_BASE_URL to the origin you browse from)
-go run ./cmd/worker   # PayPal void/capture, reconciliation, history indexing, notification emails
 ```
 
-Normal startup never seeds people or history. Migrations run through **version 12**.
+Then set these values in `.env`. The Go commands read `.env` automatically; set `ENV_FILE` to use another file.
 
-**Optional settings in `.env`:**
+| Setting | Value |
+|---|---|
+| `DATABASE_URL` | `postgres://postgres:postgres@127.0.0.1:54321/pause?sslmode=disable` (matches the Docker command below) |
+| `HTTP_ADDR` and `APP_BASE_URL` | `127.0.0.1:8080` and `http://127.0.0.1:8080`: the address you open in the browser |
+| `MESSAGE_ENCRYPTION_KEY` | 32 random bytes in base64, for example from `openssl rand -base64 32`. Keep it stable |
+| `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET` | From step 1 |
+| `PAYPAL_MERCHANT_ID` | The business account ID from step 1 |
+| `DEMO_ENABLED` | `1`, which turns on judge mode |
+
+Leave `PAYPAL_WEBHOOK_ID` empty. Webhooks need a public HTTPS address, and without them the worker checks
+PayPal directly. The optional settings (Gemini, email) are listed below.
+
+### 3. Start PostgreSQL, migrate and build
+
+```bash
+docker run -d --name pause-pg -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=pause -p 54321:5432 postgres:18.1
+go run ./cmd/migrate                                             # migrations 001–012
+SEED_PASSWORD='Synthetic-Pause-password!' go run ./cmd/seed      # optional: the fixed demo accounts
+npm --prefix web ci && npm --prefix web run build
+```
+
+### 4. Run
+
+```bash
+go run ./cmd/api      # terminal 1: http://127.0.0.1:8080
+go run ./cmd/worker   # terminal 2: PayPal void/capture, reconciliation, history indexing, notification emails
+```
+
+Open http://127.0.0.1:8080 and follow [Try it in one browser window](#try-it-in-one-browser-window). Normal
+startup never seeds people or history.
+
+### 5. Full level: inference and search
+
+Start Elasticsearch (security is off, so keep it bound to loopback):
+
+```bash
+docker run -d --name pause-es -p 127.0.0.1:9200:9200 \
+  -e discovery.type=single-node -e xpack.security.enabled=false -e xpack.ml.enabled=false \
+  -e ES_JAVA_OPTS='-Xms512m -Xmx512m' docker.elastic.co/elasticsearch/elasticsearch:9.5.5
+```
+
+Set up and start the private inference service. The commands below are for Windows PowerShell; on Linux, use
+`ml/requirements.linux.lock.txt` and `source ml/.venv/bin/activate` (see [ml/README.md](ml/README.md)).
+
+```powershell
+python -m venv ml/.venv
+./ml/.venv/Scripts/Activate.ps1
+python -m pip install --no-deps -r ml/requirements.lock.txt --extra-index-url https://download.pytorch.org/whl/cpu
+$env:PYTHONPATH='ml/src'
+python -B -m pause_ml.train      # trains the classifier from datasets/ and writes its manifest
+python -B -m pause_ml.runtime    # downloads the pinned MiniLM encoder and verifies it
+$env:ML_SERVICE_TOKEN='<at least 32 random characters>'
+python -B -m pause_ml.service    # serves on 127.0.0.1:8090; keep it running
+```
+
+Add these to `.env`:
+
+```bash
+ML_SERVICE_URL=http://127.0.0.1:8090
+ML_SERVICE_TOKEN=<the same token>
+ELASTICSEARCH_URL=http://127.0.0.1:9200
+```
+
+Then bootstrap search and approve the model releases, and restart the API and the worker:
+
+```bash
+go run ./cmd/investigation-setup   # creates the public index, loads the 18 scam-pattern summaries, approves the models
+go run ./cmd/history-setup         # creates the private request-history index
+```
+
+### Optional settings
 
 | Setting | Effect |
 |---|---|
-| `DEMO_ENABLED=1` | Turns on the judge scenario. Always off in production |
-| `GEMINI_API_KEY` | Turns on the advisory AI. Also `GEMINI_MODEL` (default `gemini-3.5-flash-lite`) and `GEMINI_THINKING_LEVEL` (default `minimal`). Leave the key empty to turn it off |
-| `MAIL_MODE=off\|log\|smtp` | Controls notification emails. For `smtp`, also set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD` and `MAIL_FROM`. `MAIL_REDIRECT_TO` sends every notice to one address and is refused in production |
-| `ML_SERVICE_URL`, `ELASTICSEARCH_URL` | Private inference and search. Recording, answering and cancelling work without them, but release requires them. See [ml/README.md](ml/README.md) and [search/README.md](search/README.md) |
+| `GEMINI_API_KEY` | Turns on the advisory AI. Also `GEMINI_MODEL` (default `gemini-3.5-flash-lite`) and `GEMINI_THINKING_LEVEL` (default `minimal`). Leave the key empty to turn it off; everything else works the same |
+| `MAIL_MODE=off\|log\|smtp` | Controls notification emails. For `smtp`, also set `SMTP_HOST`, `SMTP_PORT` (587 or 465), `SMTP_USERNAME`, `SMTP_PASSWORD` and `MAIL_FROM`. `MAIL_REDIRECT_TO` sends every notice to one address and is refused in production |
+
+### Verify
 
 ```bash
-# Verify
 go vet ./... && go test ./...
 TEST_DATABASE_URL='postgres://...' go test ./internal/...            # disposable-schema suite
 TEST_DATABASE_URL='postgres://...' P05_BROWSER=1 \
@@ -310,8 +433,8 @@ npm --prefix web test                                                # SSR copy 
 go run ./cmd/eval -mode llm -split validation -rps 0.2 -output reports/llm-validation-<date>.json
 ```
 
-For full deployment, HTTPS, index bootstrap and recovery drills, see [deploy/README.md](deploy/README.md).
-Residual security notes are in [deploy/SECURITY.md](deploy/SECURITY.md).
+For the Docker Compose deployment, HTTPS, index bootstrap and recovery drills, see
+[deploy/README.md](deploy/README.md). Residual security notes are in [deploy/SECURITY.md](deploy/SECURITY.md).
 
 ## Scope and limits
 
@@ -344,3 +467,13 @@ models/         reviewed classifier card, manifests, validation report
 deploy/         Docker/compose/Caddy runbook + security notes
 reports/        measured AI, hardening, disclosure, dependency and acceptance evidence
 ```
+
+## License
+
+Pause is released under the [MIT License](LICENSE).
+
+- The synthetic training and evaluation messages in `datasets/` were written for this project. See
+  `datasets/sources.manifest.json`.
+- The public scam-pattern entries in `search/playbooks/` are original summaries that cite their public sources.
+- The MiniLM encoder (Apache-2.0) and the Go, npm and Python dependencies are downloaded at setup time under
+  their own licenses. They aren't redistributed in this repository.
