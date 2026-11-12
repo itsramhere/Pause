@@ -5,6 +5,7 @@
 *.jsonl -text
 *.py -text
 *.go text eol=lf
+*.sh text eol=lf
 # Preserve the exact measured installed-environment lock bytes (CRLF).
 ml/requirements.lock.txt -text
 # This reviewed guide is included in the source-freeze hash manifest.

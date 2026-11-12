@@ -88,9 +88,6 @@ func From(get func(string) string) (Config, error) {
 	if err != nil || len(c.MessageKey) != 32 {
 		return c, errors.New("MESSAGE_ENCRYPTION_KEY must be a base64 encoded 32-byte key")
 	}
-	if c.MerchantID == "" && c.Environment == "demo" {
-		c.MerchantID = "PauseDemoMerchant"
-	}
 	if c.MerchantID == "" || len(c.MerchantID) > 128 {
 		return c, errors.New("PAYPAL_MERCHANT_ID is required and bounded")
 	}
