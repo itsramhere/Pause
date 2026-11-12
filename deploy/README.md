@@ -112,6 +112,74 @@ managed PG/Elastic and explicit private-service TLS/network settings; account,
 plans and pre-deploy setup still need selection. See [Render Docker](https://render.com/docs/docker)
 and [health checks](https://render.com/docs/health-checks).
 
+## Deploy free on Render + Neon
+
+Pause can be hosted entirely on Render's free tier as a single Docker Web Service paired with an external free-tier Neon PostgreSQL database. In this lightweight demonstration topology, Elasticsearch, the Python ML inference service, and Caddy are omitted. The API and background worker run together in one container supervised by `scripts/render-start.sh`.
+
+### 1. Create the Neon PostgreSQL database
+1. Sign up or log in at [Neon](https://neon.tech) and create a new project (e.g. `pause`).
+2. Copy the connection string. Neon provides two connection strings:
+   - **Direct connection string** (e.g. `postgres://<user>:<password>@ep-<name>.<region>.neon.tech/pause?sslmode=require`)
+   - **Pooled connection string** (contains `-pooler` in the host, e.g. `ep-<name>-pooler.<region>.neon.tech`)
+3. Neon's pooled host uses PgBouncer in transaction mode, which can break session advisory locks used by the migration tool (`SELECT pg_advisory_xact_lock(...)`). **Always use the direct (non-pooler) host for running migrations**. The application runtime (API and worker) may use either the direct or pooled connection string with `?sslmode=require&pool_max_conns=5`.
+
+### 2. Run migrations once using the direct Neon host
+Before launching the service on Render, apply the schema migrations from your local development machine using the direct Neon connection URL:
+```sh
+DATABASE_URL="postgres://<user>:<password>@ep-<name>.<region>.neon.tech/pause?sslmode=require" \
+MESSAGE_ENCRYPTION_KEY="<base64-encoded-32-random-bytes>" \
+PAYPAL_MERCHANT_ID="TEST_MERCHANT_ID" \
+go run ./cmd/migrate
+```
+Ensure it completes with `{"msg":"migrations_applied","version":12}`. Do not use the `-pooler` host here.
+
+### 3. Deploy the Blueprint on Render
+1. In the [Render Dashboard](https://dashboard.render.com), go to **Blueprints** -> **New Blueprint Instance**.
+2. Connect your repository containing `render.yaml`. Render automatically configures:
+   - Type: Docker Web Service (`plan: free`, `runtime: docker`)
+   - Dockerfile path: `./Dockerfile`
+   - Docker start command: `/app/bin/render-start.sh` (supervises both worker and API, forwarding SIGTERM)
+   - Health check path: `/readyz` (binds to Render's dynamic `$PORT`, default 10000)
+   - Pre-configured fixed values: `APP_ENV=demo`, `DEMO_ENABLED=1`, `MAIL_MODE=off`, `TRUSTED_PROXY_CIDRS=10.0.0.0/8`
+3. Populate the remaining environment secrets marked `sync: false` in Render:
+   - `DATABASE_URL`: Your Neon connection string with `sslmode=require` (e.g. `postgres://...neon.tech/pause?sslmode=require&pool_max_conns=5`).
+   - `MESSAGE_ENCRYPTION_KEY`: Stable base64-encoded 32 random bytes (`openssl rand -base64 32`).
+   - `APP_BASE_URL`: Exact public HTTPS URL assigned by Render, without a trailing slash (e.g. `https://pause.onrender.com`).
+   - `PAYPAL_CLIENT_ID`: PayPal Sandbox client ID.
+   - `PAYPAL_CLIENT_SECRET`: PayPal Sandbox client secret.
+   - `PAYPAL_MERCHANT_ID`: PayPal Sandbox merchant ID.
+   - `GEMINI_API_KEY`: (Optional) Google Gemini API key for advisory signal reading. Leave empty to disable.
+   - `PAYPAL_WEBHOOK_ID`: Leave blank initially until registered in the next step.
+4. Click **Apply** to trigger the initial deployment.
+
+### 4. Register the PayPal Sandbox webhook
+Once the service is live at `https://<service-name>.onrender.com`, register the PayPal webhook endpoint using `cmd/paypal-webhooks`:
+```sh
+PAYPAL_CLIENT_ID="<client-id>" \
+PAYPAL_CLIENT_SECRET="<client-secret>" \
+DATABASE_URL="<direct-neon-url>" \
+MESSAGE_ENCRYPTION_KEY="<key>" \
+PAYPAL_MERCHANT_ID="<merchant-id>" \
+go run ./cmd/paypal-webhooks -mode register -url https://<service-name>.onrender.com/api/webhooks/paypal
+```
+Copy the returned `webhook_id` from the output and set `PAYPAL_WEBHOOK_ID` in the Render dashboard environment variables. Render will restart the service with the updated configuration.
+
+### 5. Prevent cold starts with a free uptime pinger
+Render's free tier spins down web services after 15 minutes of inactivity. To prevent cold start latency during judging:
+- Set up a free HTTP monitor (e.g. via UptimeRobot, cron-job.org, or Better Uptime).
+- Configure it to ping `https://<service-name>.onrender.com/readyz` every 5 to 10 minutes (HTTP GET).
+- `/readyz` returns `200 OK` when the database connection and schema are valid, keeping the service warm without incurring database load or rate-limiting judge scenario creations.
+
+### 6. Known limits and judge workflow
+- **Cold starts**: If spun down, the first request may take 50+ seconds to spin up the container and establish the database connection pool.
+- **Message checks unavailable**: Because Elasticsearch and the Python ML inference service are omitted, `/release-readyz` reports unready, `/api/intents/{id}/evidence` reports `Message checks are unavailable`, and payment capture approval is strictly blocked.
+- **Judge scenario**: Judges must select the **"stopped-request"** scenario (`stopped`). This scenario tests the defensive workflow end-to-end:
+  1. A senior submits a high-risk request and authorizes the sandbox purchase on PayPal.
+  2. The enrolled contact receives the confirmation prompt and denies it.
+  3. The worker issues a PayPal void (`PAYMENT_VOID`) for the authorization.
+  4. The purchase transitions cleanly to "Cancellation confirmed" with durable audit records and zero money moved.
+- The confirmed-purchase scenario (which requires reviewer approval and capture) cannot complete without live message checks, and capture attempts will remain safely refused by policy.
+
 ## Availability and operator diagnostics
 
 `/healthz` is process liveness. `/readyz` is API/database/schema availability.

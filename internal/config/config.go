@@ -35,7 +35,7 @@ type Config struct {
 // Load never includes values or credentials in a configuration error.
 func Load() (Config, error) { return From(os.Getenv) }
 func From(get func(string) string) (Config, error) {
-	c := Config{Environment: value(get, "APP_ENV", "development"), Listen: value(get, "HTTP_ADDR", "127.0.0.1:8080"), Origin: value(get, "APP_BASE_URL", "http://127.0.0.1:5173"), DatabaseURL: get("DATABASE_URL"), WebDir: value(get, "WEB_DIST_DIR", "web/dist"), MerchantID: get("PAYPAL_MERCHANT_ID"), MerchantLabel: value(get, "PAYPAL_MERCHANT_LABEL", "Pause Sandbox Store"), MaxAmount: 500000, MessageRetention: 7 * 24 * time.Hour, OperationRetention: 24 * time.Hour, SessionTTL: 8 * time.Hour, DecisionTTL: 30 * time.Minute, MLURL: get("ML_SERVICE_URL"), MLToken: get("ML_SERVICE_TOKEN"), ClassifierManifest: value(get, "CLASSIFIER_MANIFEST_PATH", "models/classifier.manifest.json"), EncoderManifest: value(get, "ENCODER_MANIFEST_PATH", "models/encoder.manifest.json"), ElasticURL: get("ELASTICSEARCH_URL"), ElasticKey: get("ELASTICSEARCH_API_KEY"), PlaybookAlias: value(get, "ELASTICSEARCH_PLAYBOOK_ALIAS", "pause-playbooks"), HistoryAlias: value(get, "ELASTICSEARCH_HISTORY_ALIAS", "pause-request-history")}
+	c := Config{Environment: value(get, "APP_ENV", "development"), Listen: listenAddr(get), Origin: value(get, "APP_BASE_URL", "http://127.0.0.1:5173"), DatabaseURL: get("DATABASE_URL"), WebDir: value(get, "WEB_DIST_DIR", "web/dist"), MerchantID: get("PAYPAL_MERCHANT_ID"), MerchantLabel: value(get, "PAYPAL_MERCHANT_LABEL", "Pause Sandbox Store"), MaxAmount: 500000, MessageRetention: 7 * 24 * time.Hour, OperationRetention: 24 * time.Hour, SessionTTL: 8 * time.Hour, DecisionTTL: 30 * time.Minute, MLURL: get("ML_SERVICE_URL"), MLToken: get("ML_SERVICE_TOKEN"), ClassifierManifest: value(get, "CLASSIFIER_MANIFEST_PATH", "models/classifier.manifest.json"), EncoderManifest: value(get, "ENCODER_MANIFEST_PATH", "models/encoder.manifest.json"), ElasticURL: get("ELASTICSEARCH_URL"), ElasticKey: get("ELASTICSEARCH_API_KEY"), PlaybookAlias: value(get, "ELASTICSEARCH_PLAYBOOK_ALIAS", "pause-playbooks"), HistoryAlias: value(get, "ELASTICSEARCH_HISTORY_ALIAS", "pause-request-history")}
 	gemini := llmSettings(get)
 	c.GeminiAPIKey, c.GeminiModel, c.GeminiBaseURL, c.GeminiThinkingLevel = gemini.APIKey, gemini.Model, gemini.BaseURL, gemini.ThinkingLevel
 	if c.Environment != "development" && c.Environment != "test" && c.Environment != "demo" && c.Environment != "production" {
@@ -87,6 +87,9 @@ func From(get func(string) string) (Config, error) {
 	c.MessageKey, err = base64.StdEncoding.DecodeString(get("MESSAGE_ENCRYPTION_KEY"))
 	if err != nil || len(c.MessageKey) != 32 {
 		return c, errors.New("MESSAGE_ENCRYPTION_KEY must be a base64 encoded 32-byte key")
+	}
+	if c.MerchantID == "" && c.Environment == "demo" {
+		c.MerchantID = "PauseDemoMerchant"
 	}
 	if c.MerchantID == "" || len(c.MerchantID) > 128 {
 		return c, errors.New("PAYPAL_MERCHANT_ID is required and bounded")
@@ -175,6 +178,17 @@ func value(get func(string) string, k, d string) string {
 	return d
 }
 func loopback(h string) bool { return h == "127.0.0.1" || h == "localhost" || h == "::1" }
+
+func listenAddr(get func(string) string) string {
+	if addr := get("HTTP_ADDR"); addr != "" {
+		return addr
+	}
+	port := value(get, "PORT", "10000")
+	if strings.Contains(port, ":") {
+		return port
+	}
+	return "0.0.0.0:" + port
+}
 
 // LLMConfig contains only the settings needed for advisory signal extraction.
 type LLMConfig struct {

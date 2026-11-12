@@ -176,3 +176,34 @@ func TestP06PrivateNetworkAndProxyConfiguration(t *testing.T) {
 		t.Fatal("unbounded proxy trust")
 	}
 }
+
+func TestListenAddress(t *testing.T) {
+	cases := []struct {
+		httpAddr string
+		port     string
+		want     string
+	}{
+		{"127.0.0.1:8080", "10000", "127.0.0.1:8080"},
+		{"0.0.0.0:8080", "", "0.0.0.0:8080"},
+		{"", "10000", "0.0.0.0:10000"},
+		{"", "3000", "0.0.0.0:3000"},
+		{"", "127.0.0.1:3000", "127.0.0.1:3000"},
+		{"", "", "0.0.0.0:10000"},
+	}
+	for _, tc := range cases {
+		env := validEnv()
+		if tc.httpAddr != "" {
+			env["HTTP_ADDR"] = tc.httpAddr
+		}
+		if tc.port != "" {
+			env["PORT"] = tc.port
+		}
+		c, err := From(func(k string) string { return env[k] })
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if c.Listen != tc.want {
+			t.Fatalf("HTTP_ADDR=%q PORT=%q: got %q, want %q", tc.httpAddr, tc.port, c.Listen, tc.want)
+		}
+	}
+}

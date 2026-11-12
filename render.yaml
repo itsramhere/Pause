@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: pause
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerCommand: /app/bin/render-start.sh
+    healthCheckPath: /readyz
+    envVars:
+      - key: APP_ENV
+        value: demo
+      - key: DEMO_ENABLED
+        value: "1"
+      - key: MAIL_MODE
+        value: "off"
+      - key: TRUSTED_PROXY_CIDRS
+        value: 10.0.0.0/8
+      - key: DATABASE_URL
+        sync: false
+      - key: MESSAGE_ENCRYPTION_KEY
+        sync: false
+      - key: APP_BASE_URL
+        sync: false
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_MERCHANT_ID
+        sync: false
+      - key: PAYPAL_WEBHOOK_ID
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false

@@ -21,7 +21,9 @@ COPY models/*.json /app/models/
 COPY search/ /app/search/
 COPY datasets/splits.manifest.json /app/datasets/splits.manifest.json
 COPY tests/fixtures/ /app/tests/fixtures/
+COPY scripts/render-start.sh /app/bin/render-start.sh
+RUN chmod +x /app/bin/render-start.sh
 USER 65532:65532
-ENV HTTP_ADDR=0.0.0.0:8080 WEB_DIST_DIR=/app/web/dist
-EXPOSE 8080
+ENV WEB_DIST_DIR=/app/web/dist
+EXPOSE 8080 10000
 CMD ["/app/bin/api"]

@@ -114,6 +114,9 @@ func (s *Service) syncHistory(ctx context.Context, id string, targets []string) 
 	return err
 }
 func (s *Service) WorkHistoryOnce(ctx context.Context) (bool, error) {
+	if s.Investigation == nil {
+		return false, nil
+	}
 	jobs := &store.Jobs{DB: s.DB, Clock: s.Clock}
 	job, err := jobs.Lease(ctx, []string{"SEARCH_PROJECTION"}, 2*time.Minute)
 	if err != nil || job == nil {
